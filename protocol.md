@@ -70,7 +70,7 @@ The key words **must**, **must not**, **required**, **shall**, **shall not**, **
 
 The key word **UUID** (alternatively: **Universally Unique IDentifier**, **Globally Unique IDentifier** or **UUID**) in this document is to be interpreted as described by RFC 4122 ["A Universally Unique IDentifier (UUID) URN Namespace"].
 
-The key word **UID*** (alternatively: **Unique IDentifier**) in this document is to be interpreted as an identifier that is unique within the context of the payload originator.
+The key word **UID** (alternatively: **Unique IDentifier**) in this document is to be interpreted as an identifier that is unique within the context of the payload originator.
 
 The key words **node** and **peer** in this document are to be interpreted as an `Engine`, which may include payloads, may query other nodes, may respond to other nodes and may provide outlets.
 
@@ -431,7 +431,7 @@ Similarly, if an application requires not only the InCommon Shibboleth federatio
             # eduPerson Attribute:
             'urn:mace:dir:attribute-def:eduPersonPrincipalName',
             # UCTrust Attribute:
-            'urn:oid:2.16.840.1.113916.1.1.4.1],
+            'urn:oid:2.16.840.1.113916.1.1.4.1]',
             # ..
           ]
         }
@@ -671,7 +671,7 @@ Payload does not exist with identity.
 
 # Internal Routines
 
-**NON-NORMATIVE** This section is not anywhere near complete and thus should be regarded as non-normative at this time, although it will be classified as normative upon completion.
+**NON-NORMATIVE** This section is very incomplete and should be regarded as non-normative at this time; upon completion, it shall be classified as normative.
 
 ## FILTER-IN
 
