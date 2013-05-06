@@ -10,7 +10,7 @@ Copyright (c) 2013, Regents of the University of California. All rights reserved
 
 # Overview
 
-This memorandum describes the USE (URI Sharing Environment) Protocol. This protocol propagates URI knowledge across a peer-to-peer topology with support heterogeneous and asymmetric world views. In this way, each peer may develop from its neighbors a knowledge of the  ecosystem as suited to its needs, taking into consideration trust relationships and policies around acceptance and sharing.
+This memorandum describes the USE (URI Sharing Environment) Protocol. This protocol propagates URI knowledge across a peer-to-peer topology with support for heterogeneous and asymmetric world views. In this way, each peer may develop from its neighbors a knowledge of the  ecosystem as suited to its needs, taking into consideration trust relationships and policies around acceptance and sharing.
 
  The motivating use case for this protocol is for **web app stores**, such as in the context of a mobile dashboard, an IMS LTI Tool Consumer, or a W3C Packaged Web Apps launcher. As such, initial work on this protocol originated from a desire to flexibly serve such use cases. However, it is generic enough to comport to any use case whereby URIs are propagated across a peer-to-peer topology, including where peers have heterogeneous and asymmetric world views.
 
