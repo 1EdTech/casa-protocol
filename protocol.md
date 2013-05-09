@@ -46,7 +46,7 @@ To facilitate a relatively automated process of propagation, each organization m
 
 #### Mobile Dashboard
 
-Many organizations with mobile web apps arrange them in a dashboard. In some cases, they make this dashboard configurable and seek out apps from peers. Further, they may choose to share their own apps with these or other peers.  For example take the case of the UC System, where a campus may have both location specific mobile web apps, as well as academic reference apps that can be shared.  An example of an app that can be referenced and shared as a resource is an organic chemistry glossary, where the glossary itself is a growing body of work.
+Many organizations with mobile web apps arrange them in a dashboard. In some cases, they make this dashboard configurable and seek out apps from peers. Further, they may choose to share their own apps with these or other peers.  For example take the case of the UC System, where a campus may have both location specific mobile web apps, as well as academic reference apps that can be shared.  An example of a mobile web app that can be referenced and shared as a resource is an organic chemistry glossary, where the glossary itself is a growing body of work.
 
 Satisfaction of this use case requires that (1) the heterogeneous and asymmetric peering relationships must be satisfied and (2) it must be possible to filter URIs based on whether or not they provide a mobile view to content.
 
