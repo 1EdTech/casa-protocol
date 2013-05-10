@@ -1,6 +1,6 @@
-# DRAFT - URI SHARING ENVIRONMENT (USE) PROTOCOL
+# URI SHARING ENVIRONMENT (USE) PROTOCOL
 
-##Introduction
+# Introduction
 
 ## Status of this Memo
 
@@ -23,7 +23,7 @@ Information propagation throughout a network is conventionally handled as either
 * Complete Topology - Nodes in an infrastructure each contact every other node in the infrastructure in order to gain full knowledge of the environment. This approach requires `0.5*N*(N-1)` edges for `N` nodes, thus imposing a high control overhead to retain an accurate perception of the ecosystem.
 * Star Topology - Nodes in an infrastructure each contact one central node to share their knowledge and collect knowledge from others. This approach requires a homogeneous world view and centralized trust, as well as placing significant load and responsibility upon the hub node.
 
-Neither of these implementations adequately model the real world in the context of **web app stores**. Traditionally, web portals have built their ecosystem by directly contacting peers they trust and sharing apps among themselves. They neither have the global knowledge or resources to maintain a fully-connected mesh with all other peers in the network, nor will there ever be a complete consensus to appoint a central hub.  The success of the Internet is in fact due to a lack of a central hub.
+Neither of these implementations adequately model the real world in the context of **web app stores**. Traditionally, web portals have built their ecosystem by directly contacting peers they trust and sharing apps among themselves. They neither have the global knowledge or resources to maintain a fully-connected mesh with all other peers in the network, nor will there ever be a complete consensus to appoint a central hub.
 
 ## Solution
 
