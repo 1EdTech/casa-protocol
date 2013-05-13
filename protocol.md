@@ -33,7 +33,7 @@ Each organization shall define its inbound and outbound peers:
 
 * An inbound peer is a peer from which the node is willing to accept URI information; in order to know where to pull information from, an inbound peer is defined explicitly by hostname, 
 
-* An outbound peer is a peer to which the peer is willing to share URI information; an outbound peer may be configured as solely a remote address, or as a remote address and a netmask, allowing for broad sharing policies to be implemented.
+* An outbound peer is a peer to which the peer is willing to share URI information; an outbound peer may be configured as solely a remote address, or as a remote address and a wildcard mask, allowing for broad sharing policies to be implemented.
 
  While an organization may both accept from and share with a peer, this symmetry is not required. Further, when accepting applications from a peer, an organization may choose to accept only those that originate with the peer, or it may additionally accept applications that were shared with and propagated through the peer.
 
@@ -92,7 +92,7 @@ The key word **set** in this document is to be interpreted as an unordered data 
 
 The key word **object** in this document is to be interpreted as an unordered data structure of key-value pairs, referred to in language systems by terms including, but not limited to, "object", "associative array", "hash map" and "key-value store". The term **property** or **attribute** in this document may be interpreted as synonymous with **key** to mean a reference within the object that returns a **value**.
 
-The key word **netmask** (alternatively: **subnet mask**) in this document is to be interpreted as described the word "mask" by RFC 4632 ["Classless Inter-domain Routing (CIDR)"].
+The key word **wildcard mask** (alternatively: **mask**) in this document is to be interpreted as the binary inverse of the key word "network mask" as described by RFC 4632 ["Classless Inter-domain Routing (CIDR)"].
 
 ### Constituents
 
@@ -238,7 +238,7 @@ The `AdjOutPeer` object extends the `Node` object, specifying a peer to which th
   :secret => String || undefined,
   :out    => {
     :address => String || undefined,
-    :netmask => String || undefined,
+    :mask    => String || undefined,
     :local   => false
   }
 }
@@ -246,7 +246,7 @@ The `AdjOutPeer` object extends the `Node` object, specifying a peer to which th
 
 All `AdjOutPeer` objects must define an `:out` property (alternatively: `:out` object) containing an object that must include a `:local` property set to `false`. 
 
-It is recommended that the `:out` property also contains an `:address` property with an IP address value. If the `:address` property is not defined, then the `Engine` shall respond to any request bearing the correct `:name` and `:secret`. Additionally, the `:out` property may include a `:netmask` property with an netmask value in the event that the `Engine` shall respond to any request issued by an `Outlet` within a subnet.
+It is recommended that the `:out` property also contains an `:address` property with an IP address value. If the `:address` property is not defined, then the `Engine` shall respond to any request bearing the correct `:name` and `:secret`. Additionally, the `:out` property may include a `:mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued by an `Outlet` within a subnet.
 
 The `:out` object may be set in concurrence with an `:in` object to classify a peer as both an `AdjInPeer` and  an `AdjOutPeer`.
 
@@ -260,7 +260,7 @@ The `Outlet` object extends the `Node` object, specifying a peer to which the `E
   :secret   =>    String || undefined,
   :response =>    {
     :address  =>  String || undefined,
-    :netmask  =>  String || undefined,
+    :mask     =>  String || undefined,
     :local    =>  true,
     :manage   =>  true || false || undefined
   }
@@ -271,7 +271,7 @@ All `Local` objects must define an `:out` property (alternatively: `:out` object
 
 The `:out` property may include a `:manage` property, in which case the `Outlet` will be treated as a `ManagerOutlet`. A `ManagerOutlet` may issue mutator (POST, PUT and DELETE) requests against the `Engine` to modify data in `Local`, as well as to modify `AdjInFilter`, `AdjInTransform`, `AdjOutTransform` and `AdjOutFilter`. If the `:manage` property is false or undefined, then the `Outlet` will not have access to mutator requests.
 
-The `:out` property may also contains an `:address` property with an IP address value. This is recommended for `ManagerOutlet` nodes. If the `:address` property is defined, the `Engine` shall respond to requests bearing the correct `:name` and `:secret` only if the requesting agent is from `:address`. Additionally, the `:out` property may include a `:netmask` property with a netmask value in the event that the `Engine` shall respond to any request issued by an `Outlet` within a subnet.
+The `:out` property may also contains an `:address` property with an IP address value. This is recommended for `ManagerOutlet` nodes. If the `:address` property is defined, the `Engine` shall respond to requests bearing the correct `:name` and `:secret` only if the requesting agent is from `:address`. Additionally, the `:out` property may include a `:mask` property with a wildcard mask value in the event that the `Engine` shall respond to any request issued by an `Outlet` within a subnet.
 
 The `:out` object may be set in concurrence with an `:in` object to classify a peer as both an `AdjInPeer` and an `Outlet`.
 
