@@ -14,7 +14,7 @@ Copyright (c) 2013, Regents of the University of California. All rights reserved
 
 This memorandum describes the USE (URI Sharing Environment) Protocol. This protocol propagates URI knowledge across a peer-to-peer topology with support for heterogeneous and asymmetric world views. In this way, each peer may develop from its neighbors a knowledge of the  ecosystem as suited to its needs, taking into consideration trust relationships and policies around acceptance and sharing.
 
- The motivating use case for this protocol is for **web app stores**, such as in the context of a mobile dashboard, an IMS LTI Tool Consumer, or a W3C Packaged Web Apps launcher. As such, initial work on this protocol originated from a desire to flexibly serve such use cases. However, it is generic enough to comport to any use case whereby URIs are propagated across a peer-to-peer topology, including where peers have heterogeneous and asymmetric world views.
+The motivating use case for this protocol is **web app stores**, such as in the context of a mobile dashboard, an IMS LTI Tool Consumer or a W3C Packaged Web Apps launcher. As such, this protocol originated as an attempt to serve this use cases; however, given its flexibility, it is generic enough to comport with other use cases whereby URIs and metadata are propagated across a peer-to-peer topology.
 
 ## Background
 
@@ -23,7 +23,7 @@ Information propagation throughout a network is conventionally handled as either
 * Complete Topology - Nodes in an infrastructure each contact every other node in the infrastructure in order to gain full knowledge of the environment. This approach requires `0.5*N*(N-1)` edges for `N` nodes, thus imposing a high control overhead to retain an accurate perception of the ecosystem.
 * Star Topology - Nodes in an infrastructure each contact one central node to share their knowledge and collect knowledge from others. This approach requires a homogeneous world view and centralized trust, as well as placing significant load and responsibility upon the hub node.
 
-Neither of these implementations adequately model the real world in the context of **web app stores**. Traditionally, web portals have built their ecosystem by directly contacting peers they trust and sharing apps among themselves. They neither have the global knowledge or resources to maintain a fully-connected mesh with all other peers in the network, nor will there ever be a complete consensus to appoint a central hub.
+Neither of these implementations adequately model the real world. Traditionally, web portals have built their ecosystem by directly contacting peers they trust and sharing apps among themselves. They neither have global knowledge nor resources to maintain a fully-connected mesh with all other peers in the network, nor will consensus ever be achieved to appoint a central hub.
 
 ## Solution
 
@@ -31,9 +31,8 @@ This protocol describes an approach that treats each organization in the network
 
 Each organization shall define its inbound and outbound peers:
 
-* An inbound peer is a peer from which the node is willing to accept URI information; in order to know where to pull information from, an inbound peer is defined explicitly by hostname, 
-
-* An outbound peer is a peer to which the peer is willing to share URI information; an outbound peer may be configured as solely a remote address, or as a remote address and a wildcard mask, allowing for broad sharing policies to be implemented.
+* An inbound peer is a peer from which the node is willing to accept URI information; in order to know where to pull information from, an inbound peer is defined explicitly by hostname. 
+* An outbound peer is a peer to which the peer is willing to share URI information; an outbound peer may be configured as a remote address, or as a remote address and a wildcard mask, allowing for broad sharing policies to be implemented.
 
  While an organization may both accept from and share with a peer, this symmetry is not required. Further, when accepting applications from a peer, an organization may choose to accept only those that originate with the peer, or it may additionally accept applications that were shared with and propagated through the peer.
 
@@ -100,7 +99,7 @@ The key word **wildcard mask** (alternatively: **mask**) in this document is to 
 
 The `Engine` is a storage, querying and distribution routine that logically represents a node. 
 
-The engine is responsive for:
+The engine is responsible for:
 
 1. Persistent storage of the node's relative ecosystem.
 2. RESTful interfaces for managing payloads in the node's relative ecosystem.
@@ -111,42 +110,50 @@ The engine is responsive for:
 
 An `AdjInPeer` is a peer that the `Engine` queries for payloads.
 
-Information from an `AdjInPeer` is (1) processed through `AdjInFilter`, (2) stored within the `AdjIn` structure, (3) transformed by `AdjInTransform` and (4) finally delivered to `Local` for conveyance to outlets and propagation to `AdjOutPeer` nodes.
+Payloads from an `AdjInPeer` are (1) translated to human-readable attributes by `AdjInTranslate`, (2) processed through `AdjInFilter` and (3) stored within the `AdjIn` structure. From there, the flow splits through (1) `AdjInTransform` to `Local` for dissemination to outlets and (2) `AdjOutTransform` to `AdjOut` for dissemination to `AdjOutPeer` nodes.
 
 #### AdjOutPeer
 
-An `AdjOutPeer` is a peer that the `Engine` allows to query it for payloads, both that originate from the node or that may have originated from one of node's peers and are flagged to be propagated.
+An `AdjOutPeer` is a peer that the `Engine` allows to query it for payloads, both (1) that originate from the node and are flagged to be shared and (2) that originated from one of node's peers and were flagged to be propagated.
 
-Information from `Local` is (1) transformed by `AdjOutTransform`, (2) stored within the `AdjOut` structure, (3) processed through `AdjOutFilter` and (4) finally delivered via an HTTP response to a querying `AdjOutPeer` node.
+Payloads delivered to `AdjOutPeer` nodes begin at `AdjIn` for propagated URIs and `Local` for originated URIs. In both cases, payloads pass through `AdjOutTransform` before arriving at `AdjOut`. From `AdjOut`, payloads are then (1) processed by `AdjOutFilter`, (2) translated to machine-readable attributes by `AdjOutTranslate` and (3) delivered via HTTP response to the requesting `AdjOutPeer`.
 
 #### Outlet
 
-An outlet is an interface that delivers information based on the `Local` structure, represented as either a:
+An outlet is an interface that delivers information based on the `Local` structure, represented as either:
 
 * `ManagerOutlet` used to manage payloads, filters and transforms within the `Engine`.
 * `LocalOutlet` used as a configurable portal such as a tool launcher or mobile dashboard.
 
+Outlets derive their data from the `Local` structure, which includes payloads both originated at the node and retrieved from elsewhere in the network.
+
 ### Mechanisms
+
+#### AdjInTranslate
+
+When a payload is received, the first step that must occur is translation of attributes from machine-readable attribute UUIDs to human-readable names configured by the peer. If there is no mapping for a machine-readable attribute UUID, it should not be affected by this process.
+
+While machine-readable names avoid namespace conflicts in the peer-to-peer communication layer, it is more convenient to treat attributes by their human-readable names within a node and its outlets.
 
 #### AdjInFilter
 
-Payloads received from `AdjInPeer` nodes are dropped if they do not meet the constraints imposed by `AdjInFilter`.
+Once a payload has been translated, this phase drops payloads with attributes that do not meet configured constraints. This operation should be used to drop payloads that have requisites an organization does not support, and may also be used to drop applications that lack attributes an organization requires.
 
-These filters should be used to drop payloads that have requisites an organization does not support or that do not support something that the organization requires.  
-
-If a payload meets the `AdjInFilter` constraints, then it will be entered into `AdjIn`.
+If a payload meets the `AdjInFilter` constraints, it shall be entered into `AdjIn`.
 
 #### AdjInTransform
 
-Payloads from `AdjIn` are transformed via the `AdjInTransform` rules before they are entered into `Local`. 
+After a payload is written to `AdjIn`, it forks along a data path that takes it to `Local`. Before reaching `Local`, payloads must first pass through `AdjInTransform`. 
 
-This allows an organization to curate the way in which payloads are presented via outlets.
+This routine allows a node to curate the way in which payloads are presented to outlets.
 
 #### AdjOutTransform
 
-Payloads from `Local` are transformed via the `AdjOutTransform` rules before they are entered into `AdjOut`. 
+All payloads being delivered to `AdjOut` must first pass through `AdjOutTransform`. 
 
-This allows an organization to curate the way in which payloads are presented to `AdjOutPeer` nodes.
+These payloads originate from one of two locations based on their origin: (1) payloads shared from `AdjInPeer` nodes travel a data path from `AdjIn` and (2) payloads originating at the node travel a data path from `Local`.
+
+This routine allows a node to curate the way in which payloads are presented to `AdjOutPeer` nodes.
 
 #### AdjOutFilter
 
@@ -156,21 +163,27 @@ These filters are typically used to drop payloads that will not be useful for ot
 
 If a payload meets the `AdjOutFilter` constraints, then it will be provided in the response to queries from `AdjOutPeer` nodes.
 
+#### AdjOutTransform
+
+When preparing an HTTP response to an `AdjOutPeer` node, the last step before delivery is passing each payload through `AdjOutTransform`, which maps human-readable names configured by the peer into machine-readable attribute UUIDs. If there is no mapping for a human-readable name, and it is not of UUID form, then it should be discarded during this translation phase. However, if a name is already in UUID form and no mapping exists for it, then it should not be affected by this process.
+
+While human-readable names are useful within a node and its outlets, machine-readable names avoid namespace conflicts in the peer-to-peer communication layer. This is particularly true when multiple attributes might be used to achieve functionality that might be given the same name but that has different mechanics.
+
 ### Data Structures
 
 #### AdjIn
 
-This structure contains payloads shared from or propagated through an `AdjInPeer` node, after being filtered by `AdjInFilter`.
+This structure contains payloads shared from or propagated through an `AdjInPeer` node, after being translated by `AdjInTranslate` and filtered by `AdjInFilter`.
 
 #### Local
 
-This structure contains payloads that either (1) originate directly from the node or (2) originate from an `AdjInPeer` node and shall have successfully passed through `AdjInFilter` and `AdjInTransform`.
+This structure contains payloads that either (1) originate directly from the node or (2) originate from an `AdjInPeer` node and shall have successfully passed through `AdjInTranslate`, `AdjInFilter` and `AdjInTransform`.
 
 #### AdjOut
 
-This structure contains payloads that either (1) originate directly from the node or (2) were received from an `AdjInPeer` node and are marked for propagation. Payloads must be passed through `AdjOutFilter` before being entered into this structure.
+This structure contains payloads that either (1) originate directly from the node and passed through `AdjOutTransform` or (2) were received from an `AdjInPeer` node, are marked for propagation and have passed through `AdjInTranslate`, `AdjInFilter` and `AdjOutTransform`.
 
-Payloads in this structure may be made available by the `Engine` when queried by an `AdjOutPeer` node, contingent on the fact that payloads made available must first pass through `AdjOutFilter`.
+Payloads in this structure may be made available by the `Engine` when queried by an `AdjOutPeer` node, contingent on the fact that payloads made available must first pass through `AdjOutFilter` and `AdjOutTranslate`.
 
 ## User Characteristics
 
@@ -185,6 +198,12 @@ This protocol recommends that all RESTful web services minimally implement trans
 ### Payload Trust
 
 The use of transport layer security does not ensure the validity of the contents contained within a payload. A malicious peer may propagate payloads that do not conform to this protocol. Consequently, trust is required between a node and its direct peers. Further, if a node accepts applications propagated through (rather than derived at) the `AdjInPeer`, then the node is implicitly trusting those indirect peers, or at least the representation provided by it's direct peer. Because this multi-hop trust may not always be desired, `AdjInFilter` may be used to only accept applications derived directly at the `AdjInPeer`.
+
+### Machine-readable Attributes
+
+In peer-to-peer communications, all attributes are defined through machine-readable UUIDs. This avoids namespace conflicts that might accrue when two peers define different attribute structures intended to serve similar purposes. However, through border translations, attributes within a node may be expressed by a human-readable equivalent. This equivalent is configured at the behest of the node, allowing two nodes to (1) interpret attributes differently or (2) to introduce new interpretations of a concept (like categories, tags or ratings) by simply introducing a new machine-readable attribute and interpreting module.
+
+When a payload arrives at the border from an `AdjInPeer`, it is mapped to a human-readable equivalent as configured; similarly, before a payload leaves the border headed for an `AdjOutPeer`, it is mapped to its machine-readable form.
 
 ## Constraints
 
@@ -322,6 +341,8 @@ The `:attributes` object should also include:
 * a `:use` object specifies metadata that a node may evaluate. If a node cannot evaluate an attribute within this object, it should not drop the payload at `AdjInFilter` unless a filter is defined explicitly to this effect.
 * a `:require` object specifies metadata that a node must be able to evaluate. If a node cannot evaluate an attribute within this object, or if a node evaluates the metadata as not having the specified requirements, then it must drop the payload at `AdjInFilter`. 
 
+All keys of the  `:use` and `:require` objects are expressed as human-readable names within the node, translated by `AdjInTranslate` for propagated payloads, while they are expressed as machine-readable UUIDs when being shared with other nodes, translated by `AdjOutTranslate`.
+
 If the `:originator` property does not correspond to the current node, the payload must also include:
 
 * an `:original` property that contains the values of `:attributes` as defined by the originator
@@ -330,7 +351,7 @@ If the `:original` property is already set, it must not be modified.
 
 ### Properties for :use
 
-All properties discussed in this section should be considered optional. Further, additional properties may be added into this structure on an ad hoc basis.
+All properties discussed in this section should be considered optional. Further, additional properties may be added into this structure on an ad hoc basis. Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
 
 #### Example: Common Website Properties
 
@@ -371,7 +392,7 @@ In a similar way, other capabilities such as an IMS Learning Tools Interoperabil
 
 ### Properties for :require
 
-All properties discussed in this section should be considered optional. Further, additional properties may be added into this structure on an ad hoc basis. It should be noted, however, that if a `:require` property is introduced that a peer does not recognize, then the peer will drop the payload at `AdjInFilter`.
+All properties discussed in this section should be considered optional. Further, additional properties may be added into this structure on an ad hoc basis. It should be noted, however, that if a `:require` property is introduced that a peer does not recognize, then the peer will drop the payload at `AdjInFilter`. Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
 
 #### Example: Shibboleth
 
