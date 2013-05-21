@@ -27,14 +27,14 @@ Neither of these implementations adequately model the real world. Traditionally,
 
 ## Solution
 
-This protocol describes an approach that treats each organization in the network as an autonomous system. Under this scheme, each organization is responsible for defining it's own peer trust, acceptance and sharing policies.
+This protocol describes an approach that treats each organization in the network as an autonomous system. Under this scheme, each organization is responsible for defining its own peer trust, acceptance and sharing policies.
 
 Each organization shall define its inbound and outbound peers:
 
 * An inbound peer is a peer from which the node is willing to accept URI information; in order to know where to pull information from, an inbound peer is defined explicitly by hostname. 
 * An outbound peer is a peer to which the peer is willing to share URI information; an outbound peer may be configured as a remote address, or as a remote address and a wildcard mask, allowing for broad sharing policies to be implemented.
 
- While an organization may both accept from and share with a peer, this symmetry is not required. Further, when accepting applications from a peer, an organization may choose to accept only those that originate with the peer, or it may additionally accept applications that were shared with and propagated through the peer.
+While an organization may both accept from and share with a peer, this symmetry is not required. Further, when accepting applications from a peer, an organization may choose to accept only those that originate with the peer, or it may additionally accept applications that were shared with and propagated through the peer.
 
 To facilitate a relatively automated process of propagation, each organization may define filters and transformations for both inbound and outbound data:
 
@@ -89,7 +89,7 @@ The key word **array** in this document is to be interpreted as an ordered data 
 
 The key word **set** in this document is to be interpreted as an unordered data structure of elements.
 
-The key word **object** in this document is to be interpreted as an unordered data structure of key-value pairs, referred to in language systems by terms including, but not limited to, "object", "associative array", "hash map" and "key-value store". The term **property** or **attribute** in this document may be interpreted as synonymous with **key** to mean a reference within the object that returns a **value**.
+The key word **object** in this document is to be interpreted as an unordered data structure of key-value pairs, referred to in language systems by terms including, but not limited to, "object", "associative array", "hash map", "dictionary" and "key-value store". The term **property** or **attribute** in this document may be interpreted as synonymous with **key** to mean a reference within the object that returns a **value**.
 
 The key word **wildcard mask** (alternatively: **mask**) in this document is to be interpreted as the binary inverse of the key word "network mask" as described by RFC 4632 ["Classless Inter-domain Routing (CIDR)"].
 
@@ -197,7 +197,7 @@ This protocol recommends that all RESTful web services minimally implement trans
 
 ### Payload Trust
 
-The use of transport layer security does not ensure the validity of the contents contained within a payload. A malicious peer may propagate payloads that do not conform to this protocol. Consequently, trust is required between a node and its direct peers. Further, if a node accepts applications propagated through (rather than derived at) the `AdjInPeer`, then the node is implicitly trusting those indirect peers, or at least the representation provided by it's direct peer. Because this multi-hop trust may not always be desired, `AdjInFilter` may be used to only accept applications derived directly at the `AdjInPeer`.
+The use of transport layer security does not ensure the validity of the contents contained within a payload. A malicious peer may propagate payloads that do not conform to this protocol. Consequently, trust is required between a node and its direct peers. Further, if a node accepts URIs propagated through (rather than derived at) the `AdjInPeer`, then the node is implicitly trusting those indirect peers, or at least the representation provided by it's direct peer. Because this multi-hop trust may not always be desired, `AdjInFilter` may be used to only accept applications derived directly at the `AdjInPeer`.
 
 ### Machine-readable Attributes
 
@@ -220,7 +220,7 @@ The `Node` object is a logical representation of an entity that may interact wit
 }
 ```
 
-All `Node` objects must define a `:name` property. This must be a unique name among all peers defined within the `Engine`.
+All `Node` objects must define a `:name` property. This is a local reference to the node only, meaning that a peer may choose its own approach for naming nodes, but within a node, the name must be unique among all peers defined within the `Engine`.
 
 All `Node` objects may define a `:secret` property. If the secret property is set, then it must be included in all RESTful web service requests issued against the `Engine`.
 
@@ -326,8 +326,8 @@ A `payload` represents a URI and associated metadata.
 
 Minimally, a payload must include:
 
-* an `:identity` property that must include `:id` and `:originator` properties
-* an `:attributes` property that must include `:name` and `:uri` properties.
+* an `:identity` object that must include `:id` and `:originator` properties
+* an `:attributes` object that must include `:name` and `:uri` properties.
 
 The `:attributes` object may additionally include:
 
@@ -351,11 +351,11 @@ If the `:original` property is already set, it must not be modified.
 
 ### Properties for :use
 
-All properties discussed in this section should be considered optional. Further, additional properties may be added into this structure on an ad hoc basis. Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
+**NON-NORMATIVE** This section is intended as an non-normative example of how the `:use` attribute might be implemented. It should not be regarded as part of the protocol at this time, and the very structure of the `:use` property here might change completely before final implementation.
+
+Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
 
 #### Example: Common Website Properties
-
-**NON-NORMATIVE** This section is intended as an non-normative example of how the `:use` attribute might be implemented. It should not be regarded as part of the protocol at this time, and the very structure of the `:require` property here might change completely before final implementation.
 
 Some common properties for the `payload[:attributes][:use]` object include:
 
@@ -392,11 +392,11 @@ In a similar way, other capabilities such as an IMS Learning Tools Interoperabil
 
 ### Properties for :require
 
-All properties discussed in this section should be considered optional. Further, additional properties may be added into this structure on an ad hoc basis. It should be noted, however, that if a `:require` property is introduced that a peer does not recognize, then the peer will drop the payload at `AdjInFilter`. Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
+**NON-NORMATIVE** This section is intended as an non-normative example of how the `:require` attribute might be implemented. It should not be regarded as part of the protocol at this time, and the very structure of the `:require` property here might change completely before final implementation.
+
+Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
 
 #### Example: Shibboleth
-
-**NON-NORMATIVE** This section is intended as an non-normative example of how the `:require` attribute might be implemented. It should not be regarded as part of the protocol at this time, and the very structure of the `:require` property here might change completely before final implementation.
 
 Shibboleth is a SAML-based middleware that supports federation.
 
