@@ -700,11 +700,25 @@ Payload does not exist with identity.
 
 Filter that runs on all payloads that arrives from any `AdjInPeer` before reaching `AdjIn`.
 
-### ALWAYS
+A payload must be dropped unless a module is running that supports each `:require` attribute:
 
 ```ruby
-if payload[:attributes].has_key? :require
-  drop Payload unless accepts? Payload[:attributes][:require]
+@required_attributes.keys.each do |attribute|
+
+  drop unless @modules.include? attribute
+
+end
+```
+
+A payload must be dropped if one or more modules do not accept their corresponding `:require` attribute:
+
+```ruby
+@required_attributes.keys.each do |attribute|
+
+  if @modules[name].respond_to? 'accepts?'
+    drop unless @modules[name].accepts? attribute
+  end
+
 end
 ```
 
