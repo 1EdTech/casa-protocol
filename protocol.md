@@ -91,6 +91,8 @@ The key word **set** in this document is to be interpreted as an unordered data 
 
 The key word **object** in this document is to be interpreted as an unordered data structure of key-value pairs, referred to in language systems by terms including, but not limited to, "object", "associative array", "hash map", "dictionary" and "key-value store". The term **property** or **attribute** in this document may be interpreted as synonymous with **key** to mean a reference within the object that returns a **value**.
 
+The key word **timestamp** in this document is to be interpreted as a string written in the format of ISO 8601 ["Representation of dates and times"], using the combined date and time format including the `T` delimiter between the date and time segments and the `Z` signifier when in the UTC timezone.
+
 The key word **wildcard mask** (alternatively: **mask**) in this document is to be interpreted as the binary inverse of the key word "network mask" as described by RFC 4632 ["Classless Inter-domain Routing (CIDR)"].
 
 ### Constituents
@@ -312,6 +314,7 @@ A `payload` represents a URI and associated metadata.
   :attributes =>  {
     :name      =>  String,
     :uri       =>  String,
+    :timestamp =>  String,
     :share     =>  true || false || undefined,
     :propagate =>  true || false || undefined,
     :use       =>  {
@@ -327,7 +330,9 @@ A `payload` represents a URI and associated metadata.
 Minimally, a payload must include:
 
 * an `:identity` object that must include `:id` and `:originator` properties
-* an `:attributes` object that must include `:name` and `:uri` properties.
+* an `:attributes` object that must include `:name`, `:uri` and `:timestamp` properties.
+
+The `:timestamp` property must be string in the format of an ISO 8601 timestamp, referencing the time at which the attributes were most recently changed. It must including the `T` delimeter between date and time segments and the `Z` timezone for UTC. When both `:attributes` and `:original` exist, the `:timezone` values may be different if any peer modified the `:attributes` section, as that modifying peer should update the `:attributes` timestamp but not the `:original` timestamp.
 
 The `:attributes` object may additionally include:
 
@@ -703,9 +708,9 @@ Filter that runs on all payloads that arrives from any `AdjInPeer` before reachi
 A payload must be dropped unless a module is running that supports each `:require` attribute:
 
 ```ruby
-@required_attributes.keys.each do |attribute|
+@attributes['required'].keys.each do |attribute_name|
 
-  drop unless @modules.include? attribute
+  drop unless @modules.include? attribute_name
 
 end
 ```
@@ -713,13 +718,19 @@ end
 A payload must be dropped if one or more modules do not accept their corresponding `:require` attribute:
 
 ```ruby
-@required_attributes.keys.each do |attribute|
+@attributes['required'].each do |attribute_name, attribute|
 
-  if @modules[name].respond_to? 'accepts?'
-    drop unless @modules[name].accepts? attribute
+  if @modules[attribute].respond_to? 'accepts?'
+    drop unless @modules[attribute].accepts? attribute
   end
 
 end
+```
+
+It is recommended that a payload be dropped if its creation time is older than the version already in persistence:
+
+```ruby
+drop if @original['timestamp'] < AdjIn.find(@identity).original['timestamp']
 ```
 
 ## TRANSFORM-IN
