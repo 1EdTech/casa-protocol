@@ -137,9 +137,15 @@ When a payload is received, the first step that must occur is translation of att
 
 While machine-readable names avoid namespace conflicts in the peer-to-peer communication layer, it is more convenient to treat attributes by their human-readable names within a node and its outlets.
 
+#### AdjInSquash
+
+After a payload is translated by `AdjInTranslate` but before it is filtered by `AdjInFilter`, this phase sets up the `attributes` section by copying the `original` section and then walking through the elements in the `journal` sequentially and replacing attributes specified in each record. 
+
+Additional logic is allowed within this phase, such as for conflict resolution between the journal and a previously witnessed journal, so long as it produces an idempotent `attributes` section if `AdjInSquash` is applied multiple times on the same received payload without other versions of the journal being introduced as well.
+
 #### AdjInFilter
 
-Once a payload has been translated, this phase drops payloads with attributes that do not meet configured constraints. This operation should be used to drop payloads that have requisites an organization does not support, and may also be used to drop applications that lack attributes an organization requires.
+Once a payload has been translated and squashed, this phase drops payloads with attributes that do not meet configured constraints. This operation should be used to drop payloads that have requisites an organization does not support, and may also be used to drop applications that lack attributes an organization requires.
 
 If a payload meets the `AdjInFilter` constraints, it shall be entered into `AdjIn`.
 
@@ -300,14 +306,14 @@ The `:request` property may be concurrently set on a peer to make it both an `Ou
 
 ## Payload
 
-A `payload` represents a URI and associated metadata, and it is the fundamental unit accepted, presented and shared by a peer.
+A `Payload` represents a URI and associated metadata, and it is the fundamental unit accepted, presented and shared by a peer.
 
-A `payload` comes in two formats:
+A `Payload` comes in two formats:
 
-* **TransitPayload** is how a payload is communicated between peers. It must include `identity` and `original` structures, and should include a `journal` structure if any peer along the payload's route has made changes to the payload. It does not include the `attributes` structure, as that structure is computed upon arrival at a peer. All attributes in the TransitPayload structures must be expressed in their machine-readable representation.
-* **LocalPayload** is how a payload is managed locally in filters and transforms, as well as how it's produced to outlets. It must include `identity` and `attributes` sections. Further, if it does not originate at the current host, it must maintain the existing `original` and `journal` structures. All known attributes in the LocalPayload structures should be expressed in their human-readable representation.
+* `TransitPayload` is how a payload is communicated between peers. It must include `identity` and `original` structures, and should include a `journal` structure if any peer along the payload's route has made changes to the payload. It does not include the `attributes` structure, as that structure is computed upon arrival at a peer. All attributes in the TransitPayload structures must be expressed in their machine-readable representation.
+* `LocalPayload` is how a payload is regarded locally for filters and transforms, as well as how it's communicated to outlets. It must include `identity` and `attributes` sections. Further, if it does not originate at the current host, it must maintain the existing `original` and `journal` structures. All known attributes in the `LocalPayload` structures should be expressed in their human-readable representation.
 
-If originated from the node itself, the LocalPayload `attributes` section is explicitly defined. In all other cases, when received from an adjacent node, the `attributes` section of a payload is defined by squashing the `original` and `journal` sections of a payload, potentially also considering known attributes for a payload in the local node with the same identity. 
+If originated from the node itself, the `attributes` section is explicitly defined for the `LocalPayload`. In all other cases, when received from an adjacent node, the `attributes` section of a payload is defined by squashing the `original` and `journal` sections of a payload, potentially also considering known attributes for a payload in the local node with the same identity, as defined by `AdjInSquash`.
 
 ### TransitPayload
 
@@ -405,16 +411,16 @@ If originated from the node itself, the LocalPayload `attributes` section is exp
     'share' => true || false,
     'propagate' => true || false,
     'use' => {
-      # .. (original 'use' structure)
+      # .. (local or squashed 'use' structure)
     } || undefined,
     'require' => {
-      # .. (original 'require' structure)
+      # .. (local or squashed 'require' structure)
     } || undefined
   }
 }
 ```
 
-When a `LocalPayload` is returned to an Outlet, it is recommended that the `original` and `journal` attributes are dropped to reduce the payload size, as the squashed representation is contained in full by the `attributes` section.
+When a `LocalPayload` is returned to a non-manager `Outlet`, it is recommended that the `original` and `journal` attributes are dropped to reduce the payload size, as the squashed representation is contained in full by the `attributes` section.
 
 ### Payload Components
 
@@ -488,7 +494,7 @@ All attributes within the `use` and `require` objects are expressed as human-rea
 
 The `original` property is an object that must contain the `attributes` section set by the originator.
 
-The `original` property must exist for any payload that a node sends to an adjacent peer (TransitPayload); consequently, it should exist on any payload received from an adjacent peer. To accomplish this, if the `original` property does not exist when a payload reaches AdjOutTransform, it should be generated at that time from the `attributes` property.
+The `original` property must exist for any payload that a node sends to an adjacent peer (`TransitPayload`); consequently, it should exist on any payload received from an adjacent peer. To accomplish this, if the `original` property does not exist when a payload reaches `AdjOutTransform`, it should be generated at that time from the `attributes` property.
 
 The `original` property may not be modified once it is generated.
 
@@ -500,7 +506,7 @@ The original attributes structure definition is identical to the attributes stru
 
 The `journal` property is an array of zero or more objects that contain an `author` section, a `timestamp` and either a `use` section or a `require` section or both. An element in the `journal` array reflects a set of changes to `use` and `require` attributes as made by `author` as of `timestamp`.
 
-When a payload arrives at a node, the AdjInSquash phase is responsible for assessing the `original` property and applying changes from the `journal` in sequential array order to produce an `attributes` property for the payload. The exact behavior of AdjInSquash may be customized within the local context, as the product `attributes` property is local to an individual node.
+When a payload arrives at a node, the `AdjInSquash` phase is responsible for assessing the `original` property and applying changes from the `journal` in sequential array order to produce an `attributes` property for the payload. The exact behavior of `AdjInSquash` may be customized within the local context, as the product `attributes` property is local to an individual node.
 
 The `journal` property may exist for any payload that has been transmuted by the local node, as well as for any payload that has been transmuted by a peer that was not the originator of the payload. While the `attributes` section denotes the representation of the payload within the local context, the journal dictates changes to the payload in a broader context.
 
@@ -524,10 +530,10 @@ Each element is defined as:
   },
   'timestamp' => String(Timestamp),
   'use' => {
-    # .. (original 'use' structure)
+    # .. (modifications to 'use' properties)
   } || undefined,
   'require' => {
-    # .. (original 'require' structure)
+    # .. (modifications to 'require' properties)
   } || undefined
 }
 ```
@@ -540,6 +546,8 @@ Each element is defined as:
 * `require` [Optional] - The `require` property is an object that may be included which specifies sequential alterations to the metadata as defined by the `original` property of the payload, plus any changes defined by earlier elements in the `journal` structure.
 
 All attributes within the `use` and `require` objects are expressed as human-readable names within the node (translated from UUID to name `AdjInTranslate` for propagated payloads), while they are expressed as machine-readable UUIDs when being shared with other nodes (translated from name to UUID `AdjOutTranslate`).
+
+To unset an attribute within the `use` or `require` objects, set it as `false`. Otherwise, changes are complete.
 
 ### Properties for 'use'
 
@@ -804,7 +812,7 @@ Returns the `Payload` object with `attributes` from POST body and `identity` as 
         "originator"    :   String
     },
     "attributes" : {
-        // .. (journal for the payload)
+        // .. (payload attributes)
     }
 }
 ```
@@ -852,7 +860,7 @@ PUT /payloads?name=[name]&secret=[secret] HTTP/1.1
         "originator"    :   String
     },
     "attributes": {
-        // attributes..
+        // rewrite of local attributes..
     },
     "journal": {
         // journal attribute changes..
