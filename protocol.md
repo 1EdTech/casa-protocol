@@ -27,14 +27,14 @@ Neither of these implementations adequately model the real world. Traditionally,
 
 ## Solution
 
-This protocol describes an approach that treats each organization in the network as an autonomous system. Under this scheme, each organization is responsible for defining it's own peer trust, acceptance and sharing policies.
+This protocol describes an approach that treats each organization in the network as an autonomous system. Under this scheme, each organization is responsible for defining its own peer trust, acceptance and sharing policies.
 
 Each organization shall define its inbound and outbound peers:
 
 * An inbound peer is a peer from which the node is willing to accept URI information; in order to know where to pull information from, an inbound peer is defined explicitly by hostname. 
 * An outbound peer is a peer to which the peer is willing to share URI information; an outbound peer may be configured as a remote address, or as a remote address and a wildcard mask, allowing for broad sharing policies to be implemented.
 
- While an organization may both accept from and share with a peer, this symmetry is not required. Further, when accepting applications from a peer, an organization may choose to accept only those that originate with the peer, or it may additionally accept applications that were shared with and propagated through the peer.
+While an organization may both accept from and share with a peer, this symmetry is not required. Further, when accepting applications from a peer, an organization may choose to accept only those that originate with the peer, or it may additionally accept applications that were shared with and propagated through the peer.
 
 To facilitate a relatively automated process of propagation, each organization may define filters and transformations for both inbound and outbound data:
 
@@ -89,7 +89,9 @@ The key word **array** in this document is to be interpreted as an ordered data 
 
 The key word **set** in this document is to be interpreted as an unordered data structure of elements.
 
-The key word **object** in this document is to be interpreted as an unordered data structure of key-value pairs, referred to in language systems by terms including, but not limited to, "object", "associative array", "hash map" and "key-value store". The term **property** or **attribute** in this document may be interpreted as synonymous with **key** to mean a reference within the object that returns a **value**.
+The key word **object** in this document is to be interpreted as an unordered data structure of key-value pairs, referred to in language systems by terms including, but not limited to, "object", "associative array", "hash map", "dictionary" and "key-value store". The term **property** or **attribute** in this document may be interpreted as synonymous with **key** to mean a reference within the object that returns a **value**.
+
+The key word **timestamp** in this document is to be interpreted as a string written in the format of ISO 8601 ["Representation of dates and times"], using the combined date and time format including the `T` delimiter between the date and time segments and the `Z` signifier when in the UTC timezone.
 
 The key word **wildcard mask** (alternatively: **mask**) in this document is to be interpreted as the binary inverse of the key word "network mask" as described by RFC 4632 ["Classless Inter-domain Routing (CIDR)"].
 
@@ -135,9 +137,15 @@ When a payload is received, the first step that must occur is translation of att
 
 While machine-readable names avoid namespace conflicts in the peer-to-peer communication layer, it is more convenient to treat attributes by their human-readable names within a node and its outlets.
 
+#### AdjInSquash
+
+After a payload is translated by `AdjInTranslate` but before it is filtered by `AdjInFilter`, this phase sets up the `attributes` section by copying the `original` section and then walking through the elements in the `journal` sequentially and replacing attributes specified in each record. 
+
+Additional logic is allowed within this phase, such as for conflict resolution between the journal and a previously witnessed journal, so long as it produces an idempotent `attributes` section if `AdjInSquash` is applied multiple times on the same received payload without other versions of the journal being introduced as well.
+
 #### AdjInFilter
 
-Once a payload has been translated, this phase drops payloads with attributes that do not meet configured constraints. This operation should be used to drop payloads that have requisites an organization does not support, and may also be used to drop applications that lack attributes an organization requires.
+Once a payload has been translated and squashed, this phase drops payloads with attributes that do not meet configured constraints. This operation should be used to drop payloads that have requisites an organization does not support, and may also be used to drop applications that lack attributes an organization requires.
 
 If a payload meets the `AdjInFilter` constraints, it shall be entered into `AdjIn`.
 
@@ -197,7 +205,7 @@ This protocol recommends that all RESTful web services minimally implement trans
 
 ### Payload Trust
 
-The use of transport layer security does not ensure the validity of the contents contained within a payload. A malicious peer may propagate payloads that do not conform to this protocol. Consequently, trust is required between a node and its direct peers. Further, if a node accepts applications propagated through (rather than derived at) the `AdjInPeer`, then the node is implicitly trusting those indirect peers, or at least the representation provided by it's direct peer. Because this multi-hop trust may not always be desired, `AdjInFilter` may be used to only accept applications derived directly at the `AdjInPeer`.
+The use of transport layer security does not ensure the validity of the contents contained within a payload. A malicious peer may propagate payloads that do not conform to this protocol. Consequently, trust is required between a node and its direct peers. Further, if a node accepts URIs propagated through (rather than derived at) the `AdjInPeer`, then the node is implicitly trusting those indirect peers, or at least the representation provided by it's direct peer. Because this multi-hop trust may not always be desired, `AdjInFilter` may be used to only accept applications derived directly at the `AdjInPeer`.
 
 ### Machine-readable Attributes
 
@@ -220,7 +228,7 @@ The `Node` object is a logical representation of an entity that may interact wit
 }
 ```
 
-All `Node` objects must define a `:name` property. This must be a unique name among all peers defined within the `Engine`.
+All `Node` objects must define a `:name` property. This is a local reference to the node only, meaning that a peer may choose its own approach for naming nodes, but within a node, the name must be unique among all peers defined within the `Engine`.
 
 All `Node` objects may define a `:secret` property. If the secret property is set, then it must be included in all RESTful web service requests issued against the `Engine`.
 
@@ -298,81 +306,274 @@ The `:request` property may be concurrently set on a peer to make it both an `Ou
 
 ## Payload
 
-A `payload` represents a URI and associated metadata.
+A `Payload` represents a URI and associated metadata, and it is the fundamental unit accepted, presented and shared by a peer.
+
+A `Payload` comes in two formats:
+
+* `TransitPayload` is how a payload is communicated between peers. It must include `identity` and `original` structures, and should include a `journal` structure if any peer along the payload's route has made changes to the payload. It does not include the `attributes` structure, as that structure is computed upon arrival at a peer. All attributes in the TransitPayload structures must be expressed in their machine-readable representation.
+* `LocalPayload` is how a payload is regarded locally for filters and transforms, as well as how it's communicated to outlets. It must include `identity` and `attributes` sections. Further, if it does not originate at the current host, it must maintain the existing `original` and `journal` structures. All known attributes in the `LocalPayload` structures should be expressed in their human-readable representation.
+
+If originated from the node itself, the `attributes` section is explicitly defined for the `LocalPayload`. In all other cases, when received from an adjacent node, the `attributes` section of a payload is defined by squashing the `original` and `journal` sections of a payload, potentially also considering known attributes for a payload in the local node with the same identity, as defined by `AdjInSquash`.
+
+### TransitPayload
 
 ```ruby
 {
-  :identity   =>  {
-    :id           =>  String,
-    :originator   =>  String
+  'identity' => {
+    'id'          => String(UUID),
+    'originator'  => String(UUID)
   },
-  :original   =>  {
-    # .. (original :attributes section)
-  }
-  :attributes =>  {
-    :name      =>  String,
-    :uri       =>  String,
-    :share     =>  true || false || undefined,
-    :propagate =>  true || false || undefined,
-    :use       =>  {
-        # .. (peers may process enclosed values during filtering) 
+  'original' => {
+    'uri'  => String,
+    'share' => true || false,
+    'propagate' => true || false,
+    'author' => {
+      'id' => String(UUID),
+      'name' => String,
+      'uri' => String(URI)
+    },
+    'timestamp' => String(Timestamp),
+    'use' => {
+      # .. (original 'use' structure)
     } || undefined,
-    :require   =>  {
-        # .. (peers must process enclosed values during filtering) 
+    'require' => {
+      # .. (original 'require' structure)
+    } || undefined
+  },
+  'journal'  => [
+    {
+      'author' => {
+        'id' => String(UUID),
+        'name' => String,
+        'uri' => String(URI)
+      },
+      'timestamp'  => String(Timestamp),
+      'use' => {
+        # .. (journal of modifications to 'use' structure)
+      } || undefined,
+      'require' => {
+        # .. (journal of modifications to 'require' structure)
+      } || undefined
+    }
+  ] || [] || undefined
+}
+```
+
+### LocalPayload
+
+```ruby
+{
+  'identity' => {
+    'id'          => String(UUID),
+    'originator'  => String(UUID)
+  },
+  'original' => {
+    'uri'  => String,
+    'share' => true || false,
+    'propagate' => true || false,
+    'author' => {
+      'id' => String(UUID),
+      'name' => String,
+      'uri' => String(URI)
+    },
+    'timestamp' => String(Timestamp),
+    'use' => {
+      # .. (original 'use' structure)
+    } || undefined,
+    'require' => {
+      # .. (original 'require' structure)
+    } || undefined
+  } || undefined,
+  'journal'  => [
+    {
+      'author' => {
+        'id' => String(UUID),
+        'name' => String,
+        'uri' => String(URI)
+      },
+      'timestamp'  => String(Timestamp),
+      'use' => {
+        # .. (journal of modifications to 'use' structure)
+      } || undefined,
+      'require' => {
+        # .. (journal of modifications to 'require' structure)
+      } || undefined
+    }
+  ] || [] || undefined,
+  'attributes' => {
+    'uri'  => String,
+    'author' => {
+      'id' => String(UUID),
+      'name' => String,
+      'uri' => String(URI)
+    },
+    'timestamp' => String(Timestamp),
+    'share' => true || false,
+    'propagate' => true || false,
+    'use' => {
+      # .. (local or squashed 'use' structure)
+    } || undefined,
+    'require' => {
+      # .. (local or squashed 'require' structure)
     } || undefined
   }
 }
 ```
 
-Minimally, a payload must include:
+When a `LocalPayload` is returned to a non-manager `Outlet`, it is recommended that the `original` and `journal` attributes are dropped to reduce the payload size, as the squashed representation is contained in full by the `attributes` section.
 
-* an `:identity` property that must include `:id` and `:originator` properties
-* an `:attributes` property that must include `:name` and `:uri` properties.
+### Payload Components
 
-The `:attributes` object may additionally include:
+#### Identity
 
-* a `:share` property that, if true, may inform the `Engine` to share the payload with `AdjOutPeer` nodes.
-* a `:propagate` property that, if true, may inform the `Engine` that the share bit may be set `true` if received from an `AdjInPeer`.
+The `identity` property is a globally unique compound key that denotes the logical entity to which a payload pertains. This allows an originator to safely update any property in a payload message, so long as the `identity` is retained.
 
-If either `:share` or `:propagate` is not set, the not set attribute must be assumed `false`. In combination, these two properties shall indicate whether a payload is intended for local use only, for sharing only from the originator to its directly adjacent peers, or for sharing throughout the network along multiple hops.
+The `identity` property must exist for any payload. This property is an object that must contain:
 
-The `:attributes` object should also include:
+* `id` UID string, unique within the originator for the particular payload
+* `originator` UUID string, used for all payloads generated by the same engine
 
-* a `:use` object specifies metadata that a node may evaluate. If a node cannot evaluate an attribute within this object, it should not drop the payload at `AdjInFilter` unless a filter is defined explicitly to this effect.
-* a `:require` object specifies metadata that a node must be able to evaluate. If a node cannot evaluate an attribute within this object, or if a node evaluates the metadata as not having the specified requirements, then it must drop the payload at `AdjInFilter`. 
+The `identity` property may not be modified once it is generated.
 
-All keys of the  `:use` and `:require` objects are expressed as human-readable names within the node, translated by `AdjInTranslate` for propagated payloads, while they are expressed as machine-readable UUIDs when being shared with other nodes, translated by `AdjOutTranslate`.
+##### Identity Structure
 
-If the `:originator` property does not correspond to the current node, the payload must also include:
+```ruby
+{
+  'id'          => String(UID),
+  'originator'  => String(UUID)
+}
+```
 
-* an `:original` property that contains the values of `:attributes` as defined by the originator
+* `id` [Required] - The `id` property must be a UID that is unique among all logical entities described by payloads. It is recommended, although not required, that the `id` property be generated as a UUID.
+* `originator` [Required] - The `originator` property must be the UUID of the node that introduced the logical entity described by the payload. This UUID must conform to RFC 4122, and this UUID should be the same for all payloads introduced by the node.
 
-If the `:original` property is already set, it must not be modified.
+#### Attributes
 
-### Properties for :use
+The `attributes` property is an object that defines the local representation of a payload.
 
-All properties discussed in this section should be considered optional. Further, additional properties may be added into this structure on an ad hoc basis. Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
+The `attributes` property must exist for any payload that is sent to an outlet (LocalPayload); however, the `attributes` property is considered local in context, so it should not be sent to adjacent peers (TransitPayload). To accomplish this, the `attributes` property must be computed by `AdjInSquash` and should be removed by `AdjOutTransform`.
+
+The `attributes` property may be modified by any Outlet, affecting the Payload's metadata local to the Engine. For an attribute modification to be reflected beyond the local context, it must also be written to the `journal`.
+
+##### Attributes Structure
+
+```ruby
+{
+  'uri'  => String,
+  'author' => {
+    'id' => String(UUID),
+    'name' => String,
+    'uri' => String(URI)
+  },
+  'timestamp' => String(Timestamp),
+  'share' => true || false,
+  'propagate' => true || false,
+  'use' => {
+    # .. (original 'use' structure)
+  } || undefined,
+  'require' => {
+    # .. (original 'require' structure)
+  } || undefined
+}
+```
+
+* `uri` [Required] - The `uri` property defines the URI of the payload.
+* `author` [Required] - The `author` property is an object that includes the following properties from the originator:
+ * `id` [Required] - The UUID of the originator (same as the `originator` property of `identity`).
+ * `name` [Required] - A human-readable name that identifies the originator.
+ * `uri` [Optional] - A URI that may be used to query the originator directly.
+* `timestamp` [Required] - A timestamp string formatted as ISO 8601 which references the latest change to the payload, including from changes computed during `AdjInSquash` from `journal` entries and changes made to the `attributes` section locally. It must include the `T` delimiter, the `Z` timezone if UTC, and the hours, minutes and seconds fields.
+* `share` [Optional] - If set false or undefined, the engine should not share the payload with `AdjOutPeer` nodes. This means that the payload shall be dropped by `AdjOutFilter`.
+* `propagate` [Optional] - If set false or undefined and received from an `AdjInPeer`, the node shall not share this node with peers. However, if set false or undefined but the payload originates from the node, then it shall share the payload with its peers, although it's peers will not share it further. This means that the payload shall be dropped by `AdjOutFilter`.
+* `use` [Optional] - The `use` property is an object that may be included which specifies metadata that a node may evaluate. If a node cannot evaluate an attribute within the `use` object, it should not drop the payload at `AdjInFilter` unless a filter is defined explicitly to this effect.
+* `require` [Optional] - The `require` property is an object that may be included which specifies metadata that a node must evaluate. If a node cannot evaluate an attribute within this object, or if a node evaluates the metadata as not having the specified requirements, then it must drop the payload at `AdjInFilter`.
+
+All attributes within the `use` and `require` objects are expressed as human-readable names within the node (translated from UUID to name `AdjInTranslate` for propagated payloads), while they are expressed as machine-readable UUIDs when being shared with other nodes (translated from name to UUID `AdjOutTranslate`).
+
+#### Original
+
+The `original` property is an object that must contain the `attributes` section set by the originator.
+
+The `original` property must exist for any payload that a node sends to an adjacent peer (`TransitPayload`); consequently, it should exist on any payload received from an adjacent peer. To accomplish this, if the `original` property does not exist when a payload reaches `AdjOutTransform`, it should be generated at that time from the `attributes` property.
+
+The `original` property may not be modified once it is generated.
+
+##### Original Structure
+
+The original attributes structure definition is identical to the attributes structure definition.
+
+#### Journal
+
+The `journal` property is an array of zero or more objects that contain an `author` section, a `timestamp` and either a `use` section or a `require` section or both. An element in the `journal` array reflects a set of changes to `use` and `require` attributes as made by `author` as of `timestamp`.
+
+When a payload arrives at a node, the `AdjInSquash` phase is responsible for assessing the `original` property and applying changes from the `journal` in sequential array order to produce an `attributes` property for the payload. The exact behavior of `AdjInSquash` may be customized within the local context, as the product `attributes` property is local to an individual node.
+
+The `journal` property may exist for any payload that has been transmuted by the local node, as well as for any payload that has been transmuted by a peer that was not the originator of the payload. While the `attributes` section denotes the representation of the payload within the local context, the journal dictates changes to the payload in a broader context.
+
+The `journal` property may be modified in one of two ways:
+
+1. If the last element in `journal` has an `author` block with an `id` corresponding to the `id` of the current node, then the element should be modified to make additional changes and the `timestamp` should be updated to the current time.
+2. Otherwise, a new journal element should be appended to the end of the array. This element must include an `author` block with an `id` corresponding to the `id` of the current node, the current `timestamp` and either a `use` property or a `require` property or both.
+
+##### Journal Structure
+
+The journal is an array of journal elements.
+
+Each element is defined as:
+
+```ruby
+{
+  'author' => {
+    'id' => String(UUID),
+    'name' => String,
+    'uri' => String(URI)
+  },
+  'timestamp' => String(Timestamp),
+  'use' => {
+    # .. (modifications to 'use' properties)
+  } || undefined,
+  'require' => {
+    # .. (modifications to 'require' properties)
+  } || undefined
+}
+```
+
+* `author` [Required] - The `author` property is an object that includes the following properties from the node that added this journal entry:
+ * `id` [Required] - The UUID of the node that added the journal entry.
+ * `name` [Required] - A human-readable name that identifies the node that added the journal entry.
+ * `uri` [Optional] - A URI that may be used to query the node that added the journal entry directly.
+* `use` [Optional] - The `use` property is an object that may be included which specifies sequential alterations to the metadata as defined by the `original` property of the payload, plus any changes defined by earlier elements in the `journal` structure.
+* `require` [Optional] - The `require` property is an object that may be included which specifies sequential alterations to the metadata as defined by the `original` property of the payload, plus any changes defined by earlier elements in the `journal` structure.
+
+All attributes within the `use` and `require` objects are expressed as human-readable names within the node (translated from UUID to name `AdjInTranslate` for propagated payloads), while they are expressed as machine-readable UUIDs when being shared with other nodes (translated from name to UUID `AdjOutTranslate`).
+
+To unset an attribute within the `use` or `require` objects, set it as `false`. Otherwise, changes are complete.
+
+### Properties for 'use'
+
+**NON-NORMATIVE** This section is intended as an non-normative example of how the `use` attribute might be implemented. It should not be regarded as part of the protocol at this time, and the very structure of the `:use` property here might change completely before final implementation.
+
+Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
 
 #### Example: Common Website Properties
-
-**NON-NORMATIVE** This section is intended as an non-normative example of how the `:use` attribute might be implemented. It should not be regarded as part of the protocol at this time, and the very structure of the `:require` property here might change completely before final implementation.
 
 Some common properties for the `payload[:attributes][:use]` object include:
 
 ```ruby
 {
   # ..
-  :attributes => {
+  'attributes' => {
     # ..
-    :use => {
-      :categories   => Array(String) || undefined,
-      :tags         => Array(String) || undefined,
-      :icon         => String || undefined,
-      :capabilities => {
-        :mobile     => true || false || undefined,
-        :tablet     => true || false || undefined,
-        :desktop    => true || false || undefined,
-        :responsive => true || false || undefined
+    'use' => {
+      'name'         => String || undefined,
+      'categories'   => Array(String) || undefined,
+      'tags'         => Array(String) || undefined,
+      'icon'         => String || undefined,
+      'capabilities' => {
+        'mobile'     => true || false || undefined,
+        'tablet'     => true || false || undefined,
+        'desktop'    => true || false || undefined,
+        'responsive' => true || false || undefined
       }
       # ..
     }
@@ -380,36 +581,53 @@ Some common properties for the `payload[:attributes][:use]` object include:
 }
 ```
 
-The `:categories` array may be used to define zero or more categories that an `Outlet` may provide in its interface to provide a taxonomy for payloads. The values in this array may be modified by `AdjInTransform` to fit the categories used by `Outlet` nodes, and further it may be modified by `AdjOutTransform` to fit categorical expectations `AdjOutPeer` nodes may expect.
+The `name` string may be used to define a name for the URI in the payload.
 
-The `:tags` array may be used to define zero or more keywords that an `Outlet` may provide in its interface to help search for payloads. Where categories are meant to define a taxonomy, tags are simply additional terms that may be helpful in describing a node. These may be modified similarly by `AdjInTransform` and `AdjOutTransform`, and they may also be used during `AdjInTransform` to advice on mapping a payload to categories that the node recognizes locally.
+The `categories` array may be used to define zero or more categories that an `Outlet` may provide in its interface to provide a taxonomy for payloads. The values in this array may be modified by `AdjInTransform` to fit the categories used by `Outlet` nodes, and further it may be modified by `AdjOutTransform` to fit categorical expectations `AdjOutPeer` nodes may expect.
 
-The `:icon` string is intended to represent an `img[src]` value. This may be either a traditional web accessible URL or a data scheme such as `data:image/png;base64,...`.
+The `tags` array may be used to define zero or more keywords that an `Outlet` may provide in its interface to help search for payloads. Where categories are meant to define a taxonomy, tags are simply additional terms that may be helpful in describing a node. These may be modified similarly by `AdjInTransform` and `AdjOutTransform`, and they may also be used during `AdjInTransform` to advice on mapping a payload to categories that the node recognizes locally.
 
-The `:capabilities` array is intended to provide a set of `true` or `false` values that represent things that a URI is capable of doing. The example above involves capabilities that specify whether payload is capable of supporting certain viewports or can responsively handle all viewports. These may be implemented, as may other capabilities not defined in the above example. Capabilities are useful for outlets such as a mobile dashboard, where it would not make sense to present a payload that only supports desktop viewports.
+The `icon` string is intended to represent an `img[src]` value. This may be either a traditional web accessible URL or a data scheme such as `data:image/png;base64,...`.
+
+The `capabilities` array is intended to provide a set of `true` or `false` values that represent things that a URI is capable of doing. The example above involves capabilities that specify whether payload is capable of supporting certain viewports or can responsively handle all viewports. These may be implemented, as may other capabilities not defined in the above example. Capabilities are useful for outlets such as a mobile dashboard, where it would not make sense to present a payload that only supports desktop viewports.
 
 In a similar way, other capabilities such as an IMS Learning Tools Interoperability or W3C Packaged Web Apps launch might also be made available.
 
 ### Properties for :require
 
-All properties discussed in this section should be considered optional. Further, additional properties may be added into this structure on an ad hoc basis. It should be noted, however, that if a `:require` property is introduced that a peer does not recognize, then the peer will drop the payload at `AdjInFilter`. Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
+**NON-NORMATIVE** This section is intended as an non-normative example of how the `:require` attribute might be implemented. It should not be regarded as part of the protocol at this time, and the very structure of the `:require` property here might change completely before final implementation.
+
+Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
 
 #### Example: Shibboleth
 
-**NON-NORMATIVE** This section is intended as an non-normative example of how the `:require` attribute might be implemented. It should not be regarded as part of the protocol at this time, and the very structure of the `:require` property here might change completely before final implementation.
-
 Shibboleth is a SAML-based middleware that supports federation.
 
-If an application requires the InCommon Shibboleth federation for authorization, then it might be specified as such:
+If an application requires Shibboleth for authorization, then it might be specified as such:
 
 ```ruby
 {
   # ..
-  :attributes => {
+  'attributes' => {
     # ..
-    :require => {
-      :shibboleth => {
-        :incommon => true
+    'require' => {
+      'shibboleth' => true
+      # ..
+    }
+  }
+}
+```
+
+If an application requires the InCommon Shibboleth federation, then it might be extended as:
+
+```ruby
+{
+  # ..
+  'attributes' => {
+    # ..
+    'require' => {
+      'shibboleth' => {
+        'entityID' => 'urn:mace:incommon'
       }
       # ..
     }
@@ -422,17 +640,15 @@ If an application requires not only the InCommon Shibboleth federation but also 
 ```ruby
 {
   # ..
-  :attributes => {
+  'attributes' => {
     # ..
-    :require => {
-      :shibboleth => {
-        :incommon => {
-          :entityID => [
-            'urn:mace:incommon:ucla.edu',
-            'urn:mace:incommon:berkeley.edu',
-            # ..
-          ]
-        }
+    'require' => {
+      'shibboleth' => {
+        'entityID' => [
+           'urn:mace:incommon:ucla.edu',
+           'urn:mace:incommon:berkeley.edu',
+           # ..
+         ]
       }
       # ..
     }
@@ -445,19 +661,17 @@ Similarly, if an application requires not only the InCommon Shibboleth federatio
 ```ruby
 {
   # ..
-  :attributes => {
+  'attributes' => {
     # ..
-    :require => {
-      :shibboleth => {
-        :incommon => {
-          :attributes => [
-            # eduPerson Attribute:
-            'urn:mace:dir:attribute-def:eduPersonPrincipalName',
-            # UCTrust Attribute:
-            'urn:oid:2.16.840.1.113916.1.1.4.1]',
-            # ..
-          ]
-        }
+    'require' => {
+      'shibboleth' => {
+        'attributes' => [
+           # eduPerson Attribute
+           'urn:mace:dir:attribute-def:eduPersonPrincipalName',
+           # UCTrust Attribute
+           'urn:oid:2.16.840.1.113916.1.1.4.1',
+           # ..
+         ]
       }
       # ..
     }
@@ -471,7 +685,9 @@ In a similar way, other requirements such as an IMS Learning Tools Interoperabil
 
 ## GET payloads
 
-Returns an array of `Payload` objects. If the requesting agent is in `Outlet`, payloads are returned from `Local`, or if the requesting agent is in `AdjPeerOut`, payloads are returned from `AdjOut` through `AdjOutFilter`. 
+Returns an array of `Payload` objects.
+
+If the requesting agent is an `Outlet`, payloads are returned in the `LocalPayload` form, while, if the requesting agent is an `AdjOutPeer` node, payloads are returned in the `TransitPayload` form.
 
 An error response is thrown if the request agent is not a valid `Outlet` or `AdjOutPeer`.
 
@@ -485,6 +701,54 @@ GET /payloads?name=[name]&secret=[secret] HTTP/1.1
 
 #### 200 Success
 
+##### LocalPayload for ManagerOutlet
+
+Manager outlets receive the most extended form of the `LocalPayload`, including the `identity` and `attributes` sections required by the `LocalPayload`, as well as the `original` and `journal` properties for additional telemetry about the payload (if the payload did not originate locally):
+
+```js
+[
+    {
+        "identity" : {
+            "id"            :   String,
+            "originator"    :   String
+        },
+        "attributes" : {
+            // .. (local attributes for the payload)
+        },
+        "original" : {
+            // .. (original attributes of the payload, if not locally originated)
+        } || undefined,
+        "journal" : {
+            // .. (journal for the payload, if not locally originated)
+        } || undefined
+    },
+    // .. (additional payload objects)
+]
+```
+
+##### LocalPayload for LocalOutlet
+
+Non-manager outlets do not need the optional `original` or `journal` properties of the `LocalPayload`, so they are excluded to reduce the size of the payload:
+
+```js
+[
+    {
+        "identity" : {
+            "id"            :   String,
+            "originator"    :   String
+        },
+        "attributes" : {
+            // .. (journal for the payload)
+        }
+    },
+    // .. (additional payload objects)
+]
+```
+
+##### TransitPayload for AdjOutPeer
+
+AdjOutPeer nodes receive the `TransitPayload`, which should not include the `attributes` section of the payload:
+
 ```js
 [
     {
@@ -493,11 +757,11 @@ GET /payloads?name=[name]&secret=[secret] HTTP/1.1
             "originator"    :   String
         },
         "original" : {
-            // .. (original :attributes section)
-        }
-        "attributes" : {
-            // .. (node :attributes section)
-        }
+            // .. (original attributes of the payload, if not locally originated)
+        },
+        "journal" : {
+            // .. (journal for the payload, if not locally originated)
+        } || undefined
     },
     // .. (additional payload objects)
 ]
@@ -519,9 +783,9 @@ Query string secret property was not valid for node identified by name property.
 
 ## POST payloads
 
-Creates a new `Payload` object JSON request body. This JSON request body should be solely the `attributes` values. This routine assigns `Payload[:identity]` internally and returns it back as part of the `200 Success` response. The `Payload[:original]` field is only added during delivery to `AdjOut` through `AdjOutTransform`. This allows for the `Engine` to determine which payloads are local, as they will not include a `Payload[:original]` attribute within `Local`.
+Creates a new `Payload` object JSON request body. This JSON request body should be solely the `attributes` values. This routine assigns `Payload[identity]` internally and returns it back as part of the `200 Success` response. The `Payload[original]` field is only added during delivery to `AdjOut` through `AdjOutTransform`. This allows for the `Engine` to determine which payloads are local, as they will not include a `Payload[original]` attribute within `Local`.
 
-An error response will be thrown if the request agent is not a valid `Outlet`.
+An error response will be thrown if the request agent is not a valid `ManagerOutlet`.
 
 ### Request
 
@@ -543,12 +807,12 @@ Returns the `Payload` object with `attributes` from POST body and `identity` as 
 
 ```js
 {
-    "identity": {
+    "identity" : {
         "id"            :   String,
         "originator"    :   String
     },
-    "attributes": {
-        // attributes..
+    "attributes" : {
+        // .. (payload attributes)
     }
 }
 ```
@@ -579,9 +843,9 @@ Payload already exists with identity. Use PUT payloads instead.
 
 ## PUT payloads
 
-Updates an existing `Payload` object from the request body data if a payload currently exists with the same `Payload[:identity]`. The `Payload[:identity]` data must be included to identity the payload. `Payload[:attributes]` data must be included and shall completely overwrite the old version of `:attributes` per the HTTP PUT method definition. `Payload[:original]` data should not be included; if `Payload[:original]` is provided, the `Engine` must ignore it as this is unmutable data from its originator (or it won't exist at all if the payload was locally defined).
+Updates an existing `Payload` object from the request body data if a payload currently exists with the same `Payload[identity]`. The `Payload[identity]` data must be included to identity the payload. `Payload[attributes]` data must be included and shall completely overwrite the old version of `attributes` per the HTTP PUT method definition. A `Payload[journal]` object may be included if the `Payload` did not originate from the `Engine`. The `Payload[journal]` object, if it exists, should represent a journal entry of changes that will be made to this object and propagated beyond this node. If a `Payload[journal]` is not included, then changes made by this call will not be propagated.
 
-An error response will be thrown if the request agent is not a valid `Outlet`.
+An error response will be thrown if the request agent is not a valid `ManagerOutlet`.
 
 ### Request
 
@@ -596,8 +860,11 @@ PUT /payloads?name=[name]&secret=[secret] HTTP/1.1
         "originator"    :   String
     },
     "attributes": {
-        // attributes..
-    }
+        // rewrite of local attributes..
+    },
+    "journal": {
+        // journal attribute changes..
+    } || undefined
 }
 ```
 
@@ -606,15 +873,24 @@ PUT /payloads?name=[name]&secret=[secret] HTTP/1.1
 #### 200 Success
 
 ```js
-{
-    "identity": {
-        "id"            :   String,
-        "originator"    :   String
+[
+    {
+        "identity" : {
+            "id"            :   String,
+            "originator"    :   String
+        },
+        "attributes" : {
+            // .. (local attributes for the payload)
+        },
+        "original" : {
+            // .. (original attributes of the payload, if not locally originated)
+        } || undefined,
+        "journal" : {
+            // .. (journal for the payload, if not locally originated)
+        } || undefined
     },
-    "attributes": {
-        // attributes..
-    }
-}
+    // .. (additional payload objects)
+]
 ```
 
 #### 401 Unauthorized
@@ -645,12 +921,12 @@ Payload does not exist with identity. Use POST payloads instead.
 
 Deletes an existing `Payload` object from the request body data if a payload currently exists with the same `Payload[:identity]`.
 
-An error response will be thrown if the request agent is not a valid `Outlet` or there is no payload with the specified identity.
+An error response will be thrown if the request agent is not a valid `ManagerOutlet` or there is no payload with the specified identity.
 
 ### Request
 
 ```
-DELETE /apps?name=[name]&secret=[secret] HTTP/1.1
+DELETE /payloads?name=[name]&secret=[secret] HTTP/1.1
 ```
 
 ```js
@@ -700,12 +976,32 @@ Payload does not exist with identity.
 
 Filter that runs on all payloads that arrives from any `AdjInPeer` before reaching `AdjIn`.
 
-### ALWAYS
+A payload must be dropped unless a module is running that supports each `:require` attribute:
 
 ```ruby
-if payload[:attributes].has_key? :require
-  drop Payload unless accepts? Payload[:attributes][:require]
+@attributes['required'].keys.each do |attribute_name|
+
+  drop unless @modules.include? attribute_name
+
 end
+```
+
+A payload must be dropped if one or more modules do not accept their corresponding `:require` attribute:
+
+```ruby
+@attributes['required'].each do |attribute_name, attribute|
+
+  if @modules[attribute].respond_to? 'accepts?'
+    drop unless @modules[attribute].accepts? attribute
+  end
+
+end
+```
+
+It is recommended that a payload be dropped if its creation time is older than the version already in persistence:
+
+```ruby
+drop if @original['timestamp'] < AdjIn.find(@identity).original['timestamp']
 ```
 
 ## TRANSFORM-IN
