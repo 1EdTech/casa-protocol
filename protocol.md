@@ -1,10 +1,10 @@
-# URI SHARING ENVIRONMENT (USE) PROTOCOL
+# CASA PROTOCOL
 
 # Introduction
 
 ## Status of this Memo
 
-This document specifies the USE (URI Sharing Environment) Protocol, which allows peers to propagate and share information about URIs in their ecosystem. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.
+This document specifies the CASA (Community App Sharing Architecture) Protocol, which allows peers to propagate and share information about URIs in their ecosystem. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.
 
 ## Copyright Notice
 
@@ -12,7 +12,7 @@ Copyright (c) 2013, Regents of the University of California. All rights reserved
 
 # Overview
 
-This memorandum describes the USE (URI Sharing Environment) Protocol. This protocol propagates URI knowledge across a peer-to-peer topology with support for heterogeneous and asymmetric world views. In this way, each peer may develop from its neighbors a knowledge of the  ecosystem as suited to its needs, taking into consideration trust relationships and policies around acceptance and sharing.
+This memorandum describes the CASA (Community App Sharing Architecture) Protocol. This protocol propagates URI knowledge across a peer-to-peer topology with support for heterogeneous and asymmetric world views. In this way, each peer may develop from its neighbors a knowledge of the  ecosystem as suited to its needs, taking into consideration trust relationships and policies around acceptance and sharing.
 
 The motivating use case for this protocol is **web app stores**, such as in the context of a mobile dashboard, an IMS LTI Tool Consumer or a W3C Packaged Web Apps launcher. As such, this protocol originated as an attempt to serve this use cases; however, given its flexibility, it is generic enough to comport with other use cases whereby URIs and metadata are propagated across a peer-to-peer topology.
 
