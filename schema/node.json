@@ -1,0 +1,87 @@
+{
+  "id": "casa-protocol-schema-node",
+  "$schema": "https://github.com/AppSharing/casa-protocol/blob/master/schema/node.json",
+  "description": "The CASA Protocol defines node structures within the Community App Sharing Architecture",
+  "type": "object",
+  "definitions": {
+
+    "Node": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "secret": { "type": "string" }
+      },
+      "required": [ "name" ]
+    },
+    
+    "AdjInPeer": {
+      "type": "object",
+      "properties": {
+        "in": { "$ref": "#/definitions/AdjInPeerIdentity" }
+      },
+      "additionalProperties": { "$ref": "#/definitions/Node/properties" },
+      "required": [ "name", "in" ]
+    },
+    
+    "AdjInOutPeer": {
+      "type": "object",
+      "properties": {
+        "in": { "$ref": "#/definitions/AdjInPeerIdentity" },
+        "out": { "$ref": "#/definitions/AdjOutPeerIdentity" }
+      },
+      "additionalProperties": { "$ref": "#/definitions/Node/properties" },
+      "required": [ "name", "in", "out" ]
+    },
+    
+    "AdjOutPeer": {
+      "type": "object",
+      "properties": {
+        "out": { "$ref": "#/definitions/AdjOutPeerIdentity" }
+      },
+      "additionalProperties": { "$ref": "#/definitions/Node/properties" },
+      "required": [ "name", "out" ]
+    },
+    
+    "Outlet": {
+      "type": "object",
+      "properties": {
+        "out": { "$ref": "#/definitions/OutletIdentity" }
+      },
+      "additionalProperties": { "$ref": "#/definitions/Node/properties" },
+      "required": [ "name", "out" ]
+    },
+    
+    "AdjInPeerIdentity": {
+      "type": "object",
+      "properties": {
+        "hostname": { "type": "string" },
+        "scheme": { "type": "string", "default": "https" },
+        "path": { "type": "string", "default": "/" },
+        "port": { "type": "integer", "default": 443, "minimum": 0, "maximum": 65535 }
+      },
+      "required": [ "hostname" ]
+    },
+    
+    "AdjOutPeerIdentity": {
+      "type": "object",
+      "properties": {
+        "address": { "type": "string" },
+        "mask": { "type": "string" },
+        "local": { "type": "boolean", "anyOf": [ false ], "default": false }
+      },
+      "required": [ "local" ]
+    },
+    
+    "OutletIdentity": {
+      "title": "OutletIdentity",
+      "type": "object",
+      "properties": {
+        "address": { "type": "string" },
+        "mask": { "type": "string" },
+        "local": { "type": "boolean", "anyOf": [ true ], "default": true },
+        "manage": { "type": "boolean", "default": false }
+      },
+      "required": [ "local" ]
+    }
+  }
+}
