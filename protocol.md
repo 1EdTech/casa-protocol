@@ -218,8 +218,6 @@ In peer-to-peer communications, all attributes are defined through machine-reada
 
 When a payload arrives at the border from an `AdjInPeer`, it is mapped to a human-readable equivalent as configured; similarly, before a payload leaves the border headed for an `AdjOutPeer`, it is mapped to its machine-readable form.
 
-## Constraints
-
 # Structures
 
 ## Node Structures
