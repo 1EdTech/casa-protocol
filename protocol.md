@@ -1,5 +1,8 @@
 # CASA PROTOCOL
 
+* auto-gen TOC:
+{:toc}
+
 # Introduction
 
 ## Status of this Memo
@@ -572,7 +575,7 @@ The journal is a history of all changes made to attributes since the definition 
 
 When a payload arrives at a node, the `PayloadTransitJournalEntry` objects of the `TransitPayload.journal` are converted to `PayloadLocalJournalEntry` objects as part of the `AdjInTranslate` operation that converts a `TransitPayload` to a `Payload`. Directly after this step, the `AdjInSquash` operation assesses `Payload.original` and then walks the journal in sequential array order, making changes per each `PayloadLocalJournalEntry`. The product of this process is the `Payload.attributes` property. The exact behavior of `AdjInSquash` may be customized within the local context, as the product attributes property is local to an individual node.
 
-The journal property may exist for any payload that has been transmuted by the local node, as well as for any payload that has been transmuted by a peer that was not the originator of the payload. While the attributes section denotes the representation of the payload within the local context, the journal dictates changes to the payload in a broader context. See [PayloadLocalJournalEntry](#PayloadLocalJournalEntry) for specifics regarding creating, editing and deleting journal entries.
+The journal property may exist for any payload that has been transmuted by the local node, as well as for any payload that has been transmuted by a peer that was not the originator of the payload. While the attributes section denotes the representation of the payload within the local context, the journal dictates changes to the payload in a broader context. See [PayloadLocalJournalEntry](#payloadlocaljournalentry) for specifics regarding creating, editing and deleting journal entries.
 
 #### PayloadAbstractJournalEntry
 
