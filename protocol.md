@@ -67,15 +67,15 @@ Satisfaction of this use case requires that authorization may be specified such 
 
 ### General
 
-The key words **must**, **must not**, **required**, **shall**, **shall not**, **should**, **should not**, **recommended**, **may**, and **optional** in this document are to be interpreted as described by RFC 2119 ["Key words for use in RFCs to Indicate Requirement Levels"].
+The key words **must**, **must not**, **required**, **shall**, **shall not**, **should**, **should not**, **recommended**, **may**, and **optional** in this document are to be interpreted as described by [RFC 2119](http://tools.ietf.org/rfc/rfc2119.txt) ["Key words for use in RFCs to Indicate Requirement Levels"].
 
-The key word **UUID** (alternatively: **Universally Unique IDentifier**, **Globally Unique IDentifier** or **UUID**) in this document is to be interpreted as described by RFC 4122 ["A Universally Unique IDentifier (UUID) URN Namespace"].
+The key word **UUID** (alternatively: **Universally Unique IDentifier**, **Globally Unique IDentifier**, **UUID** or **uuid**) in this document is to be interpreted as described by [RFC 4122](http://tools.ietf.org/rfc/rfc4122.txt) ["A Universally Unique IDentifier (UUID) URN Namespace"].
 
-The key word **UID** (alternatively: **Unique IDentifier**) in this document is to be interpreted as an identifier that is unique within the context of the payload originator.
+The key word **UID** (alternatively: **Unique IDentifier** or **uid**) in this document is to be interpreted as an identifier that is unique within the context of the payload originator.
 
 The key words **node** and **peer** in this document are to be interpreted as an `Engine`, which may include payloads, may query other nodes, may respond to other nodes and may provide outlets.
 
-The key word **RESTful web service** in this document is to be interpreted as a packet using HTTP methods as described by RFC 2616 ["Hypertext Transfer Protocol -- HTTP/1.1"]. 
+The key word **RESTful web service** in this document is to be interpreted as a packet using HTTP methods as described by [RFC 2616](http://tools.ietf.org/rfc/rfc2616.txt) ["Hypertext Transfer Protocol -- HTTP/1.1"]. 
 
 The key words **query** and **call** in this document are to be interpreted mean sending an RESTful web service interaction between two nodes. The key word **request** in this document is to be interpreted as a RESTful web service request; the key word **response** (alternatively for the action: **respond**) in this document is to be interpreted as a RESTful web service response.
 
@@ -91,9 +91,14 @@ The key word **set** in this document is to be interpreted as an unordered data 
 
 The key word **object** in this document is to be interpreted as an unordered data structure of key-value pairs, referred to in language systems by terms including, but not limited to, "object", "associative array", "hash map", "dictionary" and "key-value store". The term **property** or **attribute** in this document may be interpreted as synonymous with **key** to mean a reference within the object that returns a **value**.
 
-The key word **timestamp** in this document is to be interpreted as a string written in the format of ISO 8601 ["Representation of dates and times"], using the combined date and time format including the `T` delimiter between the date and time segments and the `Z` signifier when in the UTC timezone.
+The key word **timestamp** in this document is to be interpreted as a string written in the format of [RFC 3339](http://tools.ietf.org/html/rfc3339) ["Date and Time on the Internet: Timestamps"].
 
-The key word **wildcard mask** (alternatively: **mask**) in this document is to be interpreted as the binary inverse of the key word "network mask" as described by RFC 4632 ["Classless Inter-domain Routing (CIDR)"].
+The key word **wildcard mask** (alternatively: **mask**) in this document is to be interpreted as the binary inverse of the key word "network mask" as described by [RFC 4632](http://tools.ietf.org/rfc/rfc4632.txt) ["Classless Inter-domain Routing (CIDR)"].
+
+
+The key word **JavaScript Object Notation** (alternatively: **JSON**) in this document is to be interpreted as the data format described by [RFC 4627](http://tools.ietf.org/rfc/rfc4627.txt) ["The application/json Media Type for JavaScript Object Notation (JSON)"].
+
+The key word **JSON Schema** in this document is to be interpreted as a JSON format defined by the [json-schema-core](http://json-schema.org/latest/json-schema-core.html) ["JSON Schema: core definitions and terminology"] and [json-schema-validation](http://json-schema.org/latest/json-schema-validation.html) ["JSON Schema: interactive and non interactive validation"] specifications.
 
 ### Constituents
 
@@ -129,7 +134,7 @@ An outlet is an interface that delivers information based on the `Local` structu
 
 Outlets derive their data from the `Local` structure, which includes payloads both originated at the node and retrieved from elsewhere in the network.
 
-### Mechanisms
+### Operations
 
 #### AdjInTranslate
 
@@ -217,365 +222,580 @@ When a payload arrives at the border from an `AdjInPeer`, it is mapped to a huma
 
 # Structures
 
-## Node
+## Node Structures
+
+A node structures JSON Schema is available under [schema/node.json](schema/node.json).
+
+### Node
 
 The `Node` object is a logical representation of an entity that may interact with the `Engine`. However, this structure does not intrinsically provide authorization. Instead, authorization is derived from node subclasses including `AdjInPeer`, `AdjOutPeer` and `Outlet`.
 
-```ruby
+The JSON Schema for `Node`:
+
+```json
 {
-  :name   => String,
-  :secret => String || undefined
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "secret": { "type": "string" }
+  },
+  "required": [ "name" ]
 }
 ```
 
-All `Node` objects must define a `:name` property. This is a local reference to the node only, meaning that a peer may choose its own approach for naming nodes, but within a node, the name must be unique among all peers defined within the `Engine`.
+An example of a `Node` structure:
 
-All `Node` objects may define a `:secret` property. If the secret property is set, then it must be included in all RESTful web service requests issued against the `Engine`.
-
-### AdjInPeer
-
-The `AdjInPeer` object extends the `Node` object, specifying a peer that the `Engine` may query to retrieve payloads.
-
-```ruby
+```json
 {
-  :name   => String,
-  :secret => String || undefined,
-  :in     => {
-    :hostname => String,
-    :scheme   => String || undefined,
-    :path     => String || undefined,
-    :port     => String || undefined
+  "name": "Example",
+  "secret": "foobar"
+}
+```
+
+All `Node` objects must define a `name` property. This is a local reference to the node only, meaning that a peer may choose its own approach for naming nodes, but within a node, the name must be unique among all nodes defined within the `Engine`.
+
+All `Node` objects may define a `secret` property. If the secret property is set, then it must be included in all RESTful web service requests issued against the `Engine`.
+
+### AdjInPeer and AdjInPeerIdentity
+
+The `AdjInPeer` object extends the `Node` object, specifying a peer that the `Engine` may query to retrieve payloads. In addition to the inherited properties of `Node`, an `AdjInPeer` object includes an additional `AdjInPeerIdentity` object under the key `in`.
+
+The JSON Schema for `AdjInPeerIdentity` (see [schema/node.json](schema/node.json)):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "hostname": { "type": "string" },
+    "scheme": { "type": "string", "default": "https" },
+    "path": { "type": "string", "default": "/" },
+    "port": { "type": "integer", "default": 443, "minimum": 0, "maximum": 65535 }
+  },
+  "required": [ "hostname" ]
+}
+```
+
+The JSON Schema for `AdjInPeer` (see [schema/node.json](schema/node.json)):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "in": { "$ref": "#/definitions/AdjInPeerIdentity" }
+  },
+  "additionalProperties": { "$ref": "#/definitions/Node" },
+  "required": [ "name", "in" ]
+}
+```
+
+
+An example of an `AdjInPeer` structure:
+
+```json
+{
+  "name": "Example",
+  "secret": "foobar",
+  "in": {
+    "hostname": "localhost",
+    "scheme": "http",
+    "path": "/",
+    "port": 8080
   }
 }
 ```
 
-All `AdjInPeer` objects must define an `:in` property (alternatively: `:in` object) containing an object that must include a `:hostname:` attribute. 
+All `AdjInPeer` objects must define an `in` property containing an `AdjInPeerIdentity` object. 
 
-The `:in` object may optionally include the additional attributes `:scheme`, `:path` and `:port`; if any of these attributes are not set, the unset attributes default to `https`, `/` and `443` respectively.
+All `AdjInPeerIdentity` objects must define a `hostname` property. An `AdjInPeerIdentity` object may optionally include the additional attributes `scheme`, `path` and `port`; if any of these attributes are not set, the unset attributes default to `https`, `/` and `443` respectively.
 
-The `:in` object may be set in concurrence with an `:out` object to classify a peer as both an `AdjInPeer` and either an `AdjOutPeer` or an `Outlet`.
+The `in` object may be set in concurrence with an `out` property containing an `AdjOutPeerIdentity`. Under this case, the peer should be treated as both an `AdjInPeer` and an `AdjOutPeer`. See `AdjInOutPeer` for more.
 
-### AdjOutPeer
+### AdjOutPeer and AdjOutPeerIdentity
 
-The `AdjOutPeer` object extends the `Node` object, specifying a peer to which the `Engine` will return a set of payloads from `AdjOut` after passing through `AdjOutFilter`.
 
-```ruby
+The `AdjOutPeer` object extends the `Node` object, specifying a peer to which the `Engine` will respond with a set of payloads from `AdjOut` when queried by a node with a matching `AdjOutPeerIdentity`. In addition to the inherited properties of `Node`, an `AdjOutPeer` object includes an additional `AdjOutPeerIdentity` object under the key `out`.
+
+The JSON Schema for `AdjOutPeerIdentity` (see [schema/node.json](schema/node.json)):
+
+```json
 {
-  :name   => String,
-  :secret => String || undefined,
-  :out    => {
-    :address => String || undefined,
-    :mask    => String || undefined,
-    :local   => false
+  "type": "object",
+  "properties": {
+    "address": { "type": "string" },
+    "mask": { "type": "string" },
+    "local": { "type": "boolean", "anyOf": [ false ], "default": false }
+  },
+  "required": [ "local" ]
+}
+```
+
+The JSON Schema for `AdjOutPeer` (see [schema/node.json](schema/node.json)):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "out": { "$ref": "#/definitions/AdjOutPeerIdentity" }
+  },
+  "additionalProperties": { "$ref": "#/definitions/Node" },
+  "required": [ "name", "out" ]
+}
+```
+
+
+An example of an `AdjOutPeer` structure:
+
+```json
+{
+  "name": "Example",
+  "secret": "foobar",
+  "out"     : {
+    "address": "10.0.0.0",
+    "mask": "0.255.255.255",
+    "local": false
   }
 }
 ```
 
-All `AdjOutPeer` objects must define an `:out` property (alternatively: `:out` object) containing an object that must include a `:local` property set to `false`. 
+All `AdjOutPeer` objects must define an `out` property containing an `AdjOutPeerIdentity` object. 
 
-It is recommended that the `:out` property also contains an `:address` property with an IP address value. If the `:address` property is not defined, then the `Engine` shall respond to any request bearing the correct `:name` and `:secret`. Additionally, the `:out` property may include a `:mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued by an `Outlet` within a subnet.
+All `AdjOutPeerIdentity` objects must either contain a `local` property set to `false` or else not contain a `local` property. An `AdjOutPeerIdentity` object may optionally include the additional attributes `address` and `mask`.
 
-The `:out` object may be set in concurrence with an `:in` object to classify a peer as both an `AdjInPeer` and  an `AdjOutPeer`.
+It is recommended that all `AdjOutPeerIdentity` objects contain an `address` property with an IP address value. If the `address` property is not defined, then the `Engine` shall respond to any request bearing the correct `name` and `secret` defined in the containing `AdjOutPeer` object. 
+
+Additionally, the `AdjOutPeerIdentity` object may include a `mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued within a subnet. If neither the `mask` nor the `hostname` property are set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `255.255.255.255`. If the `mask` property is not set but the `hostname` property is set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `0.0.0.0`.
+
+The `out` object may be set in concurrence with an `in` property containing an `AdjInPeerIdentity`. Under this case, the peer should be treated as both an `AdjInPeer` and an `AdjOutPeer`. See `AdjInOutPeer` for more.
+
+### AdjInOutPeer
+
+The `AdjInOutPeer` object extends the `Node` object, specifying a peer that the `Engine` may query to retrieve payloads and to which the `Engine` will respond with a set of payloads from `AdjOut` when queried by a node with a matching `AdjOutPeerIdentity`. In addition to the inherited properties of `Node`, an `AdjInOutPeer` object must include an additional `AdjInPeerIdentity` under the key `in` and an `AdjOutPeerIdentity` under the key `out`.
+
+The JSON Schema for `AdjInOutPeer` (see [schema/node.json](schema/node.json)):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "in": { "$ref": "#/definitions/AdjInPeerIdentity" },
+    "out": { "$ref": "#/definitions/AdjOutPeerIdentity" }
+  },
+  "additionalProperties": { "$ref": "#/definitions/Node" },
+  "required": [ "name", "in", "out" ]
+}
+```
+
+
+An example of an `AdjOutPeer` structure:
+
+```json
+{
+  "name": "Example",
+  "secret": "foobar",
+  "in"     : {
+    "hostname": "localhost",
+    "scheme": "http",
+    "path": "/",
+    "port": 8080
+  },
+  "out"     : {
+    "address": "127.0.0.1",
+    "mask": "0.0.0.0",
+    "local": false
+  }
+}
+```
 
 ### Outlet
 
-The `Outlet` object extends the `Node` object, specifying a peer to which the `Engine` will return a set of payloads from `Local`.
+The `Outlet` object extends the `Node` object, specifying a peer to which the `Engine` will return a set of payloads from `Local`. In addition to the inherited properties of `Node`, an `Outlet` object includes an additional `OutletIdentity` object under the key `out`.
 
-```ruby
+The JSON Schema for `OutletIdentity` (see [schema/node.json](schema/node.json)):
+
+```json
 {
-  :name   => String,
-  :secret   =>    String || undefined,
-  :response =>    {
-    :address  =>  String || undefined,
-    :mask     =>  String || undefined,
-    :local    =>  true,
-    :manage   =>  true || false || undefined
+  "title": "OutletIdentity",
+  "type": "object",
+  "properties": {
+    "address": { "type": "string" },
+    "mask": { "type": "string" },
+    "local": { "type": "boolean", "anyOf": [ true ], "default": true },
+    "manage": { "type": "boolean", "default": false }
+  },
+  "required": [ "local" ]
+}
+```
+
+The JSON Schema for `Outlet` (see [schema/node.json](schema/node.json)):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "out": { "$ref": "#/definitions/OutletIdentity" }
+  },
+  "additionalProperties": { "$ref": "#/definitions/Node" },
+  "required": [ "name", "out" ]
+}
+```
+
+An example of an `Outlet` structure:
+
+```json
+{
+  "name": "Example",
+  "secret": "foobar",
+  "out"     : {
+    "address": "10.0.0.0",
+    "mask": "0.255.255.255",
+    "local": true
   }
 }
 ```
 
-All `Local` objects must define an `:out` property (alternatively: `:out` object) containing an object that must include a `:local` property set to `true`.
+All `Outlet` objects must define an `out` property containing an `OutletIdentity` object. 
 
-The `:out` property may include a `:manage` property, in which case the `Outlet` will be treated as a `ManagerOutlet`. A `ManagerOutlet` may issue mutator (POST, PUT and DELETE) requests against the `Engine` to modify data in `Local`, as well as to modify `AdjInFilter`, `AdjInTransform`, `AdjOutTransform` and `AdjOutFilter`. If the `:manage` property is false or undefined, then the `Outlet` will not have access to mutator requests.
+All `OutletIdentity` objects must either contain a `local` property set to `true`. An `OutletIdentity` object may optionally include the additional attributes `address`, `mask` and `manage`.
 
-The `:out` property may also contains an `:address` property with an IP address value. This is recommended for `ManagerOutlet` nodes. If the `:address` property is defined, the `Engine` shall respond to requests bearing the correct `:name` and `:secret` only if the requesting agent is from `:address`. Additionally, the `:out` property may include a `:mask` property with a wildcard mask value in the event that the `Engine` shall respond to any request issued by an `Outlet` within a subnet.
+It is recommended that all `OutletIdentity` objects contain an `address` property with an IP address value. If the `address` property is not defined, then the `Engine` shall respond to any request bearing the correct `name` and `secret` defined in the containing `Outlet` object. 
 
-The `:out` object may be set in concurrence with an `:in` object to classify a peer as both an `AdjInPeer` and an `Outlet`.
+Additionally, the `OutletIdentity` object may include a `mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued within a subnet. If neither the `mask` nor the `hostname` property are set, then the `Outlet` should be regarded with a `mask` value of `255.255.255.255`. If the `mask` property is not set but the `hostname` property is set, then the `Outlet` should be regarded with a `mask` value of `0.0.0.0`.
 
-The `:request` property may be concurrently set on a peer to make it both an `Outlet` and an `AdjInPeer`.
+The `OutletIdentity` may also include a `manage` property. If it contains a `manage` property set to `true`, then the `Outlet` may issue mutator (`POST`, `PUT` and `DELETE`) requests against the `Engine`. If the `manage` property is false or not set, then the `Outlet` will not have access to mutator requests.
+
+An `Outlet` may not contain an `in` object.
 
 ## Payload
 
-A `Payload` represents a URI and associated metadata, and it is the fundamental unit accepted, presented and shared by a peer.
+A payload represents a URI and associated metadata, and it is the fundamental unit accepted, presented and shared by a peer.
 
-A `Payload` comes in two formats:
+### Payload
 
-* `TransitPayload` is how a payload is communicated between peers. It must include `identity` and `original` structures, and should include a `journal` structure if any peer along the payload's route has made changes to the payload. It does not include the `attributes` structure, as that structure is computed upon arrival at a peer. All attributes in the TransitPayload structures must be expressed in their machine-readable representation.
-* `LocalPayload` is how a payload is regarded locally for filters and transforms, as well as how it's communicated to outlets. It must include `identity` and `attributes` sections. Further, if it does not originate at the current host, it must maintain the existing `original` and `journal` structures. All known attributes in the `LocalPayload` structures should be expressed in their human-readable representation.
+The `Payload` object is the complete representation of a payload that a node maintains internally. It should be returned to `Outlets` with the `manage` flag set.
 
-If originated from the node itself, the `attributes` section is explicitly defined for the `LocalPayload`. In all other cases, when received from an adjacent node, the `attributes` section of a payload is defined by squashing the `original` and `journal` sections of a payload, potentially also considering known attributes for a payload in the local node with the same identity, as defined by `AdjInSquash`.
+The JSON Schema for `Payload` (see [schema/payload.json](schema/payload.json)):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "identity": { "$ref": "#/definitions/PayloadIdentity" },
+    "original": { "$ref": "#/definitions/PayloadLocalAttributes" },
+    "journal": { "type": "array", "items": { "$ref": "#/definitions/PayloadLocalJournalEntry" } },
+    "attributes": { "$ref": "#/definitions/PayloadLocalAttributes" }
+  },
+  "required": [ "identity", "original", "attributes" ]
+}
+```
 
 ### TransitPayload
 
-```ruby
+The `TransitPayload` object is the representation of a payload as an `AdjInPeer` should send when queried and that should be sent to a querying `AdjOutPeer`.
+
+A `TransitPayload`:
+
+* must include an `identity` property containing a `PayloadIdentity` object
+* must include an `original` property containing a `PayloadTransitAttributes` object
+* should include a `journal` structure containing an array of `PayloadTransitAttributes` object if any peer along the payload's route has made changes to the payload. 
+
+As opposed to a `LocalPayload`, the `TransitPayload` should not include an `attributes` property containing a `PayloadAttributes` object, as the `attributes` property is computed by way of the `AdjInSquash` operation upon arrival. If a received `TransitPayload` includes an `attributes` property, that property should be discarded and a new version should be computed by way of `AdjInSquash`.
+
+The JSON Schema for `TransitPayload` (see [schema/payload.json](schema/payload.json)):
+
+```json
 {
-  'identity' => {
-    'id'          => String(UUID),
-    'originator'  => String(UUID)
+  "type": "object",
+  "properties": {
+    "identity": { "$ref": "#/definitions/PayloadIdentity" },
+    "original": { "$ref": "#/definitions/PayloadTransitAttributes" },
+    "journal": { "type": "array", "items": { "$ref": "#/definitions/PayloadTransitJournalEntry" } }
   },
-  'original' => {
-    'uri'  => String,
-    'share' => true || false,
-    'propagate' => true || false,
-    'author' => {
-      'id' => String(UUID),
-      'name' => String,
-      'uri' => String(URI)
-    },
-    'timestamp' => String(Timestamp),
-    'use' => {
-      # .. (original 'use' structure)
-    } || undefined,
-    'require' => {
-      # .. (original 'require' structure)
-    } || undefined
-  },
-  'journal'  => [
-    {
-      'author' => {
-        'id' => String(UUID),
-        'name' => String,
-        'uri' => String(URI)
-      },
-      'timestamp'  => String(Timestamp),
-      'use' => {
-        # .. (journal of modifications to 'use' structure)
-      } || undefined,
-      'require' => {
-        # .. (journal of modifications to 'require' structure)
-      } || undefined
-    }
-  ] || [] || undefined
+  "required": [ "identity", "original" ]
 }
 ```
 
 ### LocalPayload
 
-```ruby
+The `LocalPayload` object is a representation of a payload as should be set to an `Outlet`, unless the `manage` flag set, in which case the full `Payload` object should be sent.
+
+A `LocalPayload`:
+
+* must include an `identity` property containing a `PayloadIdentity` object
+* must include an `attributes` property containing a `PayloadLocalAttributes` object
+
+The JSON Schema for `LocalPayload` (see [schema/payload.json](schema/payload.json)):
+
+```json
 {
-  'identity' => {
-    'id'          => String(UUID),
-    'originator'  => String(UUID)
+  "type": "object",
+  "properties": {
+    "identity": { "$ref": "#/definitions/PayloadIdentity" },
+    "attributes": { "$ref": "#/definitions/PayloadLocalAttributes" }
   },
-  'original' => {
-    'uri'  => String,
-    'share' => true || false,
-    'propagate' => true || false,
-    'author' => {
-      'id' => String(UUID),
-      'name' => String,
-      'uri' => String(URI)
-    },
-    'timestamp' => String(Timestamp),
-    'use' => {
-      # .. (original 'use' structure)
-    } || undefined,
-    'require' => {
-      # .. (original 'require' structure)
-    } || undefined
-  } || undefined,
-  'journal'  => [
-    {
-      'author' => {
-        'id' => String(UUID),
-        'name' => String,
-        'uri' => String(URI)
-      },
-      'timestamp'  => String(Timestamp),
-      'use' => {
-        # .. (journal of modifications to 'use' structure)
-      } || undefined,
-      'require' => {
-        # .. (journal of modifications to 'require' structure)
-      } || undefined
-    }
-  ] || [] || undefined,
-  'attributes' => {
-    'uri'  => String,
-    'author' => {
-      'id' => String(UUID),
-      'name' => String,
-      'uri' => String(URI)
-    },
-    'timestamp' => String(Timestamp),
-    'share' => true || false,
-    'propagate' => true || false,
-    'use' => {
-      # .. (local or squashed 'use' structure)
-    } || undefined,
-    'require' => {
-      # .. (local or squashed 'require' structure)
-    } || undefined
+  "required": [ "identity", "attributes" ]
+}
+```
+
+### PayloadIdentity
+
+The `PayloadIdentity` object is represented under the `identity` property of all `Payload`, `TransitPayload` and `LocalPayload` objects. It is a globally unique compound key that denotes the logical entity to which a payload pertains. This allows an originator to safely update any property in a payload message, so long as the `identity` is retained.
+
+The JSON Schema for `PayloadIdentity` (see [schema/payload.json](schema/payload.json)):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "originator": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" }
+  },
+  "required": [ "id", "originator" ]
+}
+```
+
+The `identity` property must exist on any payload. The `identity` property may not be modified once it is generated.
+
+The `id` property must be a UID that is unique among all logical entities described by payloads. It is recommended, although not required, that the `id` property be generated as a UUID.
+
+The `originator` property must be the UUID of the node that introduced the logical entity described by the payload. This UUID must conform to RFC 4122, and this UUID should be the same for all payloads introduced by the node.
+
+### Journal
+
+The journal is a history of all changes made to attributes since the definition of `Payload.original`. It is an array of zero or more objects, each which contain: the UUID of the node that orginates the change (`originator`); the timestamp when the change was made, in a format conforming to RFC 3339 (`timestamp`); and the changed values of the attributes. Equivalently, an element in the journal array reflects a set of changes to use and require attributes as made by author as of timestamp.
+
+When a payload arrives at a node, the `PayloadTransitJournalEntry` objects of the `TransitPayload.journal` are converted to `PayloadLocalJournalEntry` objects as part of the `AdjInTranslate` operation that converts a `TransitPayload` to a `Payload`. Directly after this step, the `AdjInSquash` operation assesses `Payload.original` and then walks the journal in sequential array order, making changes per each `PayloadLocalJournalEntry`. The product of this process is the `Payload.attributes` property. The exact behavior of `AdjInSquash` may be customized within the local context, as the product attributes property is local to an individual node.
+
+The journal property may exist for any payload that has been transmuted by the local node, as well as for any payload that has been transmuted by a peer that was not the originator of the payload. While the attributes section denotes the representation of the payload within the local context, the journal dictates changes to the payload in a broader context. See [PayloadLocalJournalEntry](#PayloadLocalJournalEntry) for specifics regarding creating, editing and deleting journal entries.
+
+#### PayloadAbstractJournalEntry
+
+The `PayloadAbstractJournalEntry` object is an abstract object that defines common attributes shared between the `PayloadTransitJournalEntry` and `PayloadLocalJournalEntry`. Its properties are also required by the `PayloadAbstractAttributes` object, and thus by `PayloadTransitAttributes` and `PayloadLocalAttributes`.
+
+The JSON Schema for `PayloadAbstractJournalEntry` (see [schema/payload.json](schema/payload.json)):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "originator": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" },
+    "timestamp": { "type": "string", "format": "date-time" }
   }
 }
 ```
 
-When a `LocalPayload` is returned to a non-manager `Outlet`, it is recommended that the `original` and `journal` attributes are dropped to reduce the payload size, as the squashed representation is contained in full by the `attributes` section.
+The `originator` attribute must correspond to the UUID of the node that made the journal entry. If the payload originates from the node itself, the `originator` attribute should correspond to the node's UUID.
 
-### Payload Components
+The `timestamp` attribute is a timestamp conforming to RFC 3339 and corresponding to the time when the journal entry was made.
 
-#### Identity
+#### PayloadTransitJournalEntry
 
-The `identity` property is a globally unique compound key that denotes the logical entity to which a payload pertains. This allows an originator to safely update any property in a payload message, so long as the `identity` is retained.
+The `PayloadTransitJournalEntry` object is composed of the properties from `PayloadAbstractJournalEntry`, plus `use` and `require` objects comprised of scalar, array or object values referenced by UUIDs as keys. 
 
-The `identity` property must exist for any payload. This property is an object that must contain:
+For the properties within the `use` and `require` objects, each UUID corresponds to a module that exists on some node along the payload's path from its originator. This structure is used when receiving a `TransitPayload` from an `AdjInPeer` and when sending a `TransitPayload` to an `AdjOutPeer`; however, internally within engine rules (like filters and transformations), as well as when communicating with `Outlets`, the `PayloadLocalAttributes` structure should be used instead.
 
-* `id` UID string, unique within the originator for the particular payload
-* `originator` UUID string, used for all payloads generated by the same engine
+The JSON Schema for `PayloadTransitJournalEntry` (see [schema/payload.json](schema/payload.json)):
 
-The `identity` property may not be modified once it is generated.
-
-##### Identity Structure
-
-```ruby
+```json
 {
-  'id'          => String(UID),
-  'originator'  => String(UUID)
-}
-```
-
-* `id` [Required] - The `id` property must be a UID that is unique among all logical entities described by payloads. It is recommended, although not required, that the `id` property be generated as a UUID.
-* `originator` [Required] - The `originator` property must be the UUID of the node that introduced the logical entity described by the payload. This UUID must conform to RFC 4122, and this UUID should be the same for all payloads introduced by the node.
-
-#### Attributes
-
-The `attributes` property is an object that defines the local representation of a payload.
-
-The `attributes` property must exist for any payload that is sent to an outlet (LocalPayload); however, the `attributes` property is considered local in context, so it should not be sent to adjacent peers (TransitPayload). To accomplish this, the `attributes` property must be computed by `AdjInSquash` and should be removed by `AdjOutTransform`.
-
-The `attributes` property may be modified by any Outlet, affecting the Payload's metadata local to the Engine. For an attribute modification to be reflected beyond the local context, it must also be written to the `journal`.
-
-##### Attributes Structure
-
-```ruby
-{
-  'uri'  => String,
-  'author' => {
-    'id' => String(UUID),
-    'name' => String,
-    'uri' => String(URI)
+  "type": "object",
+  "properties": {
+    "use": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" : {
+          "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ]
+        }
+      },
+      "default": {}
+    },
+    "require": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" : {
+          "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ]
+        }
+      },
+      "default": {}
+    }
   },
-  'timestamp' => String(Timestamp),
-  'share' => true || false,
-  'propagate' => true || false,
-  'use' => {
-    # .. (original 'use' structure)
-  } || undefined,
-  'require' => {
-    # .. (original 'require' structure)
-  } || undefined
+  "additionalProperties": { "$ref": "#/definitions/PayloadAbstractJournalEntry/properties" },
+  "required": [ "originator", "timestamp" ]
 }
 ```
 
-* `uri` [Required] - The `uri` property defines the URI of the payload.
-* `author` [Required] - The `author` property is an object that includes the following properties from the originator:
- * `id` [Required] - The UUID of the originator (same as the `originator` property of `identity`).
- * `name` [Required] - A human-readable name that identifies the originator.
- * `uri` [Optional] - A URI that may be used to query the originator directly.
-* `timestamp` [Required] - A timestamp string formatted as ISO 8601 which references the latest change to the payload, including from changes computed during `AdjInSquash` from `journal` entries and changes made to the `attributes` section locally. It must include the `T` delimiter, the `Z` timezone if UTC, and the hours, minutes and seconds fields.
-* `share` [Optional] - If set false or undefined, the engine should not share the payload with `AdjOutPeer` nodes. This means that the payload shall be dropped by `AdjOutFilter`.
-* `propagate` [Optional] - If set false or undefined and received from an `AdjInPeer`, the node shall not share this node with peers. However, if set false or undefined but the payload originates from the node, then it shall share the payload with its peers, although it's peers will not share it further. This means that the payload shall be dropped by `AdjOutFilter`.
-* `use` [Optional] - The `use` property is an object that may be included which specifies metadata that a node may evaluate. If a node cannot evaluate an attribute within the `use` object, it should not drop the payload at `AdjInFilter` unless a filter is defined explicitly to this effect.
-* `require` [Optional] - The `require` property is an object that may be included which specifies metadata that a node must evaluate. If a node cannot evaluate an attribute within this object, or if a node evaluates the metadata as not having the specified requirements, then it must drop the payload at `AdjInFilter`.
+The `PayloadTransitJournalEntry` object is never operated on explicitly except to generate a `PayloadLocalJournalEntry` object by way of the `AdjInTranslate` operation or as generated from a `PayloadLocalJournalEntry` by way of the `AdjOutTranslate` operation.
 
-All attributes within the `use` and `require` objects are expressed as human-readable names within the node (translated from UUID to name `AdjInTranslate` for propagated payloads), while they are expressed as machine-readable UUIDs when being shared with other nodes (translated from name to UUID `AdjOutTranslate`).
+#### PayloadLocalJournalEntry
 
-#### Original
+The `PayloadLocalJournalEntry` object is composed of the properties from `PayloadAbstractJournalEntry`, plus `use` and `require` objects comprised of scalar, array or object values referenced by human-readable names as keys. 
 
-The `original` property is an object that must contain the `attributes` section set by the originator.
+For the properties within the `use` and `require` objects, each key is determine by way of translation from UUID to human-readable names based on a mapping local to the node. This structure is used internally within engine rules (like filters and transformations), as well as when communicated to `Outlets`; however, it should never be conveyed to an `AdjOutPeer`, and the `Attributes` object should be used in such cases.
 
-The `original` property must exist for any payload that a node sends to an adjacent peer (`TransitPayload`); consequently, it should exist on any payload received from an adjacent peer. To accomplish this, if the `original` property does not exist when a payload reaches `AdjOutTransform`, it should be generated at that time from the `attributes` property.
+The JSON Schema for `PayloadLocalJournalEntry` (see [schema/payload.json](schema/payload.json)):
 
-The `original` property may not be modified once it is generated.
-
-##### Original Structure
-
-The original attributes structure definition is identical to the attributes structure definition.
-
-#### Journal
-
-The `journal` property is an array of zero or more objects that contain an `author` section, a `timestamp` and either a `use` section or a `require` section or both. An element in the `journal` array reflects a set of changes to `use` and `require` attributes as made by `author` as of `timestamp`.
-
-When a payload arrives at a node, the `AdjInSquash` phase is responsible for assessing the `original` property and applying changes from the `journal` in sequential array order to produce an `attributes` property for the payload. The exact behavior of `AdjInSquash` may be customized within the local context, as the product `attributes` property is local to an individual node.
-
-The `journal` property may exist for any payload that has been transmuted by the local node, as well as for any payload that has been transmuted by a peer that was not the originator of the payload. While the `attributes` section denotes the representation of the payload within the local context, the journal dictates changes to the payload in a broader context.
-
-The `journal` property may be modified in one of two ways:
-
-1. If the last element in `journal` has an `author` block with an `id` corresponding to the `id` of the current node, then the element should be modified to make additional changes and the `timestamp` should be updated to the current time.
-2. Otherwise, a new journal element should be appended to the end of the array. This element must include an `author` block with an `id` corresponding to the `id` of the current node, the current `timestamp` and either a `use` property or a `require` property or both.
-
-##### Journal Structure
-
-The journal is an array of journal elements.
-
-Each element is defined as:
-
-```ruby
+```json
 {
-  'author' => {
-    'id' => String(UUID),
-    'name' => String,
-    'uri' => String(URI)
+  "type": "object",
+  "properties": {
+    "use": {
+      "type": "object",
+      "patternProperties": {
+        "." : {  "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ] }
+      },
+      "default": {}
+    },
+    "require": {
+      "type": "object",
+      "patternProperties": {
+        "." : { "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ] }
+      },
+      "default": {}
+    }
   },
-  'timestamp' => String(Timestamp),
-  'use' => {
-    # .. (modifications to 'use' properties)
-  } || undefined,
-  'require' => {
-    # .. (modifications to 'require' properties)
-  } || undefined
+  "additionalProperties": { "$ref": "#/definitions/PayloadAbstractJournalEntry/properties" },
+  "required": [ "uri", "originator", "timestamp", "share", "propagate" ]
 }
 ```
 
-* `author` [Required] - The `author` property is an object that includes the following properties from the node that added this journal entry:
- * `id` [Required] - The UUID of the node that added the journal entry.
- * `name` [Required] - A human-readable name that identifies the node that added the journal entry.
- * `uri` [Optional] - A URI that may be used to query the node that added the journal entry directly.
-* `use` [Optional] - The `use` property is an object that may be included which specifies sequential alterations to the metadata as defined by the `original` property of the payload, plus any changes defined by earlier elements in the `journal` structure.
-* `require` [Optional] - The `require` property is an object that may be included which specifies sequential alterations to the metadata as defined by the `original` property of the payload, plus any changes defined by earlier elements in the `journal` structure.
+A `PayloadLocalJournalEntry` object is generated by way of the `AdjInTranslate` operation from each `PayloadTransitJournalEntry.journal` array element, and it is contained as an element within the `Payload.journal` array.
 
-All attributes within the `use` and `require` objects are expressed as human-readable names within the node (translated from UUID to name `AdjInTranslate` for propagated payloads), while they are expressed as machine-readable UUIDs when being shared with other nodes (translated from name to UUID `AdjOutTranslate`).
+If `AdjOutTransform` changes any `Payload.attributes.use` or `Payload.attributes.require` attribute, a `PayloadLocalJournalEntry` object must be modified within `Payload.journal` as follows:
 
-To unset an attribute within the `use` or `require` objects, set it as `false`. Otherwise, changes are complete.
+1. If the last element in the `Payload.journal` has an `originator` UUID corresponding to the UUID of the node, the element should be modified to make additional changes and the timestamp should be updated to the current time.
+2. Otherwise, a new journal element should be appended to the end of the `Payload.journal` array. This element must include an `originator` property with an UUID corresponding to the id of the current node, the current timestamp conforming to RFC 3339, and either a use property or a require property or both corresponding to changes that the node made to the attributes by way of `AdjOutTransform`.
 
-### Properties for 'use'
+A `Payload.journal` entry may not be removed from `Payload.journal` unless it is the last element in `Payload.journal`, has an `originator` UUID corresponding to the UUID of the node and `AdjOutTransform` has not changed either `Payload.attributes.use` and `Payload.attributes.require`. Equivalently, the node may only remove the last `Payload.journal` entry if it has an `originator` UUID corresponding to the current node and the `Payload.attributes` values after `AdjInSquash` are equivalent to the attributes after `AdjOutTransform`.
 
-**NON-NORMATIVE** This section is intended as an non-normative example of how the `use` attribute might be implemented. It should not be regarded as part of the protocol at this time, and the very structure of the `:use` property here might change completely before final implementation.
+### Attributes
+
+Attributes describe the state of a payload at a particular point in the process. The `Payload.original` structure is a set of attributes as set by the originator when the payload was introduced into the network, and the `Payload.attributes` structure is a set of attributes computed by way of: `AdjInTranslate` to map from transit machine-readable UUID representation to local human-readable name representation; `AdjInSquash` to process `Payload.original` and `Payload.journal` to arrive at a set of `Payload.attributes` send from `AdjInPeer`; and either `AdjInTransform` for `Outlet` queries or `AdjOutTransform for `AdjOutPeer` queries to modify the `use` and `require` properties.
+
+If `AdjOutTransform` modifies the `use` or `require` properties, a journal entry must be written.
+
+The `attributes` property exists for any `Payload` delivered to an `Outlet`, either of the `Payload` or `LocalPayload` variety, while it should not be sent as part of a `TransitPayload` to an `AdjOutPeer`.
+
+#### PayloadAbstractAttributes
+
+The `PayloadAbstractAttributes` object is an abstract object that defines common attributes shared between `PayloadTransitAttributes` and `PayloadLocalAttributes`. It requires the properties of `PayloadAbstractJournalEntry`, plus the `uri`, `share` and `propagate` properties.
+
+The JSON Schema for `PayloadAbstractAttributes` (see [schema/payload.json](schema/payload.json)):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "uri": { "type": "string", "format": "uri" },
+    "share": { "type": "boolean", "default": false },
+    "propagate": { "type": "boolean", "default": false }
+  },
+  "additionalProperties": { "$ref": "#/definitions/PayloadAbstractJournalEntry/properties" },
+  "required": ["uri", "originator", "timestamp", "share", "propagate"]
+}
+```
+
+The `uri` property must be set and must define the URI for the payload.
+
+The `share` property may be set. If `share` is not set or is `false`, then then engine should not share the payload with `AdjOutPeer` nodes, meaning that the payload should be dropped by `AdjOutFilter`.
+
+The `propagate` property may be set. When received from an `AdjInPeer`, if `propagate` is not set or is false, then the node shall not share this payload with peers, meaning the payload should be dropped at `AdjOutFilter`; similarly, if `propagate` is not set or is false and the payload originates from the node, then it shall share the payload with its peers, but its peers shall not share it further.
+
+#### PayloadTransitAttributes
+
+The `PayloadTransitAttributes` object is composed of the properties from `PayloadAbstractAttributes` and `PayloadAbstractJournalEntry`, plus `use` and `require` objects comprised of scalar, array or object values referenced by UUIDs as keys. 
+
+For the properties within the `use` and `require` objects, each UUID corresponds to a module that exists on some node along the payload's path from its originator. This structure is used only for the `original` property when receiving a `TransitPayload` from an `AdjInPeer` and when sending a `TransitPayload` to an `AdjOutPeer`; it is not used for an `attributes` property, as a `TransitPayload` should not include an attributes section.
+
+The JSON Schema for `PayloadTransitAttributes` (see [schema/payload.json](schema/payload.json)):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "use": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" : {
+          "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ]
+        }
+      },
+      "default": {}
+    },
+    "require": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" : {
+          "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ]
+        }
+      },
+      "default": {}
+    }
+  },
+  "additionalProperties": { "$ref": "#/definitions/PayloadAbstractAttributes/properties" },
+  "required": [ "uri", "originator", "timestamp", "share", "propagate" ]
+}
+```
+
+The `PayloadTransitAttributes` object is never operated on explicitly except to generate a `PayloadLocalAttributes` object for `Payload.original` by way of the `AdjInTranslate` operation or as generated from the `PayloadLocalAttributes` object in `Payload.original` by way of the `AdjOutTranslate` operation before sending a `TransitPayload`.
+
+#### PayloadLocalAttributes
+
+The `PayloadLocalAttributes` object is composed of the properties from `PayloadAbstractAttributes` and `PayloadAbstractJournalEntry`, plus `use` and `require` objects comprised of scalar, array or object values referenced by human-readable names as keys. 
+
+For the properties within the `use` and `require` objects, each key is determine by way of translation from UUID to human-readable names based on a mapping local to the node. This structure is used internally within engine rules (like filters and transformations), as well as when communicated to `Outlets`; however, it should never be conveyed to an `AdjOutPeer`, and the `Attributes` object should be used in such cases.
+
+The JSON Schema for `PayloadLocalAttributes` (see [schema/payload.json](schema/payload.json)):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "use": {
+      "type": "object",
+      "patternProperties": {
+        "." : {  "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ] }
+      },
+      "default": {}
+    },
+    "require": {
+      "type": "object",
+      "patternProperties": {
+        "." : { "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ] }
+      },
+      "default": {}
+    }
+  },
+  "additionalProperties": { "$ref": "#/definitions/PayloadAbstractAttributes/properties" },
+  "required": [ "uri", "originator", "timestamp", "share", "propagate" ]
+}
+```
+
+The `use` property, if set for `Payload.attributes`, is an object which specifies metadata that a node may evaluate. It a node cannot evaluate an attribute within the `use` object because it does not have a module that recognizes the key, it should not drop the payload at `AdjInFilter` unless a filter is defined explicitly to this effect.
+
+The `require` property, if set for `Payload.attributes`, is an object which specifies metadata that a node must evaluate. If a node cannot evaluate an attribute within the `require` object because it does not have a module that recognizes the key, it must drop the payload at `AdjInFilter`.
+
+##### Properties for 'use'
+
+**NON-NORMATIVE** This section is intended as an non-normative example of how the `use` attribute might be implemented.
 
 Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
 
-#### Example: Common Website Properties
+##### Example: Common Website Properties
 
-Some common properties for the `payload[:attributes][:use]` object include:
+Some common properties for the `payload.attributes.use` object include:
 
-```ruby
+```json
 {
-  # ..
-  'attributes' => {
-    # ..
-    'use' => {
-      'name'         => String || undefined,
-      'categories'   => Array(String) || undefined,
-      'tags'         => Array(String) || undefined,
-      'icon'         => String || undefined,
-      'capabilities' => {
-        'mobile'     => true || false || undefined,
-        'tablet'     => true || false || undefined,
-        'desktop'    => true || false || undefined,
-        'responsive' => true || false || undefined
-      }
-      # ..
+  "name" : { "type": "string" },
+  "categories" : { "type": "array", "items": { "type": "string" } },
+  "tags" : { "type": "array", "items" => { "type": "string" } },
+  "icon" : { "type": "string", "format": "uri" },
+  "capabilities" : {
+    "type": "object"
+    "properties": {
+      "mobile": { "type": "boolean" },
+      "tablet": { "type": "boolean" },
+      "desktop": { "type": "boolean" },
+      "responsive": { "type": "boolean" }
     }
   }
 }
@@ -593,88 +813,57 @@ The `capabilities` array is intended to provide a set of `true` or `false` value
 
 In a similar way, other capabilities such as an IMS Learning Tools Interoperability or W3C Packaged Web Apps launch might also be made available.
 
-### Properties for :require
+##### Properties for 'require'
 
-**NON-NORMATIVE** This section is intended as an non-normative example of how the `:require` attribute might be implemented. It should not be regarded as part of the protocol at this time, and the very structure of the `:require` property here might change completely before final implementation.
+**NON-NORMATIVE** This section is intended as an non-normative example of how the `require` attribute might be implemented.
 
 Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
 
-#### Example: Shibboleth
+###### Example: Shibboleth
 
 Shibboleth is a SAML-based middleware that supports federation.
 
 If an application requires Shibboleth for authorization, then it might be specified as such:
 
-```ruby
+```json
 {
-  # ..
-  'attributes' => {
-    # ..
-    'require' => {
-      'shibboleth' => true
-      # ..
-    }
-  }
+  "shibboleth": true
 }
 ```
 
 If an application requires the InCommon Shibboleth federation, then it might be extended as:
 
-```ruby
+```json
 {
-  # ..
-  'attributes' => {
-    # ..
-    'require' => {
-      'shibboleth' => {
-        'entityID' => 'urn:mace:incommon'
-      }
-      # ..
-    }
+  "shibboleth": {
+    "entityID": "urn:mace:incommon"
   }
 }
 ```
 
 If an application requires not only the InCommon Shibboleth federation but also authorizes only for particular identity providers, then it might be specified as:
 
-```ruby
+
+```json
 {
-  # ..
-  'attributes' => {
-    # ..
-    'require' => {
-      'shibboleth' => {
-        'entityID' => [
-           'urn:mace:incommon:ucla.edu',
-           'urn:mace:incommon:berkeley.edu',
-           # ..
-         ]
-      }
-      # ..
-    }
+  "shibboleth": {
+    "entityID": [
+        "urn:mace:incommon:ucla.edu",
+        "urn:mace:incommon:berkeley.edu",
+    ]
   }
 }
 ```
 
 Similarly, if an application requires not only the InCommon Shibboleth federation but also authorizes only on particular attributes, then it might be specified as such:
 
-```ruby
+```json
 {
-  # ..
-  'attributes' => {
-    # ..
-    'require' => {
-      'shibboleth' => {
-        'attributes' => [
-           # eduPerson Attribute
-           'urn:mace:dir:attribute-def:eduPersonPrincipalName',
-           # UCTrust Attribute
-           'urn:oid:2.16.840.1.113916.1.1.4.1',
-           # ..
-         ]
-      }
-      # ..
-    }
+  "shibboleth": {
+    "attributes": [
+        "urn:mace:dir:attribute-def:eduPersonPrincipalName",
+        "urn:oid:2.16.840.1.113916.1.1.4.1",
+    ]
   }
 }
 ```
@@ -682,6 +871,8 @@ Similarly, if an application requires not only the InCommon Shibboleth federatio
 In a similar way, other requirements such as an IMS Learning Tools Interoperability or W3C Packaged Web Apps launch might also be enforced.
 
 # External Interfaces
+
+**DEPRECATED WARNING** The data structures of this section are currently deprecated and require work to conform with the structures defined above in this document.
 
 ## GET payloads
 
@@ -969,6 +1160,8 @@ Payload does not exist with identity.
 ```
 
 # Internal Routines
+
+**DEPRECATED WARNING** The data structures of this section are currently deprecated and require work to conform with the structures defined above in this document.
 
 **NON-NORMATIVE** This section is very incomplete and should be regarded as non-normative at this time; upon completion, it shall be classified as normative.
 
