@@ -53,8 +53,14 @@
             1. [PayloadAbstractAttributes](#payloadabstractattributes)
             2. [PayloadTransitAttributes](#payloadtransitattributes)
             3. [PayloadLocalAttributes](#payloadlocalattributes)
-4. [External Interfaces](#external-interfaces) **(deprecated)**
-5. [Internal Routines](#internal-routines) **(deprecated)**
+4. [External Interfaces](#external-interfaces)
+    1. [GET /payloads](#get-payloads)
+    2. [GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-payloadsoriginator-uuidpayload-uid)
+    3. [GET /local/payloads](#get-localpayloads)
+    4. [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
+    5. [GET /out/payloads](#get-outpayloads)
+    6. [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
+5. [Internal Routines](#internal-routines)
 
 # Introduction
 
@@ -935,191 +941,30 @@ In a similar way, other requirements such as an IMS Learning Tools Interoperabil
 
 # External Interfaces
 
-**DEPRECATED WARNING** The data structures of this section are currently deprecated and require work to conform with the structures defined above in this document.
+**INCOMPLETE** This section is currently a work-in-progress and not yet complete.
 
-## GET payloads
+## GET /payloads
 
-Returns an array of `Payload` objects.
+Method that aliases based on context:
 
-If the requesting agent is an `Outlet`, payloads are returned in the `LocalPayload` form, while, if the requesting agent is an `AdjOutPeer` node, payloads are returned in the `TransitPayload` form.
+* If requesting agent is `Outlet`, see [GET /local/payloads](#get-localpayloads)
+* If requesting agent is `AdjOutPeer`, see [GET /out/payloads](#get-outpayloads)
 
-An error response is thrown if the request agent is not a valid `Outlet` or `AdjOutPeer`.
+## GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]
 
-### Request
+Method that aliases based on context:
 
-```
-GET /payloads?name=[name]&secret=[secret] HTTP/1.1
-```
+* If requesting agent is `Outlet`, see [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
+* If requesting agent is `AdjOutPeer`, see [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
 
-### Response
+## GET /local/payloads
 
-#### 200 Success
-
-##### LocalPayload for ManagerOutlet
-
-Manager outlets receive the most extended form of the `LocalPayload`, including the `identity` and `attributes` sections required by the `LocalPayload`, as well as the `original` and `journal` properties for additional telemetry about the payload (if the payload did not originate locally):
-
-```js
-[
-    {
-        "identity" : {
-            "id"            :   String,
-            "originator"    :   String
-        },
-        "attributes" : {
-            // .. (local attributes for the payload)
-        },
-        "original" : {
-            // .. (original attributes of the payload, if not locally originated)
-        } || undefined,
-        "journal" : {
-            // .. (journal for the payload, if not locally originated)
-        } || undefined
-    },
-    // .. (additional payload objects)
-]
-```
-
-##### LocalPayload for LocalOutlet
-
-Non-manager outlets do not need the optional `original` or `journal` properties of the `LocalPayload`, so they are excluded to reduce the size of the payload:
-
-```js
-[
-    {
-        "identity" : {
-            "id"            :   String,
-            "originator"    :   String
-        },
-        "attributes" : {
-            // .. (journal for the payload)
-        }
-    },
-    // .. (additional payload objects)
-]
-```
-
-##### TransitPayload for AdjOutPeer
-
-AdjOutPeer nodes receive the `TransitPayload`, which should not include the `attributes` section of the payload:
-
-```js
-[
-    {
-        "identity" : {
-            "id"            :   String,
-            "originator"    :   String
-        },
-        "original" : {
-            // .. (original attributes of the payload, if not locally originated)
-        },
-        "journal" : {
-            // .. (journal for the payload, if not locally originated)
-        } || undefined
-    },
-    // .. (additional payload objects)
-]
-```
-
-#### 401 Unauthorized
-
-```
-Query string name property was not specified but is required.
-```
-
-```
-Query string secret property was not specified but is required.
-```
-
-```
-Query string secret property was not valid for node identified by name property.
-```
-
-## POST payloads
-
-Creates a new `Payload` object JSON request body. This JSON request body should be solely the `attributes` values. This routine assigns `Payload[identity]` internally and returns it back as part of the `200 Success` response. The `Payload[original]` field is only added during delivery to `AdjOut` through `AdjOutTransform`. This allows for the `Engine` to determine which payloads are local, as they will not include a `Payload[original]` attribute within `Local`.
-
-An error response will be thrown if the request agent is not a valid `ManagerOutlet`.
+If the requesting agent is an `Outlet`, returns an array of `LocalPayload` objects; otherwise, an error is thrown.
 
 ### Request
 
 ```
-POST /payloads?name=[name]&secret=[secret] HTTP/1.1
-```
-
-```js
-{
-    // attributes..
-}
-```
-
-### Response
-
-#### 200 Success
-
-Returns the `Payload` object with `attributes` from POST body and `identity` as assigned internally.
-
-```js
-{
-    "identity" : {
-        "id"            :   String,
-        "originator"    :   String
-    },
-    "attributes" : {
-        // .. (payload attributes)
-    }
-}
-```
-
-#### 401 Unauthorized
-
-```
-Query string name property was not specified but is required.
-```
-
-```
-Query string secret property was not specified but is required.
-```
-
-```
-Query string secret property was not valid for node identified by name property.
-```
-
-```
-Query string secret and name properties are not valid for ManagerOutlet.
-```
-
-#### 409 Conflict
-
-```
-Payload already exists with identity. Use PUT payloads instead.
-```
-
-## PUT payloads
-
-Updates an existing `Payload` object from the request body data if a payload currently exists with the same `Payload[identity]`. The `Payload[identity]` data must be included to identity the payload. `Payload[attributes]` data must be included and shall completely overwrite the old version of `attributes` per the HTTP PUT method definition. A `Payload[journal]` object may be included if the `Payload` did not originate from the `Engine`. The `Payload[journal]` object, if it exists, should represent a journal entry of changes that will be made to this object and propagated beyond this node. If a `Payload[journal]` is not included, then changes made by this call will not be propagated.
-
-An error response will be thrown if the request agent is not a valid `ManagerOutlet`.
-
-### Request
-
-```
-PUT /payloads?name=[name]&secret=[secret] HTTP/1.1
-```
-
-```js
-{
-    "identity": {
-        "id"            :   String,
-        "originator"    :   String
-    },
-    "attributes": {
-        // rewrite of local attributes..
-    },
-    "journal": {
-        // journal attribute changes..
-    } || undefined
-}
+GET /local/payloads?secret=[secret] HTTP/1.1
 ```
 
 ### Response
@@ -1127,106 +972,219 @@ PUT /payloads?name=[name]&secret=[secret] HTTP/1.1
 #### 200 Success
 
 ```js
-[
-    {
-        "identity" : {
-            "id"            :   String,
-            "originator"    :   String
-        },
-        "attributes" : {
-            // .. (local attributes for the payload)
-        },
-        "original" : {
-            // .. (original attributes of the payload, if not locally originated)
-        } || undefined,
-        "journal" : {
-            // .. (journal for the payload, if not locally originated)
-        } || undefined
-    },
-    // .. (additional payload objects)
-]
+{
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/Payload"
+  }
+}
 ```
 
 #### 401 Unauthorized
 
-```
-Query string name property was not specified but is required.
-```
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
 
 ```
-Query string secret property was not specified but is required.
+Requesting agent must send secret.
 ```
 
-```
-Query string secret property was not valid for node identified by name property.
-```
+#### 403 Forbidden
+
+If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
 
 ```
-Query string secret and name properties are not valid for ManagerOutlet.
+Secret was not accepted for requesting agent.
+```
+
+If the requesting agent is not an `Outlet`:
+
+```
+Method not allowed for requesting agent.
+```
+
+## GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]
+
+If the requesting agent is an `Outlet` and payload in `Local` persistence has a `PayloadIdentity` matching `[ORIGINATOR-UUID]` and `[PAYLOAD-ID]`, returns the payload. If the `Outlet` has the `out.manage` property set to `true`, this payload is returned as a `Payload` object, while if it does not, then it is returned as a `Payload` object. If the requesting agent is not an `Outlet`, an error is thrown.
+
+### Request
+
+```
+GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]?secret=[secret] HTTP/1.1
+```
+
+### Response
+
+#### 200 Success
+
+If the `Outlet` has the `out.manage` property set to `true`:
+
+```js
+{
+  "$ref": "#/definitions/Payload"
+}
+```
+
+If the `Outlet` does not have the `out.manage` property or it is not set to `true`:
+
+```js
+{
+  "$ref": "#/definitions/Payload"
+}
+```
+
+#### 401 Unauthorized
+
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Requesting agent must send secret.
+```
+
+#### 403 Forbidden
+
+If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Secret was not accepted for requesting agent.
+```
+
+If the requesting agent is not an `Outlet`:
+
+```
+Method not allowed for requesting agent.
 ```
 
 #### 404 Not Found
 
+If no payload in `Local` persistence with `PayloadIdentity` matching `[ORIGINATOR-UUID]` and `[PAYLOAD-ID]`:
+
 ```
-Payload does not exist with identity. Use POST payloads instead.
+Payload not found.
 ```
 
-## DELETE payloads
+## GET /out/payloads
 
-Deletes an existing `Payload` object from the request body data if a payload currently exists with the same `Payload[:identity]`.
-
-An error response will be thrown if the request agent is not a valid `ManagerOutlet` or there is no payload with the specified identity.
+If the requesting agent is an `AdjOutPeer`, returns an array of `TransitPayload` objects; else, if requesting agent is an `Outlet` with the `out.manage` property set to `true`, returns an array of `LocalPayload` objects; otherwise, an error is thrown.
 
 ### Request
 
 ```
-DELETE /payloads?name=[name]&secret=[secret] HTTP/1.1
-```
-
-```js
-{
-    "id"            :   String,
-    "originator"    :   String
-}
+GET /out/payloads?secret=[secret] HTTP/1.1
 ```
 
 ### Response
 
-#### 204 No Content
+#### 200 Success
 
+If requesting agent is an `AdjOutPeer`:
+
+```js
+{
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/TransitPayload"
+  }
+}
 ```
-Payload successfully deleted.
+
+If requesting agent is an `Outlet` with the `out.manage` property set to `true`:
+
+```js
+{
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/LocalPayload"
+  }
+}
 ```
 
 #### 401 Unauthorized
 
-```
-Query string name property was not specified but is required.
-```
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
 
 ```
-Query string secret property was not specified but is required.
+Requesting agent must send secret.
 ```
 
-```
-Query string secret property was not valid for node identified by name property.
-```
+#### 403 Forbidden
+
+If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
 
 ```
-Query string secret and name properties are not valid for ManagerOutlet.
+Secret was not accepted for requesting agent.
+```
+
+If the requesting agent is neither an `AdjOutPeer` nor an `Outlet` with the `out.manage` property set to `true`:
+
+```
+Method not allowed for requesting agent.
+```
+
+## GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]
+
+If the requesting agent is an `AdjOutPeer` or an `Outlet` with an `out.manage` property set to `true` and payload in `AdjOut` persistence has a `PayloadIdentity` matching `[ORIGINATOR-UUID]` and `[PAYLOAD-ID]`, returns the payload. If the requesting agent is an `AdjOutPeer`, returns a `TransitPayload` object; else, if requesting agent is an `Outlet` with the `out.manage` property set to `true`, returns a `Payload` object; otherwise, an error is thrown.
+
+### Request
+
+```
+GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]?secret=[secret] HTTP/1.1
+```
+
+### Response
+
+#### 200 Success
+
+If requesting agent is an `AdjOutPeer`:
+
+```js
+{
+  "$ref": "#/definitions/TransitPayload"
+}
+```
+
+If requesting agent is an `Outlet` with the `out.manage` property set to `true`:
+
+```js
+{
+  "$ref": "#/definitions/Payload"
+}
+```
+
+#### 401 Unauthorized
+
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Requesting agent must send secret.
+```
+
+#### 403 Forbidden
+
+If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Secret was not accepted for requesting agent.
+```
+
+If the requesting agent is neither an `AdjOutPeer` nor an `Outlet` with the `out.manage` property set to `true`:
+
+```
+Method not allowed for requesting agent.
 ```
 
 #### 404 Not Found
 
+If no payload in `AdjOut` persistence with `PayloadIdentity` matching `[ORIGINATOR-UUID]` and `[PAYLOAD-ID]`:
+
 ```
-Payload does not exist with identity.
+Payload not found.
 ```
 
 # Internal Routines
 
-**DEPRECATED WARNING** The data structures of this section are currently deprecated and require work to conform with the structures defined above in this document.
+**INCOMPLETE** This section is currently a work-in-progress and not yet complete.
 
-**NON-NORMATIVE** This section is very incomplete and should be regarded as non-normative at this time; upon completion, it shall be classified as normative.
+**NON-NORMATIVE** This section should be regarded as non-normative at this time, as it may be heavily reworked.
 
 ## FILTER-IN
 
@@ -1236,9 +1194,7 @@ A payload must be dropped unless a module is running that supports each `:requir
 
 ```ruby
 @attributes['required'].keys.each do |attribute_name|
-
-  drop unless @modules.include? attribute_name
-
+  drop unless @modules.include?(attribute_name)
 end
 ```
 
@@ -1246,11 +1202,9 @@ A payload must be dropped if one or more modules do not accept their correspondi
 
 ```ruby
 @attributes['required'].each do |attribute_name, attribute|
-
   if @modules[attribute].respond_to? 'accepts?'
     drop unless @modules[attribute].accepts? attribute
   end
-
 end
 ```
 
@@ -1269,9 +1223,7 @@ Transform that runs on all payloads from `AdjIn` before delivery to `Local`.
 Payload not shared beyond node if propagation is not set true:
 
 ```ruby
-unless payload[:attributes].has_key? :propagate and payload[:attributes][:propagate]
-  payload[:attributes][:share] = false 
-end
+@attributes['share] = false unless @attributes.has_key?('propagate') and @attributes['propagate']
 ```
 
 ## TRANSFORM-OUT
@@ -1283,7 +1235,7 @@ Transform that runs on all payloads from `Local` before delivery to `AdjOut`.
 Payloads in `Local` originating from the node itself do not have an `:original` field, so ensure that this field exists for all payloads in `AdjOut`:
 
 ```ruby
-payload[:original] = payload[:attributes] unless payload.has_key? :original 
+@original = @attributes unless @payload.has_key? 'original'
 ```
 
 ## FITLER-OUT
@@ -1295,7 +1247,5 @@ Filter that runs on all payloads in `AdjOut` before delivery to any `AdjOutPeer`
 Drop any application unless it is flagged for sharing:
 
 ```ruby
-unless payload[:attributes].has_key? :share and payload[:attributes][:share]
-  drop payload
-end
+drop payload unless @attributes.has_key?('share') and @attributes['share']
 ```
