@@ -773,11 +773,11 @@ The `use` property, if set for `Payload.attributes`, is an object which specifie
 
 The `require` property, if set for `Payload.attributes`, is an object which specifies metadata that a node must evaluate. If a node cannot evaluate an attribute within the `require` object because it does not have a module that recognizes the key, it must drop the payload at `AdjInFilter`.
 
-##### Properties for 'use'
+##### Non-Normative: Properties for 'use'
 
-**NON-NORMATIVE** This section is intended as an non-normative example of how the `use` attribute might be implemented.
+This section is intended as an non-normative example of how the `use` attribute might be implemented.
 
-Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
+Examples in this section use the local human-readable form of attribute names; an equivalent UUID machine-readable form would also need to be defined for an implementing module.
 
 ##### Example: Common Website Properties
 
@@ -813,11 +813,11 @@ The `capabilities` array is intended to provide a set of `true` or `false` value
 
 In a similar way, other capabilities such as an IMS Learning Tools Interoperability or W3C Packaged Web Apps launch might also be made available.
 
-##### Properties for 'require'
+##### Non-Normative: Properties for 'require'
 
-**NON-NORMATIVE** This section is intended as an non-normative example of how the `require` attribute might be implemented.
+This section is intended as an non-normative example of how the `require` attribute might be implemented. 
 
-Additionally, it should also be noted that payloads communicated between peers must use the machine-readable UUID mappings for human-readable attribute names.
+Examples in this section use the local human-readable form of attribute names; an equivalent UUID machine-readable form would also need to be defined for an implementing module.
 
 ###### Example: Shibboleth
 
