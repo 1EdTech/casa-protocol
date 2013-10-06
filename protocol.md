@@ -1,7 +1,60 @@
 # CASA PROTOCOL
 
-* auto-gen TOC:
-{:toc}
+1. [Introduction](#introduction)
+ 1. [Status of this Memo](#status-of-this-memo)
+ 2. [Copyright Notice](#copyright-notice)
+2. [Overview](#overview)
+ 1. [Background](#background)
+ 2. [Solution](#solution)
+ 3. [Use Cases](#use-cases)
+  1. [Mobile Dashboard](#moble-dashboard)
+  2. [Tool Launcher](#tool-launcher)
+  3. [Authorization](#authorization)
+ 4. [Terminology](#terminology)
+ 5. [Constituents](#constituents)
+  1. [Engine](#engine)
+  2. [AdjInPeer](#adjinpeer)
+  3. [AdjOutPeer](#adjoutpeer)
+  4. [Outlet](#outlet)
+ 6. [Operations](#operations)
+  1. [AdjInTranslate](#adjintranslate)
+  2. [AdjInSquash](#adjinsquash)
+  3. [AdjInFilter](#adjinfilter)
+  4. [AdjInTransform](#adjintransform)
+  5. [AdjOutTransform](#adjouttransform)
+  6. [AdjOutFilter](#adjoutfilter)
+  7. [AdjOutTransform](#adjouttransform)
+ 7. [Persistence](#persistence)
+  1. [AdjIn](#adjin)
+  2. [Local](#local)
+  3. [AdjOut](#adjout)
+ 8. [User Characteristics](#user-characteristics)
+  1. [Pull-based Protocol](#pull-based-protocol)
+  2. [Transport Security](#transport-security)
+  3. [Payload Trust](#payload-trust)
+  4. [Machine-readable Attributes](#machine-readable-attributes)
+3. [Structures](#structures)
+ 1. [Node Structures](#node-structures)
+  1. [Node](#node)
+  2. [AdjInPeer and AdjInPeerIdentity](#adjinpeer-and-adjinpeeridentity)
+  3. [AdjOutPeer and AdjOutPeerIdentity](#adjoutpeer-and-adjoutpeeridentity)
+  4. [AdjInOutPeer](#adjinoutpeer)
+  5. [Outlet](##outlet-1)
+ 2. [Payload Structures](#payload-structures)
+  1. [Payload](#payload)
+  2. [TransitPayload](#transitpayload)
+  3. [LocalPayload](#localpayload)
+  4. [PayloadIdentity](#payloadidentity)
+  5. [Journal](#journal)
+   1. [PayloadAbstractJournalEntry](#payloadabstractjournalentry)
+   2. [PayloadTransitJournalEntry](#payloadtransitjournalentry)
+   3. [PayloadLocalJournalEntry](#payloadlocaljournalentry)
+  6. [Attributes](#attributes)
+   1. [PayloadAbstractAttributes](#payloadabstractattributes)
+   2. [PayloadTransitAttributes](#payloadtransitattributes)
+   3. [PayloadLocalAttributes](#payloadlocalattributes)
+4. [External Interfaces](#external-interfaces) *(deprecated)*
+5. [Internal Routines](#internal-routines) *(deprecated)*
 
 # Introduction
 
@@ -475,7 +528,7 @@ The `OutletIdentity` may also include a `manage` property. If it contains a `man
 
 An `Outlet` may not contain an `in` object.
 
-## Payload
+## Payload Structures
 
 A payload represents a URI and associated metadata, and it is the fundamental unit accepted, presented and shared by a peer.
 
@@ -789,7 +842,7 @@ This section is intended as an non-normative example of how the `use` attribute 
 
 Examples in this section use the local human-readable form of attribute names; an equivalent UUID machine-readable form would also need to be defined for an implementing module.
 
-##### Example: Common Website Properties
+###### Example: Common Website Properties
 
 Some common properties for the `payload.attributes.use` object include:
 
