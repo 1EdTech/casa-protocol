@@ -761,7 +761,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{53.835875393880386, 10.000000670200766}, {319, 72}}</string>
+			<string>{{53.835875393880386, 10.000000670200766}, {257, 72}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -804,7 +804,7 @@
 
 \f0\b\fs72 \cf0 CASA Protocol\
 
-\fs48 Architecture Diagram 1.0-03}</string>
+\fs48 Architecture Diagram}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
 			</dict>
@@ -3480,8 +3480,8 @@
 			<real>-1</real>
 			<key>Points</key>
 			<array>
-				<string>{669.38294971491973, 430.94587333886147}</string>
-				<string>{739.49999225679267, 430.94593016075675}</string>
+				<string>{669.38294971491734, 430.94585709575182}</string>
+				<string>{739.49999225642921, 430.94585709575182}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3845,7 +3845,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2013-10-03 17:12:48 +0000</string>
+	<string>2013-10-06 00:45:33 +0000</string>
 	<key>Modifier</key>
 	<string>Eric Bollens</string>
 	<key>NotesVisible</key>
@@ -3881,7 +3881,7 @@
 		<key>NSPaperSize</key>
 		<array>
 			<string>size</string>
-			<string>{792, 612}</string>
+			<string>{792, 611.99997901916504}</string>
 		</array>
 		<key>NSPrintReverseOrientation</key>
 		<array>
