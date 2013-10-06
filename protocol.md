@@ -65,8 +65,6 @@ Satisfaction of this use case requires that authorization may be specified such 
 
 ## Terminology
 
-### General
-
 The key words **must**, **must not**, **required**, **shall**, **shall not**, **should**, **should not**, **recommended**, **may**, and **optional** in this document are to be interpreted as described by [RFC 2119](http://tools.ietf.org/rfc/rfc2119.txt) ["Key words for use in RFCs to Indicate Requirement Levels"].
 
 The key word **UUID** (alternatively: **Universally Unique IDentifier**, **Globally Unique IDentifier**, **UUID** or **uuid**) in this document is to be interpreted as described by [RFC 4122](http://tools.ietf.org/rfc/rfc4122.txt) ["A Universally Unique IDentifier (UUID) URN Namespace"].
@@ -93,82 +91,85 @@ The key word **object** in this document is to be interpreted as an unordered da
 
 The key word **timestamp** in this document is to be interpreted as a string written in the format of [RFC 3339](http://tools.ietf.org/html/rfc3339) ["Date and Time on the Internet: Timestamps"].
 
-The key word **wildcard mask** (alternatively: **mask**) in this document is to be interpreted as the binary inverse of the key word "network mask" as described by [RFC 4632](http://tools.ietf.org/rfc/rfc4632.txt) ["Classless Inter-domain Routing (CIDR)"].
+The key word **idempotent** in this document is to be interpreted as defined by [RFC 2616](http://tools.ietf.org/rfc/rfc2616.txt) ["Hypertext Transfer Protocol -- HTTP/1.1"]. 
 
+The key word **wildcard mask** (alternatively: **mask**) in this document is to be interpreted as the binary inverse of the key word "network mask" as described by [RFC 4632](http://tools.ietf.org/rfc/rfc4632.txt) ["Classless Inter-domain Routing (CIDR)"].
 
 The key word **JavaScript Object Notation** (alternatively: **JSON**) in this document is to be interpreted as the data format described by [RFC 4627](http://tools.ietf.org/rfc/rfc4627.txt) ["The application/json Media Type for JavaScript Object Notation (JSON)"].
 
 The key word **JSON Schema** in this document is to be interpreted as a JSON format defined by the [json-schema-core](http://json-schema.org/latest/json-schema-core.html) ["JSON Schema: core definitions and terminology"] and [json-schema-validation](http://json-schema.org/latest/json-schema-validation.html) ["JSON Schema: interactive and non interactive validation"] specifications.
 
-### Constituents
+## Constituents
 
-#### Engine
+### Engine
 
 The `Engine` is a storage, querying and distribution routine that logically represents a node. 
 
 The engine is responsible for:
 
 1. Persistent storage of the node's relative ecosystem.
-2. RESTful interfaces for managing payloads in the node's relative ecosystem.
-3. RESTful interfaces for `AdjOutPeer` to query payloads from the node's relative ecosystem.
-4. Scheduled job to query `AdjInPeer` RESTful interfaces to update the node's relative ecosystem.
+2. Implementation of the protocol's operations and structures.
+3. RESTful interfaces for managing payloads in the node's relative ecosystem.
+4. RESTful interfaces for `AdjOutPeer` to query payloads from the node's relative ecosystem.
+5. Scheduled job to query `AdjInPeer` RESTful interfaces to update the node's relative ecosystem.
 
-#### AdjInPeer
+### AdjInPeer
 
 An `AdjInPeer` is a peer that the `Engine` queries for payloads.
 
-Payloads from an `AdjInPeer` are (1) translated to human-readable attributes by `AdjInTranslate`, (2) processed through `AdjInFilter` and (3) stored within the `AdjIn` structure. From there, the flow splits through (1) `AdjInTransform` to `Local` for dissemination to outlets and (2) `AdjOutTransform` to `AdjOut` for dissemination to `AdjOutPeer` nodes.
+Payloads from an `AdjInPeer` are (1) translated to human-readable attributes by `AdjInTranslate`, (2) computed by taking the original attributes and applying the journal via `AdjInSquash`, (3) processed through `AdjInFilter` and (4) stored within the `AdjIn` structure. From there, the flow splits through (1) `AdjInTransform` to `Local` for dissemination to outlets and (2) `AdjOutTransform` to `AdjOut` for dissemination to `AdjOutPeer` nodes.
 
-#### AdjOutPeer
+### AdjOutPeer
 
 An `AdjOutPeer` is a peer that the `Engine` allows to query it for payloads, both (1) that originate from the node and are flagged to be shared and (2) that originated from one of node's peers and were flagged to be propagated.
 
 Payloads delivered to `AdjOutPeer` nodes begin at `AdjIn` for propagated URIs and `Local` for originated URIs. In both cases, payloads pass through `AdjOutTransform` before arriving at `AdjOut`. From `AdjOut`, payloads are then (1) processed by `AdjOutFilter`, (2) translated to machine-readable attributes by `AdjOutTranslate` and (3) delivered via HTTP response to the requesting `AdjOutPeer`.
 
-#### Outlet
+### Outlet
 
-An outlet is an interface that delivers information based on the `Local` structure, represented as either:
+An outlet is an interface that accesses the local representation of a payload, namely a payload's identity and attributes. 
 
-* `ManagerOutlet` used to manage payloads, filters and transforms within the `Engine`.
-* `LocalOutlet` used as a configurable portal such as a tool launcher or mobile dashboard.
+If an outlet is designated as a manager, it additionally gains read access to the payload's original attributes and journal; further, it may also payloads stored in `Local` to influence how other outlets perceive the payload and, optionally, those stored in `AdjOut` to influence how `AdjOutPeer` nodes perceive the payload. Modifications to payloads must be both written to the `attributes` property of the payload and entered into the `journal` section of the payload.
 
-Outlets derive their data from the `Local` structure, which includes payloads both originated at the node and retrieved from elsewhere in the network.
+## Operations
 
-### Operations
-
-#### AdjInTranslate
-
-When a payload is received, the first step that must occur is translation of attributes from machine-readable attribute UUIDs to human-readable names configured by the peer. If there is no mapping for a machine-readable attribute UUID, it should not be affected by this process.
+### AdjInTranslate
 
 While machine-readable names avoid namespace conflicts in the peer-to-peer communication layer, it is more convenient to treat attributes by their human-readable names within a node and its outlets.
 
-#### AdjInSquash
+When a payload is received, the first operation that must occur is translation of `use` and `require` attributes from machine-readable attribute UUIDs to human-readable names configured by the peer. This translation should occur for all recognized keys of the `use` and `require` structures of the `original` property and all recognized keys of the `use` and `require` structures of all entries within the `journal`. A recognized key is defined as one where the `Engine` has a module that has registered the mapping. If there is no mapping for a machine-readable attribute UUID, the key should be ignored.
 
-After a payload is translated by `AdjInTranslate` but before it is filtered by `AdjInFilter`, this phase sets up the `attributes` section by copying the `original` section and then walking through the elements in the `journal` sequentially and replacing attributes specified in each record. 
+### AdjInSquash
 
-Additional logic is allowed within this phase, such as for conflict resolution between the journal and a previously witnessed journal, so long as it produces an idempotent `attributes` section if `AdjInSquash` is applied multiple times on the same received payload without other versions of the journal being introduced as well.
+Payloads arriving from `AdjInPeer` queries include `identity`, `original` and (optionally) `journal` properties; however, they do not actually include an `attributes` section.
 
-#### AdjInFilter
+After a payload is translated by `AdjInTranslate` but before it is filtered by `AdjInFilter`, this operation sets up the `attributes` section by copying the `original` section and then walking through the elements in the `journal` sequentially and replacing attributes specified in each record. 
 
-Once a payload has been translated and squashed, this phase drops payloads with attributes that do not meet configured constraints. This operation should be used to drop payloads that have requisites an organization does not support, and may also be used to drop applications that lack attributes an organization requires.
+The mechanism for processing the journal may be configured by the module that recognizes the attribute or by custom rules within the engine. This allows for conflict resolution between the journal and a previously witnessed journal, so long as it produces an idempotent `attributes` section if `AdjInSquash` is applied multiple times on the same received payload without other versions of the journal being introduced.
+
+### AdjInFilter
+
+Once a payload has been translated and squashed, this operation drops payloads with `use` and `require` properties under the payload's `attributes` property that do not meet configured constraints. 
+
+This operation must drop payloads that have `require` properties that the engine does not support, such as those that it did not recognize during `AdjInTranslate`. Additionally, it must drop payloads with `require` properties that fail when evaluated by the supporting module. Finally, this operation may also be configured to impose additional constraints.
 
 If a payload meets the `AdjInFilter` constraints, it shall be entered into `AdjIn`.
 
-#### AdjInTransform
+### AdjInTransform
 
-After a payload is written to `AdjIn`, it forks along a data path that takes it to `Local`. Before reaching `Local`, payloads must first pass through `AdjInTransform`. 
+After a payload is written to `AdjIn`, it forks along a data path that takes it to `Local`. Before reaching `Local`, payloads must first pass through `AdjInTransform`. Changes made through transformation rules within `AdjInTransform` should be made directly against the `attributes` section of the payload, and additionally, they should be written to an entry in the `journal`.
 
 This routine allows a node to curate the way in which payloads are presented to outlets.
 
-#### AdjOutTransform
+### AdjOutTransform
 
 All payloads being delivered to `AdjOut` must first pass through `AdjOutTransform`. 
 
-These payloads originate from one of two locations based on their origin: (1) payloads shared from `AdjInPeer` nodes travel a data path from `AdjIn` and (2) payloads originating at the node travel a data path from `Local`.
+These payloads originate from one of two locations based on their origin: (1) payloads shared from `AdjInPeer` nodes travel a data path from `AdjIn` and (2) payloads originating at the node travel a data path from `Local`. Changes made through transformation rules within `AdjOutTransform` should be made as an entry in the `journal`.
 
 This routine allows a node to curate the way in which payloads are presented to `AdjOutPeer` nodes.
 
-#### AdjOutFilter
+### AdjOutFilter
 
 Payloads from `AdjOut` are dropped if they do not meet the constraints imposed by `AdjOutFilter`. 
 
@@ -176,25 +177,33 @@ These filters are typically used to drop payloads that will not be useful for ot
 
 If a payload meets the `AdjOutFilter` constraints, then it will be provided in the response to queries from `AdjOutPeer` nodes.
 
-#### AdjOutTransform
+### AdjOutTransform
 
-When preparing an HTTP response to an `AdjOutPeer` node, the last step before delivery is passing each payload through `AdjOutTransform`, which maps human-readable names configured by the peer into machine-readable attribute UUIDs. If there is no mapping for a human-readable name, and it is not of UUID form, then it should be discarded during this translation phase. However, if a name is already in UUID form and no mapping exists for it, then it should not be affected by this process.
+When preparing an HTTP response to an `AdjOutPeer` node, the last step before delivery is passing each payload through `AdjOutTransform`, which maps human-readable names configured by the peer into machine-readable attribute UUIDs. This operation affects both the `original` attribute of the payload and all entries in the `journal` attribute of the payload.
+
+If there is no mapping for a human-readable name, and it is not of UUID form, then it should be discarded during this translation phase; however, if a name is already in UUID form and no mapping exists for it, then it should not be affected by this process. Consequently, a regular expression match conforming to RFC 4122 must be used to determine if translation is required on an attribute.
 
 While human-readable names are useful within a node and its outlets, machine-readable names avoid namespace conflicts in the peer-to-peer communication layer. This is particularly true when multiple attributes might be used to achieve functionality that might be given the same name but that has different mechanics.
 
-### Data Structures
+## Persistence
 
-#### AdjIn
+### AdjIn
 
-This structure contains payloads shared from or propagated through an `AdjInPeer` node, after being translated by `AdjInTranslate` and filtered by `AdjInFilter`.
+This structure contains payloads shared from or propagated through an `AdjInPeer` node, after being translated by `AdjInTranslate`, squashed by `AdjInSquash` and filtered by `AdjInFilter`. 
 
-#### Local
+Payloads in `AdjIn` are of the `Payload` structure, including the `identity`, `original`, `journal` and `attributes` properties. If a payload's `attributes` structure is unmodified from its `original` structure, then the `journal` may be neglected.
 
-This structure contains payloads that either (1) originate directly from the node or (2) originate from an `AdjInPeer` node and shall have successfully passed through `AdjInTranslate`, `AdjInFilter` and `AdjInTransform`.
+These payloads follow two datapaths: (1) through `AdjInTransform` to `Local` for dissemination to local outlets, and `
 
-#### AdjOut
+### Local
 
-This structure contains payloads that either (1) originate directly from the node and passed through `AdjOutTransform` or (2) were received from an `AdjInPeer` node, are marked for propagation and have passed through `AdjInTranslate`, `AdjInFilter` and `AdjOutTransform`.
+This structure contains payloads that either (1) originate directly from the node or (2) originate from an `AdjInPeer` node and shall have successfully passed through `AdjInTranslate`, `AdjInFilter` and `AdjInTransform`. 
+
+Payloads in `Local` are of the `Payload` structure, including the `identity`, `original`, `journal` and `attributes` properties. If a payload's `attributes` structure is unmodified from its `original` structure, then the `journal` may be neglected.
+
+### AdjOut
+
+This structure contains payloads that either (1) originate directly from the node and passed from `Local` through `AdjOutTransform` or (2) were received from an `AdjInPeer` node, are marked for propagation, were stored in `AdjIn` and have passed through `AdjInTranslate`, `AdjInFilter` and `AdjOutTransform`.
 
 Payloads in this structure may be made available by the `Engine` when queried by an `AdjOutPeer` node, contingent on the fact that payloads made available must first pass through `AdjOutFilter` and `AdjOutTranslate`.
 
