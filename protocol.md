@@ -82,34 +82,34 @@ The motivating use case for this protocol is **web app stores**, such as in the 
 
 Information propagation throughout a network is conventionally handled as either:
 
-* Complete Topology - Nodes in an infrastructure each contact every other node in the infrastructure in order to gain full knowledge of the environment. This approach requires `0.5*N*(N-1)` edges for `N` nodes, thus imposing a high control overhead to retain an accurate perception of the ecosystem.
-* Star Topology - Nodes in an infrastructure each contact one central node to share their knowledge and collect knowledge from others. This approach requires a homogeneous world view and centralized trust, as well as placing significant load and responsibility upon the hub node.
+* Complete Topology - Nodes in an infrastructure each contact every other node in the infrastructure in order to gain full knowledge of the environment. This approach requires `0.5*N*(N-1)` edges for `N` nodes, thus imposing high control overhead to retain accurate knowledge of the ecosystem.
+* Star Topology - Nodes in an infrastructure each contact one central node to share their knowledge and collect knowledge from others. This approach requires a homogeneous world view and centralized trust, and it places significant load and responsibility upon the central aggregator.
 
-Neither of these implementations adequately model the real world. Traditionally, web portals have built their ecosystem by directly contacting peers they trust and sharing apps among themselves. They neither have global knowledge nor resources to maintain a fully-connected mesh with all other peers in the network, nor will consensus ever be achieved to appoint a central hub.
+Neither of these approaches adequately model the real world. Traditionally, web portals build their ecosystem by directly contacting trusted peers, learning about apps they offer and apps about which they know. In such a scenario, neither global knowledge nor a fully-connected mesh are viable, nor will consensus ever be achieved for a central hub.
 
 ## Solution
 
-This protocol describes an approach that treats each organization in the network as an autonomous system. Under this scheme, each organization is responsible for defining its own peer trust, acceptance and sharing policies.
+This protocol describes an alternative that treats each organization in the network as an autonomous system, whereby each autonomous system: (1) defines its own peer trust, acceptance and sharing policies; (2) queries neighboring peers and processes peer responses; (3) responds to neighboring peers when queries; and (4) produces a storefront for interaction with its own end users.
 
 Each organization shall define its inbound and outbound peers:
 
-* An inbound peer is a peer from which the node is willing to accept URI information; in order to know where to pull information from, an inbound peer is defined explicitly by hostname. 
-* An outbound peer is a peer to which the peer is willing to share URI information; an outbound peer may be configured as a remote address, or as a remote address and a wildcard mask, allowing for broad sharing policies to be implemented.
+* `AdjInPeer` - An inbound peer from which the node is willing to accept information; in order to know where to pull information from, an inbound peer is defined explicitly by hostname. 
+* `AdjOutPeer` - An outbound peer to which the peer is willing to share information; an outbound peer may be configured as a remote address, or as a remote address and a wildcard mask, allowing for broad sharing policies to be implemented.
 
 While an organization may both accept from and share with a peer, this symmetry is not required. Further, when accepting applications from a peer, an organization may choose to accept only those that originate with the peer, or it may additionally accept applications that were shared with and propagated through the peer.
 
 To facilitate a relatively automated process of propagation, each organization may define filters and transformations for both inbound and outbound data:
 
-* Inbound filters may be used to drop URIs that are not suited for the organization's ecosystem.
-* Inbound transformations allow an organization to curate URI metadata it accepts into its ecosystem.
+* Inbound filters may be used to drop payloads that are not suited for the organization's ecosystem.
+* Inbound transformations allow an organization to curate information it accepts into its ecosystem.
 * Outbound transformations are used to alter data when providing it out to other organizations.
-* Outbound filters allow one to set rules that prevent sharing URIs not intended for peers.
+* Outbound filters maybe be used to prevent sharing payloads not intended for peers.
 
 ## Use Cases
 
 #### Mobile Dashboard
 
-Many organizations with mobile web apps arrange them in a dashboard. In some cases, they make this dashboard configurable and seek out apps from peers. Further, they may choose to share their own apps with these or other peers.  For example take the case of the UC System, where a campus may have both location specific mobile web apps, as well as academic reference apps that can be shared.  An example of a mobile web app that can be referenced and shared as a resource is an organic chemistry glossary, where the glossary itself is a growing body of work.
+Many organizations with mobile web apps arrange them in a dashboard. In some cases, they make this dashboard configurable and seek out apps from peers. Further, they may choose to share their own apps with these or other peers.  For example, take the case of the UC System, where a campus may have both location-specific mobile web apps, as well as academic reference apps that can be shared.  An example of a mobile web app that can be referenced and shared as a resource is an organic chemistry glossary, where the glossary itself is a growing body of work.
 
 Satisfaction of this use case requires that (1) the heterogeneous and asymmetric peering relationships must be satisfied and (2) it must be possible to filter URIs based on whether or not they provide a mobile view to content.
 
