@@ -293,7 +293,7 @@ When a payload arrives at the border from an `AdjInPeer`, it is mapped to a huma
 
 ## Node Structures
 
-A node structures JSON Schema is available under [schema/node.json](schema/node.json).
+A node structures JSON Schema is available under see [schema.json](schema.json).
 
 ### Node
 
@@ -329,7 +329,7 @@ All `Node` objects may define a `secret` property. If the secret property is set
 
 The `AdjInPeer` object extends the `Node` object, specifying a peer that the `Engine` may query to retrieve payloads. In addition to the inherited properties of `Node`, an `AdjInPeer` object includes an additional `AdjInPeerIdentity` object under the key `in`.
 
-The JSON Schema for `AdjInPeerIdentity` (see [schema/node.json](schema/node.json)):
+The JSON Schema for `AdjInPeerIdentity` (see see [schema.json](schema.json)):
 
 ```json
 {
@@ -344,7 +344,7 @@ The JSON Schema for `AdjInPeerIdentity` (see [schema/node.json](schema/node.json
 }
 ```
 
-The JSON Schema for `AdjInPeer` (see [schema/node.json](schema/node.json)):
+The JSON Schema for `AdjInPeer` (see see [schema.json](schema.json)):
 
 ```json
 {
@@ -384,7 +384,7 @@ The `in` object may be set in concurrence with an `out` property containing an `
 
 The `AdjOutPeer` object extends the `Node` object, specifying a peer to which the `Engine` will respond with a set of payloads from `AdjOut` when queried by a node with a matching `AdjOutPeerIdentity`. In addition to the inherited properties of `Node`, an `AdjOutPeer` object includes an additional `AdjOutPeerIdentity` object under the key `out`.
 
-The JSON Schema for `AdjOutPeerIdentity` (see [schema/node.json](schema/node.json)):
+The JSON Schema for `AdjOutPeerIdentity` (see see [schema.json](schema.json)):
 
 ```json
 {
@@ -398,7 +398,7 @@ The JSON Schema for `AdjOutPeerIdentity` (see [schema/node.json](schema/node.jso
 }
 ```
 
-The JSON Schema for `AdjOutPeer` (see [schema/node.json](schema/node.json)):
+The JSON Schema for `AdjOutPeer` (see see [schema.json](schema.json)):
 
 ```json
 {
@@ -440,7 +440,7 @@ The `out` object may be set in concurrence with an `in` property containing an `
 
 The `AdjInOutPeer` object extends the `Node` object, specifying a peer that the `Engine` may query to retrieve payloads and to which the `Engine` will respond with a set of payloads from `AdjOut` when queried by a node with a matching `AdjOutPeerIdentity`. In addition to the inherited properties of `Node`, an `AdjInOutPeer` object must include an additional `AdjInPeerIdentity` under the key `in` and an `AdjOutPeerIdentity` under the key `out`.
 
-The JSON Schema for `AdjInOutPeer` (see [schema/node.json](schema/node.json)):
+The JSON Schema for `AdjInOutPeer` (see see [schema.json](schema.json)):
 
 ```json
 {
@@ -479,7 +479,7 @@ An example of an `AdjOutPeer` structure:
 
 The `Outlet` object extends the `Node` object, specifying a peer to which the `Engine` will return a set of payloads from `Local`. In addition to the inherited properties of `Node`, an `Outlet` object includes an additional `OutletIdentity` object under the key `out`.
 
-The JSON Schema for `OutletIdentity` (see [schema/node.json](schema/node.json)):
+The JSON Schema for `OutletIdentity` (see see [schema.json](schema.json)):
 
 ```json
 {
@@ -495,7 +495,7 @@ The JSON Schema for `OutletIdentity` (see [schema/node.json](schema/node.json)):
 }
 ```
 
-The JSON Schema for `Outlet` (see [schema/node.json](schema/node.json)):
+The JSON Schema for `Outlet` (see see [schema.json](schema.json)):
 
 ```json
 {
@@ -542,7 +542,7 @@ A payload represents a URI and associated metadata, and it is the fundamental un
 
 The `Payload` object is the complete representation of a payload that a node maintains internally. It should be returned to `Outlets` with the `manage` flag set.
 
-The JSON Schema for `Payload` (see [schema/payload.json](schema/payload.json)):
+The JSON Schema for `Payload` (see [schema.json](schema.json)):
 
 ```json
 {
@@ -569,7 +569,7 @@ A `TransitPayload`:
 
 As opposed to a `LocalPayload`, the `TransitPayload` should not include an `attributes` property containing a `PayloadAttributes` object, as the `attributes` property is computed by way of the `AdjInSquash` operation upon arrival. If a received `TransitPayload` includes an `attributes` property, that property should be discarded and a new version should be computed by way of `AdjInSquash`.
 
-The JSON Schema for `TransitPayload` (see [schema/payload.json](schema/payload.json)):
+The JSON Schema for `TransitPayload` (see [schema.json](schema.json)):
 
 ```json
 {
@@ -592,7 +592,7 @@ A `LocalPayload`:
 * must include an `identity` property containing a `PayloadIdentity` object
 * must include an `attributes` property containing a `PayloadLocalAttributes` object
 
-The JSON Schema for `LocalPayload` (see [schema/payload.json](schema/payload.json)):
+The JSON Schema for `LocalPayload` (see [schema.json](schema.json)):
 
 ```json
 {
@@ -609,7 +609,7 @@ The JSON Schema for `LocalPayload` (see [schema/payload.json](schema/payload.jso
 
 The `PayloadIdentity` object is represented under the `identity` property of all `Payload`, `TransitPayload` and `LocalPayload` objects. It is a globally unique compound key that denotes the logical entity to which a payload pertains. This allows an originator to safely update any property in a payload message, so long as the `identity` is retained.
 
-The JSON Schema for `PayloadIdentity` (see [schema/payload.json](schema/payload.json)):
+The JSON Schema for `PayloadIdentity` (see [schema.json](schema.json)):
 
 ```json
 {
@@ -640,7 +640,7 @@ The journal property may exist for any payload that has been transmuted by the l
 
 The `PayloadAbstractJournalEntry` object is an abstract object that defines common attributes shared between the `PayloadTransitJournalEntry` and `PayloadLocalJournalEntry`. Its properties are also required by the `PayloadAbstractAttributes` object, and thus by `PayloadTransitAttributes` and `PayloadLocalAttributes`.
 
-The JSON Schema for `PayloadAbstractJournalEntry` (see [schema/payload.json](schema/payload.json)):
+The JSON Schema for `PayloadAbstractJournalEntry` (see [schema.json](schema.json)):
 
 ```json
 {
@@ -662,7 +662,7 @@ The `PayloadTransitJournalEntry` object is composed of the properties from `Payl
 
 For the properties within the `use` and `require` objects, each UUID corresponds to a module that exists on some node along the payload's path from its originator. This structure is used when receiving a `TransitPayload` from an `AdjInPeer` and when sending a `TransitPayload` to an `AdjOutPeer`; however, internally within engine rules (like filters and transformations), as well as when communicating with `Outlets`, the `PayloadLocalAttributes` structure should be used instead.
 
-The JSON Schema for `PayloadTransitJournalEntry` (see [schema/payload.json](schema/payload.json)):
+The JSON Schema for `PayloadTransitJournalEntry` (see [schema.json](schema.json)):
 
 ```json
 {
@@ -700,7 +700,7 @@ The `PayloadLocalJournalEntry` object is composed of the properties from `Payloa
 
 For the properties within the `use` and `require` objects, each key is determine by way of translation from UUID to human-readable names based on a mapping local to the node. This structure is used internally within engine rules (like filters and transformations), as well as when communicated to `Outlets`; however, it should never be conveyed to an `AdjOutPeer`, and the `Attributes` object should be used in such cases.
 
-The JSON Schema for `PayloadLocalJournalEntry` (see [schema/payload.json](schema/payload.json)):
+The JSON Schema for `PayloadLocalJournalEntry` (see [schema.json](schema.json)):
 
 ```json
 {
@@ -747,7 +747,7 @@ The `attributes` property exists for any `Payload` delivered to an `Outlet`, eit
 
 The `PayloadAbstractAttributes` object is an abstract object that defines common attributes shared between `PayloadTransitAttributes` and `PayloadLocalAttributes`. It requires the properties of `PayloadAbstractJournalEntry`, plus the `uri`, `share` and `propagate` properties.
 
-The JSON Schema for `PayloadAbstractAttributes` (see [schema/payload.json](schema/payload.json)):
+The JSON Schema for `PayloadAbstractAttributes` (see [schema.json](schema.json)):
 
 ```json
 {
@@ -774,7 +774,7 @@ The `PayloadTransitAttributes` object is composed of the properties from `Payloa
 
 For the properties within the `use` and `require` objects, each UUID corresponds to a module that exists on some node along the payload's path from its originator. This structure is used only for the `original` property when receiving a `TransitPayload` from an `AdjInPeer` and when sending a `TransitPayload` to an `AdjOutPeer`; it is not used for an `attributes` property, as a `TransitPayload` should not include an attributes section.
 
-The JSON Schema for `PayloadTransitAttributes` (see [schema/payload.json](schema/payload.json)):
+The JSON Schema for `PayloadTransitAttributes` (see [schema.json](schema.json)):
 
 ```json
 {
@@ -812,7 +812,7 @@ The `PayloadLocalAttributes` object is composed of the properties from `PayloadA
 
 For the properties within the `use` and `require` objects, each key is determine by way of translation from UUID to human-readable names based on a mapping local to the node. This structure is used internally within engine rules (like filters and transformations), as well as when communicated to `Outlets`; however, it should never be conveyed to an `AdjOutPeer`, and the `Attributes` object should be used in such cases.
 
-The JSON Schema for `PayloadLocalAttributes` (see [schema/payload.json](schema/payload.json)):
+The JSON Schema for `PayloadLocalAttributes` (see [schema.json](schema.json)):
 
 ```json
 {
