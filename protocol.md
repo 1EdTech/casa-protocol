@@ -303,12 +303,19 @@ The JSON Schema for `Node`:
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" },
-    "secret": { "type": "string" }
+  "title":"Node",
+  "type":"object",
+  "properties":{
+    "name":{
+      "type":"string"
+    },
+    "secret":{
+      "type":"string"
+    }
   },
-  "required": [ "name" ]
+  "required":[
+    "name"
+  ]
 }
 ```
 
@@ -333,14 +340,30 @@ The JSON Schema for `AdjInPeerIdentity` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "hostname": { "type": "string" },
-    "scheme": { "type": "string", "default": "https" },
-    "path": { "type": "string", "default": "/" },
-    "port": { "type": "integer", "default": 443, "minimum": 0, "maximum": 65535 }
+  "title":"AdjInPeerIdentity",
+  "type":"object",
+  "properties":{
+    "hostname":{
+      "type":"string"
+    },
+    "scheme":{
+      "type":"string",
+      "default":"https"
+    },
+    "path":{
+      "type":"string",
+      "default":"/"
+    },
+    "port":{
+      "type":"integer",
+      "default":443,
+      "minimum":1,
+      "maximum":65535
+    }
   },
-  "required": [ "hostname" ]
+  "required":[
+    "hostname"
+  ]
 }
 ```
 
@@ -348,12 +371,46 @@ The JSON Schema for `AdjInPeer` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "in": { "$ref": "#/definitions/AdjInPeerIdentity" }
+  "title":"AdjInPeer",
+  "type":"object",
+  "properties":{
+    "name":{
+      "type":"string"
+    },
+    "secret":{
+      "type":"string"
+    },
+    "in":{
+      "title":"AdjInPeerIdentity",
+      "type":"object",
+      "properties":{
+        "hostname":{
+          "type":"string"
+        },
+        "scheme":{
+          "type":"string",
+          "default":"https"
+        },
+        "path":{
+          "type":"string",
+          "default":"/"
+        },
+        "port":{
+          "type":"integer",
+          "default":443,
+          "minimum":1,
+          "maximum":65535
+        }
+      },
+      "required":[
+        "hostname"
+      ]
+    }
   },
-  "additionalProperties": { "$ref": "#/definitions/Node" },
-  "required": [ "name", "in" ]
+  "required":[
+    "name",
+    "in"
+  ]
 }
 ```
 
@@ -388,13 +445,30 @@ The JSON Schema for `AdjOutPeerIdentity` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "address": { "type": "string" },
-    "mask": { "type": "string" },
-    "local": { "type": "boolean", "anyOf": [ false ], "default": false }
+  "title":"AdjOutPeerIdentity",
+  "type":"object",
+  "properties":{
+    "address":{
+      "type":"string"
+    },
+    "mask":{
+      "type":"string"
+    },
+    "local":{
+      "type":"boolean",
+      "anyOf":[
+        {
+          "enum":[
+            false
+          ]
+        }
+      ],
+      "default":false
+    }
   },
-  "required": [ "local" ]
+  "required":[
+    "local"
+  ]
 }
 ```
 
@@ -402,12 +476,46 @@ The JSON Schema for `AdjOutPeer` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "out": { "$ref": "#/definitions/AdjOutPeerIdentity" }
+  "title":"AdjOutPeer",
+  "type":"object",
+  "properties":{
+    "name":{
+      "type":"string"
+    },
+    "secret":{
+      "type":"string"
+    },
+    "out":{
+      "title":"AdjOutPeerIdentity",
+      "type":"object",
+      "properties":{
+        "address":{
+          "type":"string"
+        },
+        "mask":{
+          "type":"string"
+        },
+        "local":{
+          "type":"boolean",
+          "anyOf":[
+            {
+              "enum":[
+                false
+              ]
+            }
+          ],
+          "default":false
+        }
+      },
+      "required":[
+        "local"
+      ]
+    }
   },
-  "additionalProperties": { "$ref": "#/definitions/Node" },
-  "required": [ "name", "out" ]
+  "required":[
+    "name",
+    "out"
+  ]
 }
 ```
 
@@ -444,13 +552,73 @@ The JSON Schema for `AdjInOutPeer` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "in": { "$ref": "#/definitions/AdjInPeerIdentity" },
-    "out": { "$ref": "#/definitions/AdjOutPeerIdentity" }
+  "title":"AdjInOutPeer",
+  "type":"object",
+  "properties":{
+    "name":{
+      "type":"string"
+    },
+    "secret":{
+      "type":"string"
+    },
+    "in":{
+      "title":"AdjInPeerIdentity",
+      "type":"object",
+      "properties":{
+        "hostname":{
+          "type":"string"
+        },
+        "scheme":{
+          "type":"string",
+          "default":"https"
+        },
+        "path":{
+          "type":"string",
+          "default":"/"
+        },
+        "port":{
+          "type":"integer",
+          "default":443,
+          "minimum":1,
+          "maximum":65535
+        }
+      },
+      "required":[
+        "hostname"
+      ]
+    },
+    "out":{
+      "title":"AdjOutPeerIdentity",
+      "type":"object",
+      "properties":{
+        "address":{
+          "type":"string"
+        },
+        "mask":{
+          "type":"string"
+        },
+        "local":{
+          "type":"boolean",
+          "anyOf":[
+            {
+              "enum":[
+                false
+              ]
+            }
+          ],
+          "default":false
+        }
+      },
+      "required":[
+        "local"
+      ]
+    }
   },
-  "additionalProperties": { "$ref": "#/definitions/Node" },
-  "required": [ "name", "in", "out" ]
+  "required":[
+    "name",
+    "in",
+    "out"
+  ]
 }
 ```
 
@@ -483,15 +651,34 @@ The JSON Schema for `OutletIdentity` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "title": "OutletIdentity",
-  "type": "object",
-  "properties": {
-    "address": { "type": "string" },
-    "mask": { "type": "string" },
-    "local": { "type": "boolean", "anyOf": [ true ], "default": true },
-    "manage": { "type": "boolean", "default": false }
+  "title":"OutletIdentity",
+  "type":"object",
+  "properties":{
+    "address":{
+      "type":"string"
+    },
+    "mask":{
+      "type":"string"
+    },
+    "local":{
+      "type":"boolean",
+      "anyOf":[
+        {
+          "enum":[
+            true
+          ]
+        }
+      ],
+      "default":true
+    },
+    "manage":{
+      "type":"boolean",
+      "default":false
+    }
   },
-  "required": [ "local" ]
+  "required":[
+    "local"
+  ]
 }
 ```
 
@@ -499,12 +686,50 @@ The JSON Schema for `Outlet` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "out": { "$ref": "#/definitions/OutletIdentity" }
+  "title":"Outlet",
+  "type":"object",
+  "properties":{
+    "name":{
+      "type":"string"
+    },
+    "secret":{
+      "type":"string"
+    },
+    "out":{
+      "title":"OutletIdentity",
+      "type":"object",
+      "properties":{
+        "address":{
+          "type":"string"
+        },
+        "mask":{
+          "type":"string"
+        },
+        "local":{
+          "type":"boolean",
+          "anyOf":[
+            {
+              "enum":[
+                true
+              ]
+            }
+          ],
+          "default":true
+        },
+        "manage":{
+          "type":"boolean",
+          "default":false
+        }
+      },
+      "required":[
+        "local"
+      ]
+    }
   },
-  "additionalProperties": { "$ref": "#/definitions/Node" },
-  "required": [ "name", "out" ]
+  "required":[
+    "name",
+    "out"
+  ]
 }
 ```
 
@@ -546,14 +771,155 @@ The JSON Schema for `Payload` (see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "identity": { "$ref": "#/definitions/PayloadIdentity" },
-    "original": { "$ref": "#/definitions/PayloadLocalAttributes" },
-    "journal": { "type": "array", "items": { "$ref": "#/definitions/PayloadLocalJournalEntry" } },
-    "attributes": { "$ref": "#/definitions/PayloadLocalAttributes" }
+  "title":"Payload",
+  "type":"object",
+  "properties":{
+    "identity":{
+      "title":"PayloadIdentity",
+      "type":"object",
+      "properties":{
+        "id":{
+          "type":"string"
+        },
+        "originator":{
+          "type":"string",
+          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+      },
+      "required":[
+        "id",
+        "originator"
+      ]
+    },
+    "original":{
+      "title":"PayloadLocalAttributes",
+      "type":"object",
+      "properties":{
+        "originator":{
+          "type":"string",
+          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "timestamp":{
+          "type":"string",
+          "format":"date-time"
+        },
+        "uri":{
+          "type":"string",
+          "format":"uri"
+        },
+        "share":{
+          "type":"boolean",
+          "default":true
+        },
+        "propagate":{
+          "type":"boolean",
+          "default":true
+        },
+        "use":{
+          "type":"object",
+          "default":{
+
+          }
+        },
+        "require":{
+          "type":"object",
+          "default":{
+
+          }
+        }
+      },
+      "required":[
+        "originator",
+        "timestamp",
+        "uri",
+        "share",
+        "propagate"
+      ]
+    },
+    "journal":{
+      "type":"array",
+      "items":{
+        "title":"PayloadLocalJournalEntry",
+        "type":"object",
+        "properties":{
+          "originator":{
+            "type":"string",
+            "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "timestamp":{
+            "type":"string",
+            "format":"date-time"
+          },
+          "use":{
+            "type":"object",
+            "default":{
+
+            }
+          },
+          "require":{
+            "type":"object",
+            "default":{
+
+            }
+          }
+        },
+        "required":[
+          "originator",
+          "timestamp"
+        ]
+      }
+    },
+    "attributes":{
+      "title":"PayloadLocalAttributes",
+      "type":"object",
+      "properties":{
+        "originator":{
+          "type":"string",
+          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "timestamp":{
+          "type":"string",
+          "format":"date-time"
+        },
+        "uri":{
+          "type":"string",
+          "format":"uri"
+        },
+        "share":{
+          "type":"boolean",
+          "default":true
+        },
+        "propagate":{
+          "type":"boolean",
+          "default":true
+        },
+        "use":{
+          "type":"object",
+          "default":{
+
+          }
+        },
+        "require":{
+          "type":"object",
+          "default":{
+
+          }
+        }
+      },
+      "required":[
+        "originator",
+        "timestamp",
+        "uri",
+        "share",
+        "propagate"
+      ]
+    }
   },
-  "required": [ "identity", "original", "attributes" ]
+  "required":[
+    "identity",
+    "original",
+    "attributes"
+  ]
 }
 ```
 
@@ -573,13 +939,165 @@ The JSON Schema for `TransitPayload` (see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "identity": { "$ref": "#/definitions/PayloadIdentity" },
-    "original": { "$ref": "#/definitions/PayloadTransitAttributes" },
-    "journal": { "type": "array", "items": { "$ref": "#/definitions/PayloadTransitJournalEntry" } }
+  "title":"TransitPayload",
+  "type":"object",
+  "properties":{
+    "identity":{
+      "title":"PayloadIdentity",
+      "type":"object",
+      "properties":{
+        "id":{
+          "type":"string"
+        },
+        "originator":{
+          "type":"string",
+          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+      },
+      "required":[
+        "id",
+        "originator"
+      ]
+    },
+    "original":{
+      "title":"PayloadTransitAttributes",
+      "type":"object",
+      "properties":{
+        "originator":{
+          "type":"string",
+          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "timestamp":{
+          "type":"string",
+          "format":"date-time"
+        },
+        "uri":{
+          "type":"string",
+          "format":"uri"
+        },
+        "share":{
+          "type":"boolean",
+          "default":true
+        },
+        "propagate":{
+          "type":"boolean",
+          "default":true
+        },
+        "use":{
+          "type":"object",
+          "patternProperties":{
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
+              "type":[
+                "array",
+                "boolean",
+                "integer",
+                "null",
+                "number",
+                "object",
+                "string"
+              ]
+            }
+          },
+          "additionalProperties":false,
+          "default":{
+
+          }
+        },
+        "require":{
+          "type":"object",
+          "patternProperties":{
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
+              "type":[
+                "array",
+                "boolean",
+                "integer",
+                "null",
+                "number",
+                "object",
+                "string"
+              ]
+            }
+          },
+          "additionalProperties":false,
+          "default":{
+
+          }
+        }
+      },
+      "required":[
+        "originator",
+        "timestamp",
+        "uri",
+        "share",
+        "propagate"
+      ]
+    },
+    "journal":{
+      "type":"array",
+      "items":{
+        "title":"PayloadTransitJournalEntry",
+        "type":"object",
+        "properties":{
+          "originator":{
+            "type":"string",
+            "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "timestamp":{
+            "type":"string",
+            "format":"date-time"
+          },
+          "use":{
+            "type":"object",
+            "patternProperties":{
+              "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
+                "type":[
+                  "array",
+                  "boolean",
+                  "integer",
+                  "null",
+                  "number",
+                  "object",
+                  "string"
+                ]
+              }
+            },
+            "additionalProperties":false,
+            "default":{
+
+            }
+          },
+          "require":{
+            "type":"object",
+            "patternProperties":{
+              "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
+                "type":[
+                  "array",
+                  "boolean",
+                  "integer",
+                  "null",
+                  "number",
+                  "object",
+                  "string"
+                ]
+              }
+            },
+            "additionalProperties":false,
+            "default":{
+
+            }
+          }
+        },
+        "required":[
+          "originator",
+          "timestamp"
+        ]
+      }
+    }
   },
-  "required": [ "identity", "original" ]
+  "required":[
+    "identity",
+    "original"
+  ]
 }
 ```
 
@@ -596,12 +1114,76 @@ The JSON Schema for `LocalPayload` (see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "identity": { "$ref": "#/definitions/PayloadIdentity" },
-    "attributes": { "$ref": "#/definitions/PayloadLocalAttributes" }
+  "title":"LocalPayload",
+  "type":"object",
+  "properties":{
+    "identity":{
+      "title":"PayloadIdentity",
+      "type":"object",
+      "properties":{
+        "id":{
+          "type":"string"
+        },
+        "originator":{
+          "type":"string",
+          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+      },
+      "required":[
+        "id",
+        "originator"
+      ]
+    },
+    "attributes":{
+      "title":"PayloadLocalAttributes",
+      "type":"object",
+      "properties":{
+        "originator":{
+          "type":"string",
+          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "timestamp":{
+          "type":"string",
+          "format":"date-time"
+        },
+        "uri":{
+          "type":"string",
+          "format":"uri"
+        },
+        "share":{
+          "type":"boolean",
+          "default":true
+        },
+        "propagate":{
+          "type":"boolean",
+          "default":true
+        },
+        "use":{
+          "type":"object",
+          "default":{
+
+          }
+        },
+        "require":{
+          "type":"object",
+          "default":{
+
+          }
+        }
+      },
+      "required":[
+        "originator",
+        "timestamp",
+        "uri",
+        "share",
+        "propagate"
+      ]
+    }
   },
-  "required": [ "identity", "attributes" ]
+  "required":[
+    "identity",
+    "attributes"
+  ]
 }
 ```
 
@@ -613,12 +1195,21 @@ The JSON Schema for `PayloadIdentity` (see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "id": { "type": "string" },
-    "originator": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" }
+  "title":"PayloadIdentity",
+  "type":"object",
+  "properties":{
+    "id":{
+      "type":"string"
+    },
+    "originator":{
+      "type":"string",
+      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    }
   },
-  "required": [ "id", "originator" ]
+  "required":[
+    "id",
+    "originator"
+  ]
 }
 ```
 
@@ -644,11 +1235,22 @@ The JSON Schema for `PayloadAbstractJournalEntry` (see [schema.json](schema.json
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "originator": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" },
-    "timestamp": { "type": "string", "format": "date-time" }
-  }
+  "title":"PayloadAbstractJournalEntry",
+  "type":"object",
+  "properties":{
+    "originator":{
+      "type":"string",
+      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "timestamp":{
+      "type":"string",
+      "format":"date-time"
+    }
+  },
+  "required":[
+    "originator",
+    "timestamp"
+  ]
 }
 ```
 
@@ -666,29 +1268,62 @@ The JSON Schema for `PayloadTransitJournalEntry` (see [schema.json](schema.json)
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "use": {
-      "type": "object",
-      "patternProperties": {
-        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" : {
-          "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ]
-        }
-      },
-      "default": {}
+  "title":"PayloadTransitJournalEntry",
+  "type":"object",
+  "properties":{
+    "originator":{
+      "type":"string",
+      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
     },
-    "require": {
-      "type": "object",
-      "patternProperties": {
-        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" : {
-          "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ]
+    "timestamp":{
+      "type":"string",
+      "format":"date-time"
+    },
+    "use":{
+      "type":"object",
+      "patternProperties":{
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
+          "type":[
+            "array",
+            "boolean",
+            "integer",
+            "null",
+            "number",
+            "object",
+            "string"
+          ]
         }
       },
-      "default": {}
+      "additionalProperties":false,
+      "default":{
+
+      }
+    },
+    "require":{
+      "type":"object",
+      "patternProperties":{
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
+          "type":[
+            "array",
+            "boolean",
+            "integer",
+            "null",
+            "number",
+            "object",
+            "string"
+          ]
+        }
+      },
+      "additionalProperties":false,
+      "default":{
+
+      }
     }
   },
-  "additionalProperties": { "$ref": "#/definitions/PayloadAbstractJournalEntry/properties" },
-  "required": [ "originator", "timestamp" ]
+  "required":[
+    "originator",
+    "timestamp"
+  ]
 }
 ```
 
@@ -704,25 +1339,34 @@ The JSON Schema for `PayloadLocalJournalEntry` (see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "use": {
-      "type": "object",
-      "patternProperties": {
-        "." : {  "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ] }
-      },
-      "default": {}
+  "title":"PayloadLocalJournalEntry",
+  "type":"object",
+  "properties":{
+    "originator":{
+      "type":"string",
+      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
     },
-    "require": {
-      "type": "object",
-      "patternProperties": {
-        "." : { "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ] }
-      },
-      "default": {}
+    "timestamp":{
+      "type":"string",
+      "format":"date-time"
+    },
+    "use":{
+      "type":"object",
+      "default":{
+
+      }
+    },
+    "require":{
+      "type":"object",
+      "default":{
+
+      }
     }
   },
-  "additionalProperties": { "$ref": "#/definitions/PayloadAbstractJournalEntry/properties" },
-  "required": [ "uri", "originator", "timestamp", "share", "propagate" ]
+  "required":[
+    "originator",
+    "timestamp"
+  ]
 }
 ```
 
@@ -751,14 +1395,37 @@ The JSON Schema for `PayloadAbstractAttributes` (see [schema.json](schema.json))
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "uri": { "type": "string", "format": "uri" },
-    "share": { "type": "boolean", "default": false },
-    "propagate": { "type": "boolean", "default": false }
+  "title":"PayloadAbstractAttributes",
+  "type":"object",
+  "properties":{
+    "originator":{
+      "type":"string",
+      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "timestamp":{
+      "type":"string",
+      "format":"date-time"
+    },
+    "uri":{
+      "type":"string",
+      "format":"uri"
+    },
+    "share":{
+      "type":"boolean",
+      "default":true
+    },
+    "propagate":{
+      "type":"boolean",
+      "default":true
+    }
   },
-  "additionalProperties": { "$ref": "#/definitions/PayloadAbstractJournalEntry/properties" },
-  "required": ["uri", "originator", "timestamp", "share", "propagate"]
+  "required":[
+    "originator",
+    "timestamp",
+    "uri",
+    "share",
+    "propagate"
+  ]
 }
 ```
 
@@ -778,29 +1445,77 @@ The JSON Schema for `PayloadTransitAttributes` (see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "use": {
-      "type": "object",
-      "patternProperties": {
-        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" : {
-          "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ]
-        }
-      },
-      "default": {}
+  "title":"PayloadTransitAttributes",
+  "type":"object",
+  "properties":{
+    "originator":{
+      "type":"string",
+      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
     },
-    "require": {
-      "type": "object",
-      "patternProperties": {
-        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" : {
-          "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ]
+    "timestamp":{
+      "type":"string",
+      "format":"date-time"
+    },
+    "uri":{
+      "type":"string",
+      "format":"uri"
+    },
+    "share":{
+      "type":"boolean",
+      "default":true
+    },
+    "propagate":{
+      "type":"boolean",
+      "default":true
+    },
+    "use":{
+      "type":"object",
+      "patternProperties":{
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
+          "type":[
+            "array",
+            "boolean",
+            "integer",
+            "null",
+            "number",
+            "object",
+            "string"
+          ]
         }
       },
-      "default": {}
+      "additionalProperties":false,
+      "default":{
+
+      }
+    },
+    "require":{
+      "type":"object",
+      "patternProperties":{
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
+          "type":[
+            "array",
+            "boolean",
+            "integer",
+            "null",
+            "number",
+            "object",
+            "string"
+          ]
+        }
+      },
+      "additionalProperties":false,
+      "default":{
+
+      }
     }
   },
-  "additionalProperties": { "$ref": "#/definitions/PayloadAbstractAttributes/properties" },
-  "required": [ "uri", "originator", "timestamp", "share", "propagate" ]
+  "required":[
+    "originator",
+    "timestamp",
+    "uri",
+    "share",
+    "propagate"
+  ]
 }
 ```
 
@@ -816,25 +1531,49 @@ The JSON Schema for `PayloadLocalAttributes` (see [schema.json](schema.json)):
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "use": {
-      "type": "object",
-      "patternProperties": {
-        "." : {  "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ] }
-      },
-      "default": {}
+  "title":"PayloadLocalAttributes",
+  "type":"object",
+  "properties":{
+    "originator":{
+      "type":"string",
+      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
     },
-    "require": {
-      "type": "object",
-      "patternProperties": {
-        "." : { "type": [ "array", "boolean", "integer", "null", "number", "object", "string" ] }
-      },
-      "default": {}
+    "timestamp":{
+      "type":"string",
+      "format":"date-time"
+    },
+    "uri":{
+      "type":"string",
+      "format":"uri"
+    },
+    "share":{
+      "type":"boolean",
+      "default":true
+    },
+    "propagate":{
+      "type":"boolean",
+      "default":true
+    },
+    "use":{
+      "type":"object",
+      "default":{
+
+      }
+    },
+    "require":{
+      "type":"object",
+      "default":{
+
+      }
     }
   },
-  "additionalProperties": { "$ref": "#/definitions/PayloadAbstractAttributes/properties" },
-  "required": [ "uri", "originator", "timestamp", "share", "propagate" ]
+  "required":[
+    "originator",
+    "timestamp",
+    "uri",
+    "share",
+    "propagate"
+  ]
 }
 ```
 
