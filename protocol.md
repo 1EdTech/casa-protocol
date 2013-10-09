@@ -1682,111 +1682,9 @@ In a similar way, other requirements such as an IMS Learning Tools Interoperabil
 
 **INCOMPLETE** This section is currently a work-in-progress and not yet complete.
 
-## GET /payloads
+## GET /in/filters
 
-Method that aliases based on context:
-
-* If requesting agent is `Outlet`, see [GET /local/payloads](#get-localpayloads)
-* If requesting agent is `AdjOutPeer`, see [GET /out/payloads](#get-outpayloads)
-
-## GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]
-
-Method that aliases based on context:
-
-* If requesting agent is `Outlet`, see [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
-* If requesting agent is `AdjOutPeer`, see [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
-
-## GET /local/payloads
-
-If the requesting agent is an `Outlet`, returns an array of `LocalPayload` objects; otherwise, an error is thrown.
-
-### Request
-
-```
-GET /local/payloads?secret=[secret] HTTP/1.1
-```
-
-### Response
-
-#### 200 Success
-
-```js
-{
-  "type": "array",
-  "items": {
-    "title":"LocalPayload",
-    "type":"object",
-    "properties":{
-      "identity":{
-        "title":"PayloadIdentity",
-        "type":"object",
-        "properties":{
-          "id":{
-            "type":"string"
-          },
-          "originator":{
-            "type":"string",
-            "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-          }
-        },
-        "required":[
-          "id",
-          "originator"
-        ]
-      },
-      "attributes":{
-        "title":"PayloadLocalAttributes",
-        "type":"object",
-        "properties":{
-          "originator":{
-            "type":"string",
-            "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-          },
-          "timestamp":{
-            "type":"string",
-            "format":"date-time"
-          },
-          "uri":{
-            "type":"string",
-            "format":"uri"
-          },
-          "share":{
-            "type":"boolean",
-            "default":true
-          },
-          "propagate":{
-            "type":"boolean",
-            "default":true
-          },
-          "use":{
-            "type":"object",
-            "default":{
-
-            }
-          },
-          "require":{
-            "type":"object",
-            "default":{
-
-            }
-          }
-        },
-        "required":[
-          "originator",
-          "timestamp",
-          "uri",
-          "share",
-          "propagate"
-        ]
-      }
-    },
-    "required":[
-      "identity",
-      "attributes"
-    ]
-  }
-}
-```
+TODO
 
 #### 401 Unauthorized
 
@@ -1798,11 +1696,37 @@ Requesting agent must send secret.
 
 #### 403 Forbidden
 
-If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+If the requesting agent is not an `Outlet` with the `out.manage` property set to `true`:
 
 ```
-Secret was not accepted for requesting agent.
+Method not allowed for requesting agent.
 ```
+
+## GET /local/payloads
+
+If the requesting agent is an `Outlet`, returns an array of `LocalPayload` objects; otherwise, an error is thrown.
+
+### Request
+
+```
+GET /local/payloads HTTP/1.1
+```
+
+### Response
+
+#### 200 Success
+
+If `Outlet`, array of [LocalPayload](#localpayload) objects.
+
+#### 401 Unauthorized
+
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Requesting agent must send secret.
+```
+
+#### 403 Forbidden
 
 If the requesting agent is not an `Outlet`:
 
@@ -1817,245 +1741,16 @@ If the requesting agent is an `Outlet` and payload in `Local` persistence has a 
 ### Request
 
 ```
-GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]?secret=[secret] HTTP/1.1
+GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID] HTTP/1.1
 ```
 
 ### Response
 
 #### 200 Success
 
-If the `Outlet` has the `out.manage` property set to `true`:
+If `Outlet` with `out.manage == true`, [Payload](#payload) object.
 
-```js
-{
-  "title":"Payload",
-  "type":"object",
-  "properties":{
-    "identity":{
-      "title":"PayloadIdentity",
-      "type":"object",
-      "properties":{
-        "id":{
-          "type":"string"
-        },
-        "originator":{
-          "type":"string",
-          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-        }
-      },
-      "required":[
-        "id",
-        "originator"
-      ]
-    },
-    "original":{
-      "title":"PayloadLocalAttributes",
-      "type":"object",
-      "properties":{
-        "originator":{
-          "type":"string",
-          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-        },
-        "timestamp":{
-          "type":"string",
-          "format":"date-time"
-        },
-        "uri":{
-          "type":"string",
-          "format":"uri"
-        },
-        "share":{
-          "type":"boolean",
-          "default":true
-        },
-        "propagate":{
-          "type":"boolean",
-          "default":true
-        },
-        "use":{
-          "type":"object",
-          "default":{
-
-          }
-        },
-        "require":{
-          "type":"object",
-          "default":{
-
-          }
-        }
-      },
-      "required":[
-        "originator",
-        "timestamp",
-        "uri",
-        "share",
-        "propagate"
-      ]
-    },
-    "journal":{
-      "type":"array",
-      "items":{
-        "title":"PayloadLocalJournalEntry",
-        "type":"object",
-        "properties":{
-          "originator":{
-            "type":"string",
-            "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-          },
-          "timestamp":{
-            "type":"string",
-            "format":"date-time"
-          },
-          "use":{
-            "type":"object",
-            "default":{
-
-            }
-          },
-          "require":{
-            "type":"object",
-            "default":{
-
-            }
-          }
-        },
-        "required":[
-          "originator",
-          "timestamp"
-        ]
-      }
-    },
-    "attributes":{
-      "title":"PayloadLocalAttributes",
-      "type":"object",
-      "properties":{
-        "originator":{
-          "type":"string",
-          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-        },
-        "timestamp":{
-          "type":"string",
-          "format":"date-time"
-        },
-        "uri":{
-          "type":"string",
-          "format":"uri"
-        },
-        "share":{
-          "type":"boolean",
-          "default":true
-        },
-        "propagate":{
-          "type":"boolean",
-          "default":true
-        },
-        "use":{
-          "type":"object",
-          "default":{
-
-          }
-        },
-        "require":{
-          "type":"object",
-          "default":{
-
-          }
-        }
-      },
-      "required":[
-        "originator",
-        "timestamp",
-        "uri",
-        "share",
-        "propagate"
-      ]
-    }
-  },
-  "required":[
-    "identity",
-    "original",
-    "attributes"
-  ]
-}
-```
-
-If the `Outlet` does not have the `out.manage` property or it is not set to `true`:
-
-```js
-{
-  "title":"LocalPayload",
-  "type":"object",
-  "properties":{
-    "identity":{
-      "title":"PayloadIdentity",
-      "type":"object",
-      "properties":{
-        "id":{
-          "type":"string"
-        },
-        "originator":{
-          "type":"string",
-          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-        }
-      },
-      "required":[
-        "id",
-        "originator"
-      ]
-    },
-    "attributes":{
-      "title":"PayloadLocalAttributes",
-      "type":"object",
-      "properties":{
-        "originator":{
-          "type":"string",
-          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-        },
-        "timestamp":{
-          "type":"string",
-          "format":"date-time"
-        },
-        "uri":{
-          "type":"string",
-          "format":"uri"
-        },
-        "share":{
-          "type":"boolean",
-          "default":true
-        },
-        "propagate":{
-          "type":"boolean",
-          "default":true
-        },
-        "use":{
-          "type":"object",
-          "default":{
-
-          }
-        },
-        "require":{
-          "type":"object",
-          "default":{
-
-          }
-        }
-      },
-      "required":[
-        "originator",
-        "timestamp",
-        "uri",
-        "share",
-        "propagate"
-      ]
-    }
-  },
-  "required":[
-    "identity",
-    "attributes"
-  ]
-}
-```
+Else if `Outlet`, [LocalPayload](#localpayload) object.
 
 #### 401 Unauthorized
 
@@ -2066,12 +1761,6 @@ Requesting agent must send secret.
 ```
 
 #### 403 Forbidden
-
-If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Secret was not accepted for requesting agent.
-```
 
 If the requesting agent is not an `Outlet`:
 
@@ -2087,268 +1776,9 @@ If no payload in `Local` persistence with `PayloadIdentity` matching `[ORIGINATO
 Payload not found.
 ```
 
-## GET /out/payloads
+## GET /in/transforms
 
-If the requesting agent is an `AdjOutPeer`, returns an array of `TransitPayload` objects; else, if requesting agent is an `Outlet` with the `out.manage` property set to `true`, returns an array of `LocalPayload` objects; otherwise, an error is thrown.
-
-### Request
-
-```
-GET /out/payloads?secret=[secret] HTTP/1.1
-```
-
-### Response
-
-#### 200 Success
-
-If requesting agent is an `AdjOutPeer`:
-
-```js
-{
-  "type": "array",
-  "items": {
-    "title":"TransitPayload",
-    "type":"object",
-    "properties":{
-      "identity":{
-        "title":"PayloadIdentity",
-        "type":"object",
-        "properties":{
-          "id":{
-            "type":"string"
-          },
-          "originator":{
-            "type":"string",
-            "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-          }
-        },
-        "required":[
-          "id",
-          "originator"
-        ]
-      },
-      "original":{
-        "title":"PayloadTransitAttributes",
-        "type":"object",
-        "properties":{
-          "originator":{
-            "type":"string",
-            "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-          },
-          "timestamp":{
-            "type":"string",
-            "format":"date-time"
-          },
-          "uri":{
-            "type":"string",
-            "format":"uri"
-          },
-          "share":{
-            "type":"boolean",
-            "default":true
-          },
-          "propagate":{
-            "type":"boolean",
-            "default":true
-          },
-          "use":{
-            "type":"object",
-            "patternProperties":{
-              "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
-                "type":[
-                  "array",
-                  "boolean",
-                  "integer",
-                  "null",
-                  "number",
-                  "object",
-                  "string"
-                ]
-              }
-            },
-            "additionalProperties":false,
-            "default":{
-
-            }
-          },
-          "require":{
-            "type":"object",
-            "patternProperties":{
-              "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
-                "type":[
-                  "array",
-                  "boolean",
-                  "integer",
-                  "null",
-                  "number",
-                  "object",
-                  "string"
-                ]
-              }
-            },
-            "additionalProperties":false,
-            "default":{
-
-            }
-          }
-        },
-        "required":[
-          "originator",
-          "timestamp",
-          "uri",
-          "share",
-          "propagate"
-        ]
-      },
-      "journal":{
-        "type":"array",
-        "items":{
-          "title":"PayloadTransitJournalEntry",
-          "type":"object",
-          "properties":{
-            "originator":{
-              "type":"string",
-              "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-            },
-            "timestamp":{
-              "type":"string",
-              "format":"date-time"
-            },
-            "use":{
-              "type":"object",
-              "patternProperties":{
-                "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
-                  "type":[
-                    "array",
-                    "boolean",
-                    "integer",
-                    "null",
-                    "number",
-                    "object",
-                    "string"
-                  ]
-                }
-              },
-              "additionalProperties":false,
-              "default":{
-
-              }
-            },
-            "require":{
-              "type":"object",
-              "patternProperties":{
-                "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
-                  "type":[
-                    "array",
-                    "boolean",
-                    "integer",
-                    "null",
-                    "number",
-                    "object",
-                    "string"
-                  ]
-                }
-              },
-              "additionalProperties":false,
-              "default":{
-
-              }
-            }
-          },
-          "required":[
-            "originator",
-            "timestamp"
-          ]
-        }
-      }
-    },
-    "required":[
-      "identity",
-      "original"
-    ]
-  }
-}
-```
-
-If requesting agent is an `Outlet` with the `out.manage` property set to `true`:
-
-```js
-{
-  "type": "array",
-  "items": {
-    "title":"LocalPayload",
-    "type":"object",
-    "properties":{
-      "identity":{
-        "title":"PayloadIdentity",
-        "type":"object",
-        "properties":{
-          "id":{
-            "type":"string"
-          },
-          "originator":{
-            "type":"string",
-            "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-          }
-        },
-        "required":[
-          "id",
-          "originator"
-        ]
-      },
-      "attributes":{
-        "title":"PayloadLocalAttributes",
-        "type":"object",
-        "properties":{
-          "originator":{
-            "type":"string",
-            "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-          },
-          "timestamp":{
-            "type":"string",
-            "format":"date-time"
-          },
-          "uri":{
-            "type":"string",
-            "format":"uri"
-          },
-          "share":{
-            "type":"boolean",
-            "default":true
-          },
-          "propagate":{
-            "type":"boolean",
-            "default":true
-          },
-          "use":{
-            "type":"object",
-            "default":{
-
-            }
-          },
-          "require":{
-            "type":"object",
-            "default":{
-
-            }
-          }
-        },
-        "required":[
-          "originator",
-          "timestamp",
-          "uri",
-          "share",
-          "propagate"
-        ]
-      }
-    },
-    "required":[
-      "identity",
-      "attributes"
-    ]
-  }
-}
-```
+TODO
 
 #### 401 Unauthorized
 
@@ -2360,11 +1790,59 @@ Requesting agent must send secret.
 
 #### 403 Forbidden
 
-If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+If the requesting agent is not an `Outlet` with the `out.manage` property set to `true`:
 
 ```
-Secret was not accepted for requesting agent.
+Method not allowed for requesting agent.
 ```
+
+## GET /out/filters
+
+TODO
+
+#### 401 Unauthorized
+
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Requesting agent must send secret.
+```
+
+#### 403 Forbidden
+
+If the requesting agent is not an `Outlet` with the `out.manage` property set to `true`:
+
+```
+Method not allowed for requesting agent.
+```
+
+## GET /out/payloads
+
+If the requesting agent is an `AdjOutPeer`, returns an array of `TransitPayload` objects; else, if requesting agent is an `Outlet` with the `out.manage` property set to `true`, returns an array of `LocalPayload` objects; otherwise, an error is thrown.
+
+### Request
+
+```
+GET /out/payloads HTTP/1.1
+```
+
+### Response
+
+#### 200 Success
+
+If `AdjOutPeer`, array of [TransitPayload](#transitpayload) objects.
+
+If `Outlet` with `out.manage == true`, array of [LocalPayload](#localpayload) objects.
+
+#### 401 Unauthorized
+
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Requesting agent must send secret.
+```
+
+#### 403 Forbidden
 
 If the requesting agent is neither an `AdjOutPeer` nor an `Outlet` with the `out.manage` property set to `true`:
 
@@ -2379,334 +1857,16 @@ If the requesting agent is an `AdjOutPeer` or an `Outlet` with an `out.manage` p
 ### Request
 
 ```
-GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]?secret=[secret] HTTP/1.1
+GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID] HTTP/1.1
 ```
 
 ### Response
 
 #### 200 Success
 
-If requesting agent is an `AdjOutPeer`:
+If `AdjOutPeer`, [TransitPayload](#transitpayload) object.
 
-```js
-{
-  "title":"TransitPayload",
-  "type":"object",
-  "properties":{
-    "identity":{
-      "title":"PayloadIdentity",
-      "type":"object",
-      "properties":{
-        "id":{
-          "type":"string"
-        },
-        "originator":{
-          "type":"string",
-          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-        }
-      },
-      "required":[
-        "id",
-        "originator"
-      ]
-    },
-    "original":{
-      "title":"PayloadTransitAttributes",
-      "type":"object",
-      "properties":{
-        "originator":{
-          "type":"string",
-          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-        },
-        "timestamp":{
-          "type":"string",
-          "format":"date-time"
-        },
-        "uri":{
-          "type":"string",
-          "format":"uri"
-        },
-        "share":{
-          "type":"boolean",
-          "default":true
-        },
-        "propagate":{
-          "type":"boolean",
-          "default":true
-        },
-        "use":{
-          "type":"object",
-          "patternProperties":{
-            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
-              "type":[
-                "array",
-                "boolean",
-                "integer",
-                "null",
-                "number",
-                "object",
-                "string"
-              ]
-            }
-          },
-          "additionalProperties":false,
-          "default":{
-
-          }
-        },
-        "require":{
-          "type":"object",
-          "patternProperties":{
-            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
-              "type":[
-                "array",
-                "boolean",
-                "integer",
-                "null",
-                "number",
-                "object",
-                "string"
-              ]
-            }
-          },
-          "additionalProperties":false,
-          "default":{
-
-          }
-        }
-      },
-      "required":[
-        "originator",
-        "timestamp",
-        "uri",
-        "share",
-        "propagate"
-      ]
-    },
-    "journal":{
-      "type":"array",
-      "items":{
-        "title":"PayloadTransitJournalEntry",
-        "type":"object",
-        "properties":{
-          "originator":{
-            "type":"string",
-            "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-          },
-          "timestamp":{
-            "type":"string",
-            "format":"date-time"
-          },
-          "use":{
-            "type":"object",
-            "patternProperties":{
-              "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
-                "type":[
-                  "array",
-                  "boolean",
-                  "integer",
-                  "null",
-                  "number",
-                  "object",
-                  "string"
-                ]
-              }
-            },
-            "additionalProperties":false,
-            "default":{
-
-            }
-          },
-          "require":{
-            "type":"object",
-            "patternProperties":{
-              "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
-                "type":[
-                  "array",
-                  "boolean",
-                  "integer",
-                  "null",
-                  "number",
-                  "object",
-                  "string"
-                ]
-              }
-            },
-            "additionalProperties":false,
-            "default":{
-
-            }
-          }
-        },
-        "required":[
-          "originator",
-          "timestamp"
-        ]
-      }
-    }
-  },
-  "required":[
-    "identity",
-    "original"
-  ]
-}
-```
-
-If requesting agent is an `Outlet` with the `out.manage` property set to `true`:
-
-```js
-{
-  "title":"Payload",
-  "type":"object",
-  "properties":{
-    "identity":{
-      "title":"PayloadIdentity",
-      "type":"object",
-      "properties":{
-        "id":{
-          "type":"string"
-        },
-        "originator":{
-          "type":"string",
-          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-        }
-      },
-      "required":[
-        "id",
-        "originator"
-      ]
-    },
-    "original":{
-      "title":"PayloadLocalAttributes",
-      "type":"object",
-      "properties":{
-        "originator":{
-          "type":"string",
-          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-        },
-        "timestamp":{
-          "type":"string",
-          "format":"date-time"
-        },
-        "uri":{
-          "type":"string",
-          "format":"uri"
-        },
-        "share":{
-          "type":"boolean",
-          "default":true
-        },
-        "propagate":{
-          "type":"boolean",
-          "default":true
-        },
-        "use":{
-          "type":"object",
-          "default":{
-
-          }
-        },
-        "require":{
-          "type":"object",
-          "default":{
-
-          }
-        }
-      },
-      "required":[
-        "originator",
-        "timestamp",
-        "uri",
-        "share",
-        "propagate"
-      ]
-    },
-    "journal":{
-      "type":"array",
-      "items":{
-        "title":"PayloadLocalJournalEntry",
-        "type":"object",
-        "properties":{
-          "originator":{
-            "type":"string",
-            "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-          },
-          "timestamp":{
-            "type":"string",
-            "format":"date-time"
-          },
-          "use":{
-            "type":"object",
-            "default":{
-
-            }
-          },
-          "require":{
-            "type":"object",
-            "default":{
-
-            }
-          }
-        },
-        "required":[
-          "originator",
-          "timestamp"
-        ]
-      }
-    },
-    "attributes":{
-      "title":"PayloadLocalAttributes",
-      "type":"object",
-      "properties":{
-        "originator":{
-          "type":"string",
-          "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-        },
-        "timestamp":{
-          "type":"string",
-          "format":"date-time"
-        },
-        "uri":{
-          "type":"string",
-          "format":"uri"
-        },
-        "share":{
-          "type":"boolean",
-          "default":true
-        },
-        "propagate":{
-          "type":"boolean",
-          "default":true
-        },
-        "use":{
-          "type":"object",
-          "default":{
-
-          }
-        },
-        "require":{
-          "type":"object",
-          "default":{
-
-          }
-        }
-      },
-      "required":[
-        "originator",
-        "timestamp",
-        "uri",
-        "share",
-        "propagate"
-      ]
-    }
-  },
-  "required":[
-    "identity",
-    "original",
-    "attributes"
-  ]
-}
-```
+If `Outlet` with `out.manage == true`, [Payload](#payload) object.
 
 #### 401 Unauthorized
 
@@ -2717,12 +1877,6 @@ Requesting agent must send secret.
 ```
 
 #### 403 Forbidden
-
-If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Secret was not accepted for requesting agent.
-```
 
 If the requesting agent is neither an `AdjOutPeer` nor an `Outlet` with the `out.manage` property set to `true`:
 
@@ -2737,6 +1891,40 @@ If no payload in `AdjOut` persistence with `PayloadIdentity` matching `[ORIGINAT
 ```
 Payload not found.
 ```
+
+## GET /out/transforms
+
+TODO
+
+#### 401 Unauthorized
+
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Requesting agent must send secret.
+```
+
+#### 403 Forbidden
+
+If the requesting agent is not an `Outlet` with the `out.manage` property set to `true`:
+
+```
+Method not allowed for requesting agent.
+```
+
+## GET /payloads
+
+Method that aliases based on context:
+
+* If requesting agent is `Outlet`, see [GET /local/payloads](#get-localpayloads)
+* If requesting agent is `AdjOutPeer`, see [GET /out/payloads](#get-outpayloads)
+
+## GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]
+
+Method that aliases based on context:
+
+* If requesting agent is `Outlet`, see [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
+* If requesting agent is `AdjOutPeer`, see [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
 
 # Internal Routines
 
