@@ -54,12 +54,16 @@
             2. [PayloadTransitAttributes](#payloadtransitattributes)
             3. [PayloadLocalAttributes](#payloadlocalattributes)
 4. [External Interfaces](#external-interfaces)
-    1. [GET /payloads](#get-payloads)
-    2. [GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-payloadsoriginator-uuidpayload-uid)
+    5. [GET /in/filters](#get-infilters)
+    5. [GET /in/transforms](#get-intransforms)
     3. [GET /local/payloads](#get-localpayloads)
     4. [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
+    5. [GET /out/filters](#get-outfilters)
     5. [GET /out/payloads](#get-outpayloads)
     6. [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
+    5. [GET /out/transforms](#get-outtransforms)
+    1. [GET /payloads](#get-payloads)
+    2. [GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-payloadsoriginator-uuidpayload-uid)
 5. [Internal Routines](#internal-routines)
 
 # Introduction
