@@ -44,12 +44,13 @@
         1. [Payload](#payload)
         2. [TransitPayload](#transitpayload)
         3. [LocalPayload](#localpayload)
-        4. [PayloadIdentity](#payloadidentity)
-        5. [Journal](#journal)
+    3. [Payload Subcomponents](#payload-subcomponents)
+        1. [PayloadIdentity](#payloadidentity)
+        2. [Journal](#journal)
             1. [PayloadAbstractJournalEntry](#payloadabstractjournalentry)
             2. [PayloadTransitJournalEntry](#payloadtransitjournalentry)
             3. [PayloadLocalJournalEntry](#payloadlocaljournalentry)
-        6. [Attributes](#attributes)
+        3. [Attributes](#attributes)
             1. [PayloadAbstractAttributes](#payloadabstractattributes)
             2. [PayloadTransitAttributes](#payloadtransitattributes)
             3. [PayloadLocalAttributes](#payloadlocalattributes)
@@ -90,7 +91,7 @@
 
 ## Status of this Memo
 
-This document specifies the CASA (Community App Sharing Architecture) Protocol, which allows peers to propagate and share information about URIs in their ecosystem. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.
+This memorandum specifies the CASA (Community App Sharing Architecture) Protocol, which allows peers to propagate and share information about web applications in their ecosystem. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.
 
 ## Copyright Notice
 
@@ -98,9 +99,9 @@ Copyright (c) 2013, Regents of the University of California. All rights reserved
 
 # Overview
 
-This memorandum describes the CASA (Community App Sharing Architecture) Protocol. This protocol propagates URI knowledge across a peer-to-peer topology with support for heterogeneous and asymmetric world views. In this way, each peer may develop from its neighbors a knowledge of the  ecosystem as suited to its needs, taking into consideration trust relationships and policies around acceptance and sharing.
+The CASA (Community App Sharing Architecture) Protocol enables the sharing of knowledge about web applications and associated metadata throughout a peer-to-peer topology with support for heterogeneous and asymmetric world views. Through this protocol, each peer develops from its neighbors a knowledge of the ecosystem as suited to its needs, taking into consideration trust relationships and policies around acceptance and sharing.
 
-The motivating use case for this protocol is **web app stores**, such as in the context of a mobile dashboard, an IMS LTI Tool Consumer or a W3C Packaged Web Apps launcher. As such, this protocol originated as an attempt to serve this use cases; however, given its flexibility, it is generic enough to comport with other use cases whereby URIs and metadata are propagated across a peer-to-peer topology.
+The motivating use case for this protocol is **web app stores**, such as in the context of a mobile dashboard, an IMS LTI Tool Consumer or a W3C Packaged Web Apps launcher. This protocol originated as an attempt to serve these use cases; however, given its flexibility, it is generic enough to comport with other use cases whereby URIs and metadata are propagated across a peer-to-peer topology.
 
 ## Background
 
@@ -113,12 +114,12 @@ Neither of these approaches adequately model the real world. Traditionally, web 
 
 ## Solution
 
-This protocol describes an alternative that treats each organization in the network as an autonomous system, whereby each autonomous system: (1) defines its own peer trust, acceptance and sharing policies; (2) queries neighboring peers and processes peer responses; (3) responds to neighboring peers when queries; and (4) produces a storefront for interaction with its own end users.
+The CASA protocol presents an alternative method that treats each organization in the network as an autonomous system, whereby each autonomous system: (1) defines its own trust, acceptance and sharing policies; (2) queries neighboring peers and processes peer responses; (3) responds to neighboring peers when queries; and (4) produces a front-end user interface for interaction with its own end users.
 
 Each organization shall define its inbound and outbound peers:
 
 * `AdjInPeer` - An inbound peer from which the node is willing to accept information; in order to know where to pull information from, an inbound peer is defined explicitly by hostname. 
-* `AdjOutPeer` - An outbound peer to which the peer is willing to share information; an outbound peer may be configured as a remote address, or as a remote address and a wildcard mask, allowing for broad sharing policies to be implemented.
+* `AdjOutPeer` - An outbound peer to which the peer is willing to share information; an outbound peer may be configured as a remote address, or as a remote address and a wildcard mask, allowing for flexible sharing policies to be implemented.
 
 While an organization may both accept from and share with a peer, this symmetry is not required. Further, when accepting applications from a peer, an organization may choose to accept only those that originate with the peer, or it may additionally accept applications that were shared with and propagated through the peer.
 
@@ -157,17 +158,17 @@ The key word **UUID** (alternatively: **Universally Unique IDentifier**, **Globa
 
 The key word **UID** (alternatively: **Unique IDentifier** or **uid**) in this document is to be interpreted as an identifier that is unique within the context of the payload originator.
 
-The key words **node** and **peer** in this document are to be interpreted as an `Engine`, which may include payloads, may query other nodes, may respond to other nodes and may provide outlets.
+The key words **node** and **peer** in this document are to be interpreted as an autonomous system which has knowledge of apps, may query other nodes for apps, may respond to other nodes with apps and may provide data to front-end outlets to present these apps to end users.
 
-The key word **RESTful web service** in this document is to be interpreted as a packet using HTTP methods as described by [RFC 2616](http://tools.ietf.org/rfc/rfc2616.txt) ["Hypertext Transfer Protocol -- HTTP/1.1"]. 
+The key word **RESTful web service** in this document is to be interpreted as an exchange using HTTP methods as described by [RFC 2616](http://tools.ietf.org/rfc/rfc2616.txt) ["Hypertext Transfer Protocol -- HTTP/1.1"]. 
 
-The key words **query** and **call** in this document are to be interpreted mean sending an RESTful web service interaction between two nodes. The key word **request** in this document is to be interpreted as a RESTful web service request; the key word **response** (alternatively for the action: **respond**) in this document is to be interpreted as a RESTful web service response.
+The key words **query** and **call** in this document are to be interpreted mean RESTful web service interactions between two nodes. The key word **request** in this document is to be interpreted as a RESTful web service request; the key word **response** (alternatively for the action: **respond**) in this document is to be interpreted as a RESTful web service response.
 
 The key word **originator** in this document is to be interpreted as the node that introduced a payload into the infrastructure. Each originator must define a UUID that uniquely identifies it across the network; further, each originator must also ensure that it assigns a UID for all payloads that it directly introduces into the network.
 
 The key word **identity** in this document is to be interpreted as a composite key constructed from a UID identifying a payload within the originator and a UUID identifying the node within the network.
 
-The key word **payload** in this document is to be interpreted as a data structure required minimally to include (1) an identity, comprised of a UID unique to the originator and the UUID of the originator, and (2) a set of attributes, minimally including a name and URI. Additionally, if a payload is propagated from a node besides the originator, it must also include a copy of the original attributes provided by the originator.
+The key word **payload** in this document is to be interpreted as a data structure required minimally to include (1) an identity, comprised of a UID unique to the originator and the UUID of the originator, and (2) a set of attributes, minimally including the URI of an app and the timestamp when created. Additionally, if a payload has changed since it left the originator, it must also include a journal of changes.
 
 The key word **array** in this document is to be interpreted as an ordered data structure of elements with sequential numeric indices.
 
@@ -329,7 +330,7 @@ A node structures JSON Schema is available under see [schema.json](schema.json).
 
 ### Node
 
-The `Node` object is a logical representation of an entity that may interact with the `Engine`. However, this structure does not intrinsically provide authorization. Instead, authorization is derived from node subclasses including `AdjInPeer`, `AdjOutPeer` and `Outlet`.
+The `Node` object is a logical representation of an entity that may interact with the `Engine`. This structure does not itself provide authorization; instead, it is an abstract structure extended by `AdjInPeer`, `AdjOutPeer`, `AdjInOutPeer` and `Outlet`, each of which provide mechanisms for determining identity and authorization.
 
 The JSON Schema for `Node`:
 
@@ -360,9 +361,9 @@ An example of a `Node` structure:
 }
 ```
 
-All `Node` objects must define a `name` property. This is a local reference to the node only, meaning that a peer may choose its own approach for naming nodes, but within a node, the name must be unique among all nodes defined within the `Engine`.
+All `Node` objects must have a `name` property.  The `name` property must be unique among all nodes defined for an `Engine`. This is a local value. Each `Engine` may define neighbors under its own naming scheme, and these values will never be shared beyond the `Engine` itself. This name is completely different from a publisher's UUID. It is meant purely for reference by `Engine` administrators, as opposed to the publisher's UUID, which is meant to establish identity within a payload.
 
-All `Node` objects may define a `secret` property. If the secret property is set, then it must be included in all RESTful web service requests issued against the `Engine`.
+All `Node` objects may define a `secret` property. If the secret property is set, it must be included in all RESTful web service requests issued against the `Engine`.
 
 ### AdjInPeer and AdjInPeerIdentity
 
@@ -455,9 +456,9 @@ An example of an `AdjInPeer` structure:
   "secret": "foobar",
   "in": {
     "hostname": "localhost",
-    "scheme": "http",
+    "scheme": "https",
     "path": "/",
-    "port": 8080
+    "port": 443
   }
 }
 ```
@@ -568,17 +569,19 @@ An example of an `AdjOutPeer` structure:
 
 All `AdjOutPeer` objects must define an `out` property containing an `AdjOutPeerIdentity` object. 
 
-All `AdjOutPeerIdentity` objects must either contain a `local` property set to `false` or else not contain a `local` property. An `AdjOutPeerIdentity` object may optionally include the additional attributes `address` and `mask`.
+All `AdjOutPeerIdentity` objects must either contain a `local` property set to `false` or else not contain a `local` property. If set `true`, it is an `OutletIdentity` instead of an `AdjOutPeerIdentity`. 
+
+An `AdjOutPeerIdentity` object may optionally include the additional attributes `address` and `mask`.
 
 It is recommended that all `AdjOutPeerIdentity` objects contain an `address` property with an IP address value. If the `address` property is not defined, then the `Engine` shall respond to any request bearing the correct `name` and `secret` defined in the containing `AdjOutPeer` object. 
 
-Additionally, the `AdjOutPeerIdentity` object may include a `mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued within a subnet. If neither the `mask` nor the `hostname` property are set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `255.255.255.255`. If the `mask` property is not set but the `hostname` property is set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `0.0.0.0`.
+Additionally, the `AdjOutPeerIdentity` object may include a `mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued within a subnet. If neither the `mask` nor the `hostname` property are set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `255.255.255.255`. If the `mask` property is not set but the `hostname` property is set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `0.0.0.0`. A `mask` property set without a `hostname` property shall be disregarded and treated as though neither are set.
 
-The `out` object may be set in concurrence with an `in` property containing an `AdjInPeerIdentity`. Under this case, the peer should be treated as both an `AdjInPeer` and an `AdjOutPeer`. See `AdjInOutPeer` for more.
+The `out` object for an `AdjOutPeerIdenity` may be set in concurrence with an `in` property containing an `AdjInPeerIdentity`. Under this case, the peer should be treated as both an `AdjInPeer` and an `AdjOutPeer`. See `AdjInOutPeer` for more.
 
 ### AdjInOutPeer
 
-The `AdjInOutPeer` object extends the `Node` object, specifying a peer that the `Engine` may query to retrieve payloads and to which the `Engine` will respond with a set of payloads from `AdjOut` when queried by a node with a matching `AdjOutPeerIdentity`. In addition to the inherited properties of `Node`, an `AdjInOutPeer` object must include an additional `AdjInPeerIdentity` under the key `in` and an `AdjOutPeerIdentity` under the key `out`.
+The `AdjInOutPeer` object extends the `Node` object, specifying a peer that the `Engine` may query to retrieve payloads for `AdjIn` and to which the `Engine` will respond with a set of payloads from `AdjOut` when queried by a node with a matching `AdjOutPeerIdentity`. In addition to the inherited properties of `Node`, an `AdjInOutPeer` object must include an additional `AdjInPeerIdentity` under the key `in` and an `AdjOutPeerIdentity` under the key `out`.
 
 The JSON Schema for `AdjInOutPeer` (see see [schema.json](schema.json)):
 
@@ -663,9 +666,9 @@ An example of an `AdjOutPeer` structure:
   "secret": "foobar",
   "in"     : {
     "hostname": "localhost",
-    "scheme": "http",
+    "scheme": "https",
     "path": "/",
-    "port": 8080
+    "port": 443
   },
   "out"     : {
     "address": "127.0.0.1",
@@ -781,7 +784,9 @@ An example of an `Outlet` structure:
 
 All `Outlet` objects must define an `out` property containing an `OutletIdentity` object. 
 
-All `OutletIdentity` objects must either contain a `local` property set to `true`. An `OutletIdentity` object may optionally include the additional attributes `address`, `mask` and `manage`.
+All `OutletIdentity` objects must contain a `local` property set to `true`. A `local` property set to `false` or not set instead denotes an `AdjOutPeerIdentity`, which is not valid for an `Outlet`.
+
+An `OutletIdentity` object may optionally include the additional attributes `address`, `mask` and `manage`.
 
 It is recommended that all `OutletIdentity` objects contain an `address` property with an IP address value. If the `address` property is not defined, then the `Engine` shall respond to any request bearing the correct `name` and `secret` defined in the containing `Outlet` object. 
 
@@ -1218,6 +1223,8 @@ The JSON Schema for `LocalPayload` (see [schema.json](schema.json)):
   ]
 }
 ```
+
+## Payload Subcomponents
 
 ### PayloadIdentity
 
@@ -2067,7 +2074,7 @@ This conformance level may be useful for publishers that simply want to share ap
 
 ## RELAY Conformance
 
-This conformance level implies that all functionality is provided for publishing to and querying from peers; however, it does not imply support for functions meant to convey data to outlets such as front ends or management tools. 
+This conformance level implies that all functionality is provided for publishing to and querying from peers; however, it does not imply support for functions meant to convey data to outlets such as front-ends or management tools. 
 
 This conformance level may be useful for nodes acting as aggregators or propagators.
 
@@ -2128,6 +2135,7 @@ This conformance level is useful for engines that wish to provide the full funct
 ### Structures
 
 * [AdjInPeer](#adjinpeer)
+* [AdjInOutPeer](#adjinoutpeer)
 * [AdjOutPeer](#adjoutpeer)
 * [LocalPayload](#localpayload)
 * [Outlet](#outlet)
