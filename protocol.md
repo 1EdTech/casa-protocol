@@ -23,7 +23,7 @@
         4. [AdjInTransform](#adjintransform)
         5. [AdjOutTransform](#adjouttransform)
         6. [AdjOutFilter](#adjoutfilter)
-        7. [AdjOutTransform](#adjouttransform)
+        7. [AdjOutTranslate](#adjouttranslate)
     7. [Persistence](#persistence)
         1. [AdjIn](#adjin)
         2. [Local](#local)
@@ -54,16 +54,16 @@
             2. [PayloadTransitAttributes](#payloadtransitattributes)
             3. [PayloadLocalAttributes](#payloadlocalattributes)
 4. [External Interfaces](#external-interfaces)
-    5. [GET /in/filters](#get-infilters)
-    5. [GET /in/transforms](#get-intransforms)
+    1. [GET /in/filters](#get-infilters)
+    2. [GET /in/transforms](#get-intransforms)
     3. [GET /local/payloads](#get-localpayloads)
     4. [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
     5. [GET /out/filters](#get-outfilters)
-    5. [GET /out/payloads](#get-outpayloads)
-    6. [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
-    5. [GET /out/transforms](#get-outtransforms)
-    1. [GET /payloads](#get-payloads)
-    2. [GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-payloadsoriginator-uuidpayload-uid)
+    6. [GET /out/payloads](#get-outpayloads)
+    7. [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
+    8. [GET /out/transforms](#get-outtransforms)
+    9. [GET /payloads](#get-payloads)
+    10. [GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-payloadsoriginator-uuidpayload-uid)
 5. [Internal Routines](#internal-routines)
     1. [FILTER-IN](#filter-in)
         1. [FILTER-IN-REQUIRE](#filter-in-require)
@@ -215,7 +215,7 @@ Payloads delivered to `AdjOutPeer` nodes begin at `AdjIn` for propagated URIs an
 
 An outlet is an interface that accesses the local representation of a payload, namely a payload's identity and attributes. 
 
-If an outlet is designated as a manager, it additionally gains read access to the payload's original attributes and journal; further, it may also payloads stored in `Local` to influence how other outlets perceive the payload and, optionally, those stored in `AdjOut` to influence how `AdjOutPeer` nodes perceive the payload. Modifications to payloads must be both written to the `attributes` property of the payload and entered into the `journal` section of the payload.
+If an outlet is designated as a manager, it additionally gains read access to the payload's original attributes and journal; this allows it to deconstruct the path by which the `Payload` arrived at its current state, and thus to set up transform rules to mutate the payload's state.
 
 ## Operations
 
@@ -241,19 +241,25 @@ This operation must drop payloads that have `require` properties that the engine
 
 If a payload meets the `AdjInFilter` constraints, it shall be entered into `AdjIn`.
 
+For more information on this routine, see the [FILTER-IN](#filter-in) internal routine subsection.
+
 ### AdjInTransform
 
-After a payload is written to `AdjIn`, it forks along a data path that takes it to `Local`. Before reaching `Local`, payloads must first pass through `AdjInTransform`. Changes made through transformation rules within `AdjInTransform` should be made directly against the `attributes` section of the payload, and additionally, they should be written to an entry in the `journal`.
+After a payload is written to `AdjIn`, it forks along a data path that takes it to `Local`. Before reaching `Local`, payloads must first pass through `AdjInTransform`. Changes made through transformation rules within `AdjInTransform` should be made directly against the `attributes` section of the payload, and additionally, they should be written to an entry in the journal. Note that this instance of the journal is local to the node, meant for debugging purposes; any changes that the node wishes to make to the journal when it propagates a payload along to other peers must occur through `AdjOutTransform`.
 
 This routine allows a node to curate the way in which payloads are presented to outlets.
+
+For more information on this routine, see the [TRANSFORM-IN](#transform-in) internal routine subsection.
 
 ### AdjOutTransform
 
 All payloads being delivered to `AdjOut` must first pass through `AdjOutTransform`. 
 
-These payloads originate from one of two locations based on their origin: (1) payloads shared from `AdjInPeer` nodes travel a data path from `AdjIn` and (2) payloads originating at the node travel a data path from `Local`. Changes made through transformation rules within `AdjOutTransform` should be made as an entry in the `journal`.
+These payloads originate from one of two locations based on their origin: (1) payloads shared from `AdjInPeer` nodes travel a data path from `AdjIn` and (2) payloads originating at the node travel a data path from `Local`. Changes made through transformation rules within `AdjOutTransform` must be made as an entry in the `journal`.
 
 This routine allows a node to curate the way in which payloads are presented to `AdjOutPeer` nodes.
+
+For more information on this routine, see the [TRANSFORM-OUT](#transform-out) internal routine subsection.
 
 ### AdjOutFilter
 
@@ -263,9 +269,11 @@ These filters are typically used to drop payloads that will not be useful for ot
 
 If a payload meets the `AdjOutFilter` constraints, then it will be provided in the response to queries from `AdjOutPeer` nodes.
 
-### AdjOutTransform
+For more information on this routine, see the [FILTER-OUT](#filter-out) internal routine subsection.
 
-When preparing an HTTP response to an `AdjOutPeer` node, the last step before delivery is passing each payload through `AdjOutTransform`, which maps human-readable names configured by the peer into machine-readable attribute UUIDs. This operation affects both the `original` attribute of the payload and all entries in the `journal` attribute of the payload.
+### AdjOutTranslate
+
+When preparing an HTTP response to an `AdjOutPeer` node, the last step before delivery is passing each payload through `AdjOutTranslate`, which maps human-readable names configured by the peer into machine-readable attribute UUIDs. This operation affects both the `original` attribute of the payload and all entries in the `journal` attribute of the payload.
 
 If there is no mapping for a human-readable name, and it is not of UUID form, then it should be discarded during this translation phase; however, if a name is already in UUID form and no mapping exists for it, then it should not be affected by this process. Consequently, a regular expression match conforming to RFC 4122 must be used to determine if translation is required on an attribute.
 
@@ -279,7 +287,7 @@ This structure contains payloads shared from or propagated through an `AdjInPeer
 
 Payloads in `AdjIn` are of the `Payload` structure, including the `identity`, `original`, `journal` and `attributes` properties. If a payload's `attributes` structure is unmodified from its `original` structure, then the `journal` may be neglected.
 
-These payloads follow two datapaths: (1) through `AdjInTransform` to `Local` for dissemination to local outlets, and `
+These payloads follow two datapaths: (1) through `AdjInTransform` to `Local` for dissemination to local outlets, and (2) through `AdjOutTransform` to `AdjOut`.
 
 ### Local
 
@@ -1396,16 +1404,18 @@ The JSON Schema for `PayloadLocalJournalEntry` (see [schema.json](schema.json)):
 
 A `PayloadLocalJournalEntry` object is generated by way of the `AdjInTranslate` operation from each `PayloadTransitJournalEntry.journal` array element, and it is contained as an element within the `Payload.journal` array.
 
-If `AdjOutTransform` changes any `Payload.attributes.use` or `Payload.attributes.require` attribute, a `PayloadLocalJournalEntry` object must be modified within `Payload.journal` as follows:
+If a transform changes any `Payload.attributes.use` or `Payload.attributes.require` attribute, a `PayloadLocalJournalEntry` object must be modified within `Payload.journal` as follows:
 
 1. If the last element in the `Payload.journal` has an `originator` UUID corresponding to the UUID of the node, the element should be modified to make additional changes and the timestamp should be updated to the current time.
 2. Otherwise, a new journal element should be appended to the end of the `Payload.journal` array. This element must include an `originator` property with an UUID corresponding to the id of the current node, the current timestamp conforming to RFC 3339, and either a use property or a require property or both corresponding to changes that the node made to the attributes by way of `AdjOutTransform`.
 
-A `Payload.journal` entry may not be removed from `Payload.journal` unless it is the last element in `Payload.journal`, has an `originator` UUID corresponding to the UUID of the node and `AdjOutTransform` has not changed either `Payload.attributes.use` and `Payload.attributes.require`. Equivalently, the node may only remove the last `Payload.journal` entry if it has an `originator` UUID corresponding to the current node and the `Payload.attributes` values after `AdjInSquash` are equivalent to the attributes after `AdjOutTransform`.
+A `Payload.journal` entry may not be removed from `Payload.journal` unless it is the last element in `Payload.journal`, has an `originator` UUID corresponding to the UUID of the node and `AdjOutTransform` has not changed either `Payload.attributes.use` and `Payload.attributes.require`. Equivalently, the node may only remove the last `Payload.journal` entry if it has an `originator` UUID corresponding to the current node and the `Payload.attributes` values after `AdjInSquash` are equivalent to the attributes after the transform.
+
+NOTE: A payload may have different journals in the `AdjIn`, `Local` and `AdjOut` persistence stores. The `AdjIn` journal represents only those entries made by other nodes before the payload was received; the `Local` journal represents entries made by other nodes before the payload was received, plus transformations in `AdjInTransform` that are conveyed to outlets; and the `AdjOut` journal represents entries made by other nodes before the payload was received, plus transformations in `AdjOutTransform` that are conveyed to peers querying the node.
 
 ### Attributes
 
-Attributes describe the state of a payload at a particular point in the process. The `Payload.original` structure is a set of attributes as set by the originator when the payload was introduced into the network, and the `Payload.attributes` structure is a set of attributes computed by way of: `AdjInTranslate` to map from transit machine-readable UUID representation to local human-readable name representation; `AdjInSquash` to process `Payload.original` and `Payload.journal` to arrive at a set of `Payload.attributes` send from `AdjInPeer`; and either `AdjInTransform` for `Outlet` queries or `AdjOutTransform for `AdjOutPeer` queries to modify the `use` and `require` properties.
+Attributes describe the state of a payload at a particular point in the process. The `Payload.original` structure is a set of attributes as set by the originator when the payload was introduced into the network, and the `Payload.attributes` structure is a set of attributes computed by way of: `AdjInTranslate` to map from transit machine-readable UUID representation to local human-readable name representation; `AdjInSquash` to process `Payload.original` and `Payload.journal` to arrive at a set of `Payload.attributes` send from `AdjInPeer`; and either `AdjInTransform` for `Outlet` queries or `AdjOutTransform` for `AdjOutPeer` queries to modify the `use` and `require` properties.
 
 If `AdjOutTransform` modifies the `use` or `require` properties, a journal entry must be written.
 
