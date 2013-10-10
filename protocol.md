@@ -65,6 +65,21 @@
     1. [GET /payloads](#get-payloads)
     2. [GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-payloadsoriginator-uuidpayload-uid)
 5. [Internal Routines](#internal-routines)
+    1. [FILTER-IN](#filter-in)
+        1. [FILTER-IN-REQUIRE](#filter-in-require)
+        2. [FILTER-IN-STALE](#filter-in-stale)
+    2. [FILTER-OUT](#filter-out)
+        1. [FILTER-OUT-NO-SHARE](#filter-out-no-share)
+    3. [PROCESS-IN](#process-in)
+    4. [PROCESS-OUT](#process-out)
+    5. [RECEIVE-IN](#receive-in)
+    6. [SEND-OUT](#send-out)
+    7. [SEND-LOCAL](#send-local)
+    8. [TRANSFORM-IN](#transform-in)
+    9. [TRANSFORM-OUT](#transform-out)
+        1. [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+        1. [TRANSFORM-OUT-NO-PROPAGATE](#transform-out-no-propagate)
+        1. [TRANSFORM-OUT-ATTRIBUTES](#transform-out-attributes)
 6. [Conformance](#conformance)
     1. [PUBLISH Conformance](#publish-conformance)
     2. [RELAY Conformance](#relay-conformance)
@@ -2038,7 +2053,7 @@ This conformance level may be useful for publishers that simply want to share ap
 
 ### External Interfaces
 
-* [GET /payloads](#get-payloads) (with [GET /out/payloads](#get-outpayloads) functionality)
+* [GET /payloads](#get-payloads) (only [GET /out/payloads](#get-outpayloads) functionality)
 
 ## RELAY Conformance
 
@@ -2052,14 +2067,18 @@ This conformance level may be useful for nodes acting as aggregators or propagat
 
 ### External Interfaces
 
-* [GET /payloads](#get-payloads) (with [GET /out/payloads](#get-outpayloads) functionality)
+* [GET /payloads](#get-payloads) (only [GET /out/payloads](#get-outpayloads) functionality)
 
 ### Internal Routines
 
 * [FILTER-IN-REQUIRE](#filter-in-require)
-* [TRANSFORM-IN-NO-PROPAGATE](#transform-in-no-propagate)
-* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
 * [FILTER-OUT-NO-SHARE](#filter-out-no-share)
+* [PROCESS-OUT](#process-out)
+* [RECEIVE-IN](#receive-in)
+* [SEND-OUT](#send-out)
+* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+* [TRANSFORM-OUT-NO-PROPAGATE](#transform-out-no-propagate)
+* [TRANSFORM-OUT-ATTRIBUTES](#transform-out-attributes)
 
 ## ENGINE Conformance
 
@@ -2075,14 +2094,20 @@ This conformance level may be useful for engines that choose to implement their 
 
 ### External Interfaces
 
-* [GET /payloads](#get-payloads) (with [GET /local/payloads](#get-localpayloads) and [GET /out/payloads](#get-outpayloads) functionality)
+* [GET /payloads](#get-payloads)
 
 ### Internal Routines
 
 * [FILTER-IN-REQUIRE](#filter-in-require)
-* [TRANSFORM-IN-NO-PROPAGATE](#transform-in-no-propagate)
-* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
 * [FILTER-OUT-NO-SHARE](#filter-out-no-share)
+* [PROCESS-IN](#process-in)
+* [PROCESS-OUT](#process-out)
+* [RECEIVE-IN](#receive-in)
+* [SEND-OUT](#send-out)
+* [SEND-LOCAL](#send-local)
+* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+* [TRANSFORM-OUT-NO-PROPAGATE](#transform-out-no-propagate)
+* [TRANSFORM-OUT-ATTRIBUTES](#transform-out-attributes)
 
 ## FULL Conformance
 
@@ -2101,11 +2126,26 @@ This conformance level is useful for engines that wish to provide the full funct
 
 ### External Interfaces
 
-* [GET /payloads](#get-payloads) (with [GET /local/payloads](#get-localpayloads) and [GET /out/payloads](#get-outpayloads) functionality)
+* [GET /in/filters](#get-infilters)
+* [GET /in/transforms](#get-intransforms)
+* [GET /local/payloads](#get-localpayloads)
+* [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
+* [GET /out/filters](#get-outfilters)
+* [GET /out/payloads](#get-outpayloads)
+* [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
+* [GET /out/transforms](#get-outtransforms)
+* [GET /payloads](#get-payloads)
+* [GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-payloadsoriginator-uuidpayload-uid)
 
 ### Internal Routines
 
 * [FILTER-IN-REQUIRE](#filter-in-require)
-* [TRANSFORM-IN-NO-PROPAGATE](#transform-in-no-propagate)
-* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
 * [FILTER-OUT-NO-SHARE](#filter-out-no-share)
+* [PROCESS-IN](#process-in)
+* [PROCESS-OUT](#process-out)
+* [RECEIVE-IN](#receive-in)
+* [SEND-OUT](#send-out)
+* [SEND-LOCAL](#send-local)
+* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+* [TRANSFORM-OUT-NO-PROPAGATE](#transform-out-no-propagate)
+* [TRANSFORM-OUT-ATTRIBUTES](#transform-out-attributes)
