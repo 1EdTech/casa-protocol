@@ -1727,14 +1727,6 @@ In a similar way, other requirements such as an IMS Learning Tools Interoperabil
 
 TODO
 
-#### 401 Unauthorized
-
-If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Requesting agent must send secret.
-```
-
 #### 403 Forbidden
 
 If the requesting agent is not an `Outlet` with the `out.manage` property set to `true`:
@@ -1758,14 +1750,6 @@ GET /local/payloads HTTP/1.1
 #### 200 Success
 
 If `Outlet`, array of [LocalPayload](#localpayload) objects.
-
-#### 401 Unauthorized
-
-If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Requesting agent must send secret.
-```
 
 #### 403 Forbidden
 
@@ -1793,14 +1777,6 @@ If `Outlet` with `out.manage == true`, [Payload](#payload) object.
 
 Else if `Outlet`, [LocalPayload](#localpayload) object.
 
-#### 401 Unauthorized
-
-If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Requesting agent must send secret.
-```
-
 #### 403 Forbidden
 
 If the requesting agent is not an `Outlet`:
@@ -1821,14 +1797,6 @@ Payload not found.
 
 TODO
 
-#### 401 Unauthorized
-
-If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Requesting agent must send secret.
-```
-
 #### 403 Forbidden
 
 If the requesting agent is not an `Outlet` with the `out.manage` property set to `true`:
@@ -1840,14 +1808,6 @@ Method not allowed for requesting agent.
 ## GET /out/filters
 
 TODO
-
-#### 401 Unauthorized
-
-If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Requesting agent must send secret.
-```
 
 #### 403 Forbidden
 
@@ -1875,14 +1835,6 @@ If `AdjOutPeer`, array of [TransitPayload](#transitpayload) objects.
 
 If `Outlet` with `out.manage == true`, array of [LocalPayload](#localpayload) objects.
 
-#### 401 Unauthorized
-
-If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Requesting agent must send secret.
-```
-
 #### 403 Forbidden
 
 If the requesting agent is neither an `AdjOutPeer` nor an `Outlet` with the `out.manage` property set to `true`:
@@ -1909,14 +1861,6 @@ If `AdjOutPeer`, [TransitPayload](#transitpayload) object.
 
 If `Outlet` with `out.manage == true`, [Payload](#payload) object.
 
-#### 401 Unauthorized
-
-If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Requesting agent must send secret.
-```
-
 #### 403 Forbidden
 
 If the requesting agent is neither an `AdjOutPeer` nor an `Outlet` with the `out.manage` property set to `true`:
@@ -1936,14 +1880,6 @@ Payload not found.
 ## GET /out/transforms
 
 TODO
-
-#### 401 Unauthorized
-
-If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Requesting agent must send secret.
-```
 
 #### 403 Forbidden
 
@@ -2023,7 +1959,7 @@ If is required that, if requesting agent is not an `AdjOutPeer`, an HTTP 401 or 
 
 Response must be prepared from `Local`.
 
-If is required that, if requesting agent is not an `Outlet`, an HTTP 401 or 403 error response must be sent.
+If is required that, if requesting agent is not an `Outlet`, an HTTP 403 error response must be sent.
 
 It is required that, if requesting agent is not a manager (`out.manage` is not `true`), `Payload.journal` and `Payload.original` must be removed before sending.
 
