@@ -65,6 +65,11 @@
     1. [GET /payloads](#get-payloads)
     2. [GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-payloadsoriginator-uuidpayload-uid)
 5. [Internal Routines](#internal-routines)
+6. [Conformance](#conformance)
+    1. [PUBLISH Conformance](#publish-conformance)
+    2. [RELAY Conformance](#relay-conformance)
+    3. [ENGINE Conformance](#engine-conformance)
+    3. [FULL Conformance](#full-conformance)
 
 # Introduction
 
@@ -1918,17 +1923,15 @@ Method not allowed for requesting agent.
 
 ## GET /payloads
 
-Method that aliases based on context:
+If requesting agent is `Outlet`, implements [GET /local/payloads](#get-localpayloads)
 
-* If requesting agent is `Outlet`, see [GET /local/payloads](#get-localpayloads)
-* If requesting agent is `AdjOutPeer`, see [GET /out/payloads](#get-outpayloads)
+If requesting agent is `AdjOutPeer`, implements [GET /out/payloads](#get-outpayloads)
 
 ## GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]
 
-Method that aliases based on context:
+If requesting agent is `Outlet`, implements [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
 
-* If requesting agent is `Outlet`, see [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
-* If requesting agent is `AdjOutPeer`, see [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
+If requesting agent is `AdjOutPeer`, implements [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
 
 # Internal Routines
 
@@ -1936,66 +1939,173 @@ Method that aliases based on context:
 
 **NON-NORMATIVE** This section should be regarded as non-normative at this time, as it may be heavily reworked.
 
+The CASA Protocol defines internal routines to implement its defined [Operations](#operations).
+
 ## FILTER-IN
 
 Filter that runs on all payloads that arrives from any `AdjInPeer` before reaching `AdjIn`.
 
-A payload must be dropped unless a module is running that supports each `:require` attribute:
+### FILTER-IN-REQUIRE
 
-```ruby
-@attributes['required'].keys.each do |attribute_name|
-  drop unless @modules.include?(attribute_name)
-end
-```
+It is required that a payload be dropped if any attribute in `Payload.attributes.require` is not recognized.
 
-A payload must be dropped if one or more modules do not accept their corresponding `:require` attribute:
+Further, it is required that a payload be dropped if any attribute in `Payload.attributes.require` does not validate when processed.
 
-```ruby
-@attributes['required'].each do |attribute_name, attribute|
-  if @modules[attribute].respond_to? 'accepts?'
-    drop unless @modules[attribute].accepts? attribute
-  end
-end
-```
+### FILTER-IN-STALE
 
-It is recommended that a payload be dropped if its creation time is older than the version already in persistence:
-
-```ruby
-drop if @original['timestamp'] < AdjIn.find(@identity).original['timestamp']
-```
-
-## TRANSFORM-IN
-
-Transform that runs on all payloads from `AdjIn` before delivery to `Local`.
-
-### ALWAYS
-
-Payload not shared beyond node if propagation is not set true:
-
-```ruby
-@attributes['share] = false unless @attributes.has_key?('propagate') and @attributes['propagate']
-```
-
-## TRANSFORM-OUT
-
-Transform that runs on all payloads from `Local` before delivery to `AdjOut`.
-
-### ALWAYS
-
-Payloads in `Local` originating from the node itself do not have an `:original` field, so ensure that this field exists for all payloads in `AdjOut`:
-
-```ruby
-@original = @attributes unless @payload.has_key? 'original'
-```
+It is recommended that a payload be dropped if its `Payload.original.timestamp` value is older than the version already in `AdjIn`.
 
 ## FITLER-OUT
 
 Filter that runs on all payloads in `AdjOut` before delivery to any `AdjOutPeer`.
 
-### ALWAYS
+### FILTER-OUT-NO-SHARE
 
-Drop any application unless it is flagged for sharing:
+It is required that a payload be dropped if `Payload.attributes.share` is not `true`.
 
-```ruby
-drop payload unless @attributes.has_key?('share') and @attributes['share']
-```
+## PROCESS-IN
+
+At some regular interval, all entries within `AdjIn` must be processed through TRANSFORM-IN and stored in `Local`. Any entry that already exists within `Local` should be replaced by the new version. 
+
+Two entries with the same `Payload.identity` may not concurrently exist within `Local`. 
+
+## PROCESS-OUT
+
+At some regular interval, all entries within `AdjIn` must be processed through TRANSFORM-OUT and stored in `AdjOut`. Any entry that already exists within `AdjOut` should be replaced by the new version.
+
+Two entries with the same `Payload.identity` may not concurrently exist within `AdjOut`. 
+
+## RECEIVE-IN
+
+Request must be passed through TRANSLATE-IN, SQUASH-IN and FILTER-IN and then be stored within `AdjIn`. Any entry that already exists within `AdjIn` should be replaced by the new version. 
+
+Two entries with the same `Payload.identity` may not concurrently exist within `AdjIn`. 
+
+## SEND-OUT
+
+Response must be prepared from `AdjOut` after passing through FILTER-OUT and TRANSLATE-OUT.
+
+If is required that, if requesting agent is not an `AdjOutPeer`, an HTTP 401 or 403 error response must be sent.
+
+## SEND-LOCAL
+
+Response must be prepared from `Local`.
+
+If is required that, if requesting agent is not an `Outlet`, an HTTP 401 or 403 error response must be sent.
+
+It is required that, if requesting agent is not a manager (`out.manage` is not `true`), `Payload.journal` and `Payload.original` must be removed before sending.
+
+## TRANSFORM-IN
+
+Transform that runs on all payloads from `AdjIn` before delivery to `Local`.
+
+## TRANSFORM-OUT
+
+Transform that runs on all payloads from `Local` before delivery to `AdjOut`.
+
+The required order is:
+
+1. [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+2. [TRANSFORM-OUT-NO-PROPAGATE](#transform-out-no-propagate)
+3. [TRANSFORM-OUT-ATTRIBUTES](#transform-out-attributes)
+4. Engine-defined TRANSFORM-OUT rules
+
+### TRANSFORM-OUT-ORIGINAL
+
+It is required that, if `Payload.original` is not defined, `Payload.attributes` must be copied into `Payload.original`.
+
+### TRANSFORM-OUT-NO-PROPAGATE
+
+It is required that `Payload.attributes.share` is set `false` if `Payload.attributes.propagate` is `false`.
+
+### TRANSFORM-OUT-ATTRIBUTES
+
+It is required that `Payload.attributes` is removed from `Payload`.
+
+# Conformance
+
+Not all nodes in the Community App Sharing Architecture must implement all structures and external interfaces defined by this protocol; instead, in the case of solely publishing apps or in the case of acting as a relay, only a subset of structures, external interfaces and internal routines must be implemented.
+
+## PUBLISH Conformance
+
+This conformance level implies that all functionality is provided for publishing to peers; however, it does not imply support for querying from peers or producing information to outlets.
+
+This conformance level may be useful for publishers that simply want to share apps as an `AdjInPeer` for others.
+
+### Structures
+
+* [TransitPayload](#transitpayload)
+
+### External Interfaces
+
+* [GET /payloads](#get-payloads) (with [GET /out/payloads](#get-outpayloads) functionality)
+
+## RELAY Conformance
+
+This conformance level implies that all functionality is provided for publishing to and querying from peers; however, it does not imply support for functions meant to convey data to outlets such as front ends or management tools. 
+
+This conformance level may be useful for nodes acting as aggregators or propagators.
+
+### Structures
+
+* [TransitPayload](#transitpayload)
+
+### External Interfaces
+
+* [GET /payloads](#get-payloads) (with [GET /out/payloads](#get-outpayloads) functionality)
+
+### Internal Routines
+
+* [FILTER-IN-REQUIRE](#filter-in-require)
+* [TRANSFORM-IN-NO-PROPAGATE](#transform-in-no-propagate)
+* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+* [FILTER-OUT-NO-SHARE](#filter-out-no-share)
+
+## ENGINE Conformance
+
+This conformance level implies that all functionality is provided for publishing to peers, querying from peers and providing data to front-end outlets; however, it does not imply support for functions meant for manipulating data within the engine.
+
+This conformance level may be useful for engines that choose to implement their own scheme for managing filters, transforms and payloads.
+
+### Structures
+
+* [LocalPayload](#localpayload)
+* [Outlet](#outlet)
+* [TransitPayload](#transitpayload)
+
+### External Interfaces
+
+* [GET /payloads](#get-payloads) (with [GET /local/payloads](#get-localpayloads) and [GET /out/payloads](#get-outpayloads) functionality)
+
+### Internal Routines
+
+* [FILTER-IN-REQUIRE](#filter-in-require)
+* [TRANSFORM-IN-NO-PROPAGATE](#transform-in-no-propagate)
+* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+* [FILTER-OUT-NO-SHARE](#filter-out-no-share)
+
+## FULL Conformance
+
+This conformance level implies that all functionality is provided for publishing to peers, querying from peers, providing data to front-end outlets and manipulating data within the engine.
+
+This conformance level is useful for engines that wish to provide the full functionality described by the CASA Protocol.
+
+### Structures
+
+* [AdjInPeer](#adjinpeer)
+* [AdjOutPeer](#adjoutpeer)
+* [LocalPayload](#localpayload)
+* [Outlet](#outlet)
+* [Payload](#payload)
+* [TransitPayload](#transitpayload)
+
+### External Interfaces
+
+* [GET /payloads](#get-payloads) (with [GET /local/payloads](#get-localpayloads) and [GET /out/payloads](#get-outpayloads) functionality)
+
+### Internal Routines
+
+* [FILTER-IN-REQUIRE](#filter-in-require)
+* [TRANSFORM-IN-NO-PROPAGATE](#transform-in-no-propagate)
+* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+* [FILTER-OUT-NO-SHARE](#filter-out-no-share)
