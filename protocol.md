@@ -23,7 +23,7 @@
         4. [AdjInTransform](#adjintransform)
         5. [AdjOutTransform](#adjouttransform)
         6. [AdjOutFilter](#adjoutfilter)
-        7. [AdjOutTransform](#adjouttransform)
+        7. [AdjOutTranslate](#adjouttranslate)
     7. [Persistence](#persistence)
         1. [AdjIn](#adjin)
         2. [Local](#local)
@@ -44,29 +44,54 @@
         1. [Payload](#payload)
         2. [TransitPayload](#transitpayload)
         3. [LocalPayload](#localpayload)
-        4. [PayloadIdentity](#payloadidentity)
-        5. [Journal](#journal)
+    3. [Payload Subcomponents](#payload-subcomponents)
+        1. [PayloadIdentity](#payloadidentity)
+        2. [Journal](#journal)
             1. [PayloadAbstractJournalEntry](#payloadabstractjournalentry)
             2. [PayloadTransitJournalEntry](#payloadtransitjournalentry)
             3. [PayloadLocalJournalEntry](#payloadlocaljournalentry)
-        6. [Attributes](#attributes)
+        3. [Attributes](#attributes)
             1. [PayloadAbstractAttributes](#payloadabstractattributes)
             2. [PayloadTransitAttributes](#payloadtransitattributes)
             3. [PayloadLocalAttributes](#payloadlocalattributes)
 4. [External Interfaces](#external-interfaces)
-    1. [GET /payloads](#get-payloads)
-    2. [GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-payloadsoriginator-uuidpayload-uid)
+    1. [GET /in/filters](#get-infilters)
+    2. [GET /in/transforms](#get-intransforms)
     3. [GET /local/payloads](#get-localpayloads)
     4. [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
-    5. [GET /out/payloads](#get-outpayloads)
-    6. [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
+    5. [GET /out/filters](#get-outfilters)
+    6. [GET /out/payloads](#get-outpayloads)
+    7. [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
+    8. [GET /out/transforms](#get-outtransforms)
+    9. [GET /payloads](#get-payloads)
+    10. [GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-payloadsoriginator-uuidpayload-uid)
 5. [Internal Routines](#internal-routines)
+    1. [FILTER-IN](#filter-in)
+        1. [FILTER-IN-REQUIRE](#filter-in-require)
+        2. [FILTER-IN-STALE](#filter-in-stale)
+    2. [FILTER-OUT](#filter-out)
+        1. [FILTER-OUT-NO-SHARE](#filter-out-no-share)
+    3. [PROCESS-IN](#process-in)
+    4. [PROCESS-OUT](#process-out)
+    5. [RECEIVE-IN](#receive-in)
+    6. [SEND-OUT](#send-out)
+    7. [SEND-LOCAL](#send-local)
+    8. [TRANSFORM-IN](#transform-in)
+    9. [TRANSFORM-OUT](#transform-out)
+        1. [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+        1. [TRANSFORM-OUT-NO-PROPAGATE](#transform-out-no-propagate)
+        1. [TRANSFORM-OUT-ATTRIBUTES](#transform-out-attributes)
+6. [Conformance](#conformance)
+    1. [PUBLISH Conformance](#publish-conformance)
+    2. [RELAY Conformance](#relay-conformance)
+    3. [ENGINE Conformance](#engine-conformance)
+    3. [FULL Conformance](#full-conformance)
 
 # Introduction
 
 ## Status of this Memo
 
-This document specifies the CASA (Community App Sharing Architecture) Protocol, which allows peers to propagate and share information about URIs in their ecosystem. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.
+This memorandum specifies the CASA (Community App Sharing Architecture) Protocol, which allows peers to propagate and share information about web applications in their ecosystem. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.
 
 ## Copyright Notice
 
@@ -74,9 +99,9 @@ Copyright (c) 2013, Regents of the University of California. All rights reserved
 
 # Overview
 
-This memorandum describes the CASA (Community App Sharing Architecture) Protocol. This protocol propagates URI knowledge across a peer-to-peer topology with support for heterogeneous and asymmetric world views. In this way, each peer may develop from its neighbors a knowledge of the  ecosystem as suited to its needs, taking into consideration trust relationships and policies around acceptance and sharing.
+The CASA (Community App Sharing Architecture) Protocol enables the sharing of knowledge about web applications and associated metadata throughout a peer-to-peer topology with support for heterogeneous and asymmetric world views. Through this protocol, each peer develops from its neighbors a knowledge of the ecosystem as suited to its needs, taking into consideration trust relationships and policies around acceptance and sharing.
 
-The motivating use case for this protocol is **web app stores**, such as in the context of a mobile dashboard, an IMS LTI Tool Consumer or a W3C Packaged Web Apps launcher. As such, this protocol originated as an attempt to serve this use cases; however, given its flexibility, it is generic enough to comport with other use cases whereby URIs and metadata are propagated across a peer-to-peer topology.
+The motivating use case for this protocol is **web app stores**, such as in the context of a mobile dashboard, an IMS LTI Tool Consumer or a W3C Packaged Web Apps launcher. This protocol originated as an attempt to serve these use cases; however, given its flexibility, it is generic enough to comport with other use cases whereby URIs and metadata are propagated across a peer-to-peer topology.
 
 ## Background
 
@@ -89,12 +114,12 @@ Neither of these approaches adequately model the real world. Traditionally, web 
 
 ## Solution
 
-This protocol describes an alternative that treats each organization in the network as an autonomous system, whereby each autonomous system: (1) defines its own peer trust, acceptance and sharing policies; (2) queries neighboring peers and processes peer responses; (3) responds to neighboring peers when queries; and (4) produces a storefront for interaction with its own end users.
+The CASA protocol presents an alternative method that treats each organization in the network as an autonomous system, whereby each autonomous system: (1) defines its own trust, acceptance and sharing policies; (2) queries neighboring peers and processes peer responses; (3) responds to neighboring peers when queries; and (4) produces a front-end user interface for interaction with its own end users.
 
 Each organization shall define its inbound and outbound peers:
 
 * `AdjInPeer` - An inbound peer from which the node is willing to accept information; in order to know where to pull information from, an inbound peer is defined explicitly by hostname. 
-* `AdjOutPeer` - An outbound peer to which the peer is willing to share information; an outbound peer may be configured as a remote address, or as a remote address and a wildcard mask, allowing for broad sharing policies to be implemented.
+* `AdjOutPeer` - An outbound peer to which the peer is willing to share information; an outbound peer may be configured as a remote address, or as a remote address and a wildcard mask, allowing for flexible sharing policies to be implemented.
 
 While an organization may both accept from and share with a peer, this symmetry is not required. Further, when accepting applications from a peer, an organization may choose to accept only those that originate with the peer, or it may additionally accept applications that were shared with and propagated through the peer.
 
@@ -133,17 +158,17 @@ The key word **UUID** (alternatively: **Universally Unique IDentifier**, **Globa
 
 The key word **UID** (alternatively: **Unique IDentifier** or **uid**) in this document is to be interpreted as an identifier that is unique within the context of the payload originator.
 
-The key words **node** and **peer** in this document are to be interpreted as an `Engine`, which may include payloads, may query other nodes, may respond to other nodes and may provide outlets.
+The key words **node** and **peer** in this document are to be interpreted as an autonomous system which has knowledge of apps, may query other nodes for apps, may respond to other nodes with apps and may provide data to front-end outlets to present these apps to end users.
 
-The key word **RESTful web service** in this document is to be interpreted as a packet using HTTP methods as described by [RFC 2616](http://tools.ietf.org/rfc/rfc2616.txt) ["Hypertext Transfer Protocol -- HTTP/1.1"]. 
+The key word **RESTful web service** in this document is to be interpreted as an exchange using HTTP methods as described by [RFC 2616](http://tools.ietf.org/rfc/rfc2616.txt) ["Hypertext Transfer Protocol -- HTTP/1.1"]. 
 
-The key words **query** and **call** in this document are to be interpreted mean sending an RESTful web service interaction between two nodes. The key word **request** in this document is to be interpreted as a RESTful web service request; the key word **response** (alternatively for the action: **respond**) in this document is to be interpreted as a RESTful web service response.
+The key words **query** and **call** in this document are to be interpreted mean RESTful web service interactions between two nodes. The key word **request** in this document is to be interpreted as a RESTful web service request; the key word **response** (alternatively for the action: **respond**) in this document is to be interpreted as a RESTful web service response.
 
 The key word **originator** in this document is to be interpreted as the node that introduced a payload into the infrastructure. Each originator must define a UUID that uniquely identifies it across the network; further, each originator must also ensure that it assigns a UID for all payloads that it directly introduces into the network.
 
 The key word **identity** in this document is to be interpreted as a composite key constructed from a UID identifying a payload within the originator and a UUID identifying the node within the network.
 
-The key word **payload** in this document is to be interpreted as a data structure required minimally to include (1) an identity, comprised of a UID unique to the originator and the UUID of the originator, and (2) a set of attributes, minimally including a name and URI. Additionally, if a payload is propagated from a node besides the originator, it must also include a copy of the original attributes provided by the originator.
+The key word **payload** in this document is to be interpreted as a data structure required minimally to include (1) an identity, comprised of a UID unique to the originator and the UUID of the originator, and (2) a set of attributes, minimally including the URI of an app and the timestamp when created. Additionally, if a payload has changed since it left the originator, it must also include a journal of changes.
 
 The key word **array** in this document is to be interpreted as an ordered data structure of elements with sequential numeric indices.
 
@@ -191,7 +216,7 @@ Payloads delivered to `AdjOutPeer` nodes begin at `AdjIn` for propagated URIs an
 
 An outlet is an interface that accesses the local representation of a payload, namely a payload's identity and attributes. 
 
-If an outlet is designated as a manager, it additionally gains read access to the payload's original attributes and journal; further, it may also payloads stored in `Local` to influence how other outlets perceive the payload and, optionally, those stored in `AdjOut` to influence how `AdjOutPeer` nodes perceive the payload. Modifications to payloads must be both written to the `attributes` property of the payload and entered into the `journal` section of the payload.
+If an outlet is designated as a manager, it additionally gains read access to the payload's original attributes and journal; this allows it to deconstruct the path by which the `Payload` arrived at its current state, and thus to set up transform rules to mutate the payload's state.
 
 ## Operations
 
@@ -217,19 +242,25 @@ This operation must drop payloads that have `require` properties that the engine
 
 If a payload meets the `AdjInFilter` constraints, it shall be entered into `AdjIn`.
 
+For more information on this routine, see the [FILTER-IN](#filter-in) internal routine subsection.
+
 ### AdjInTransform
 
-After a payload is written to `AdjIn`, it forks along a data path that takes it to `Local`. Before reaching `Local`, payloads must first pass through `AdjInTransform`. Changes made through transformation rules within `AdjInTransform` should be made directly against the `attributes` section of the payload, and additionally, they should be written to an entry in the `journal`.
+After a payload is written to `AdjIn`, it forks along a data path that takes it to `Local`. Before reaching `Local`, payloads must first pass through `AdjInTransform`. Changes made through transformation rules within `AdjInTransform` should be made directly against the `attributes` section of the payload, and additionally, they should be written to an entry in the journal. Note that this instance of the journal is local to the node, meant for debugging purposes; any changes that the node wishes to make to the journal when it propagates a payload along to other peers must occur through `AdjOutTransform`.
 
 This routine allows a node to curate the way in which payloads are presented to outlets.
+
+For more information on this routine, see the [TRANSFORM-IN](#transform-in) internal routine subsection.
 
 ### AdjOutTransform
 
 All payloads being delivered to `AdjOut` must first pass through `AdjOutTransform`. 
 
-These payloads originate from one of two locations based on their origin: (1) payloads shared from `AdjInPeer` nodes travel a data path from `AdjIn` and (2) payloads originating at the node travel a data path from `Local`. Changes made through transformation rules within `AdjOutTransform` should be made as an entry in the `journal`.
+These payloads originate from one of two locations based on their origin: (1) payloads shared from `AdjInPeer` nodes travel a data path from `AdjIn` and (2) payloads originating at the node travel a data path from `Local`. Changes made through transformation rules within `AdjOutTransform` must be made as an entry in the `journal`.
 
 This routine allows a node to curate the way in which payloads are presented to `AdjOutPeer` nodes.
+
+For more information on this routine, see the [TRANSFORM-OUT](#transform-out) internal routine subsection.
 
 ### AdjOutFilter
 
@@ -239,9 +270,11 @@ These filters are typically used to drop payloads that will not be useful for ot
 
 If a payload meets the `AdjOutFilter` constraints, then it will be provided in the response to queries from `AdjOutPeer` nodes.
 
-### AdjOutTransform
+For more information on this routine, see the [FILTER-OUT](#filter-out) internal routine subsection.
 
-When preparing an HTTP response to an `AdjOutPeer` node, the last step before delivery is passing each payload through `AdjOutTransform`, which maps human-readable names configured by the peer into machine-readable attribute UUIDs. This operation affects both the `original` attribute of the payload and all entries in the `journal` attribute of the payload.
+### AdjOutTranslate
+
+When preparing an HTTP response to an `AdjOutPeer` node, the last step before delivery is passing each payload through `AdjOutTranslate`, which maps human-readable names configured by the peer into machine-readable attribute UUIDs. This operation affects both the `original` attribute of the payload and all entries in the `journal` attribute of the payload.
 
 If there is no mapping for a human-readable name, and it is not of UUID form, then it should be discarded during this translation phase; however, if a name is already in UUID form and no mapping exists for it, then it should not be affected by this process. Consequently, a regular expression match conforming to RFC 4122 must be used to determine if translation is required on an attribute.
 
@@ -255,7 +288,7 @@ This structure contains payloads shared from or propagated through an `AdjInPeer
 
 Payloads in `AdjIn` are of the `Payload` structure, including the `identity`, `original`, `journal` and `attributes` properties. If a payload's `attributes` structure is unmodified from its `original` structure, then the `journal` may be neglected.
 
-These payloads follow two datapaths: (1) through `AdjInTransform` to `Local` for dissemination to local outlets, and `
+These payloads follow two datapaths: (1) through `AdjInTransform` to `Local` for dissemination to local outlets, and (2) through `AdjOutTransform` to `AdjOut`.
 
 ### Local
 
@@ -297,7 +330,7 @@ A node structures JSON Schema is available under see [schema.json](schema.json).
 
 ### Node
 
-The `Node` object is a logical representation of an entity that may interact with the `Engine`. However, this structure does not intrinsically provide authorization. Instead, authorization is derived from node subclasses including `AdjInPeer`, `AdjOutPeer` and `Outlet`.
+The `Node` object is a logical representation of an entity that may interact with the `Engine`. This structure does not itself provide authorization; instead, it is an abstract structure extended by `AdjInPeer`, `AdjOutPeer`, `AdjInOutPeer` and `Outlet`, each of which provide mechanisms for determining identity and authorization.
 
 The JSON Schema for `Node`:
 
@@ -328,9 +361,9 @@ An example of a `Node` structure:
 }
 ```
 
-All `Node` objects must define a `name` property. This is a local reference to the node only, meaning that a peer may choose its own approach for naming nodes, but within a node, the name must be unique among all nodes defined within the `Engine`.
+All `Node` objects must have a `name` property.  The `name` property must be unique among all nodes defined for an `Engine`. This is a local value. Each `Engine` may define neighbors under its own naming scheme, and these values will never be shared beyond the `Engine` itself. This name is completely different from a publisher's UUID. It is meant purely for reference by `Engine` administrators, as opposed to the publisher's UUID, which is meant to establish identity within a payload.
 
-All `Node` objects may define a `secret` property. If the secret property is set, then it must be included in all RESTful web service requests issued against the `Engine`.
+All `Node` objects may define a `secret` property. If the secret property is set, it must be included in all RESTful web service requests issued against the `Engine`.
 
 ### AdjInPeer and AdjInPeerIdentity
 
@@ -423,9 +456,9 @@ An example of an `AdjInPeer` structure:
   "secret": "foobar",
   "in": {
     "hostname": "localhost",
-    "scheme": "http",
+    "scheme": "https",
     "path": "/",
-    "port": 8080
+    "port": 443
   }
 }
 ```
@@ -536,17 +569,19 @@ An example of an `AdjOutPeer` structure:
 
 All `AdjOutPeer` objects must define an `out` property containing an `AdjOutPeerIdentity` object. 
 
-All `AdjOutPeerIdentity` objects must either contain a `local` property set to `false` or else not contain a `local` property. An `AdjOutPeerIdentity` object may optionally include the additional attributes `address` and `mask`.
+All `AdjOutPeerIdentity` objects must either contain a `local` property set to `false` or else not contain a `local` property. If set `true`, it is an `OutletIdentity` instead of an `AdjOutPeerIdentity`. 
+
+An `AdjOutPeerIdentity` object may optionally include the additional attributes `address` and `mask`.
 
 It is recommended that all `AdjOutPeerIdentity` objects contain an `address` property with an IP address value. If the `address` property is not defined, then the `Engine` shall respond to any request bearing the correct `name` and `secret` defined in the containing `AdjOutPeer` object. 
 
-Additionally, the `AdjOutPeerIdentity` object may include a `mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued within a subnet. If neither the `mask` nor the `hostname` property are set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `255.255.255.255`. If the `mask` property is not set but the `hostname` property is set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `0.0.0.0`.
+Additionally, the `AdjOutPeerIdentity` object may include a `mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued within a subnet. If neither the `mask` nor the `hostname` property are set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `255.255.255.255`. If the `mask` property is not set but the `hostname` property is set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `0.0.0.0`. A `mask` property set without a `hostname` property shall be disregarded and treated as though neither are set.
 
-The `out` object may be set in concurrence with an `in` property containing an `AdjInPeerIdentity`. Under this case, the peer should be treated as both an `AdjInPeer` and an `AdjOutPeer`. See `AdjInOutPeer` for more.
+The `out` object for an `AdjOutPeerIdenity` may be set in concurrence with an `in` property containing an `AdjInPeerIdentity`. Under this case, the peer should be treated as both an `AdjInPeer` and an `AdjOutPeer`. See `AdjInOutPeer` for more.
 
 ### AdjInOutPeer
 
-The `AdjInOutPeer` object extends the `Node` object, specifying a peer that the `Engine` may query to retrieve payloads and to which the `Engine` will respond with a set of payloads from `AdjOut` when queried by a node with a matching `AdjOutPeerIdentity`. In addition to the inherited properties of `Node`, an `AdjInOutPeer` object must include an additional `AdjInPeerIdentity` under the key `in` and an `AdjOutPeerIdentity` under the key `out`.
+The `AdjInOutPeer` object extends the `Node` object, specifying a peer that the `Engine` may query to retrieve payloads for `AdjIn` and to which the `Engine` will respond with a set of payloads from `AdjOut` when queried by a node with a matching `AdjOutPeerIdentity`. In addition to the inherited properties of `Node`, an `AdjInOutPeer` object must include an additional `AdjInPeerIdentity` under the key `in` and an `AdjOutPeerIdentity` under the key `out`.
 
 The JSON Schema for `AdjInOutPeer` (see see [schema.json](schema.json)):
 
@@ -631,9 +666,9 @@ An example of an `AdjOutPeer` structure:
   "secret": "foobar",
   "in"     : {
     "hostname": "localhost",
-    "scheme": "http",
+    "scheme": "https",
     "path": "/",
-    "port": 8080
+    "port": 443
   },
   "out"     : {
     "address": "127.0.0.1",
@@ -749,7 +784,9 @@ An example of an `Outlet` structure:
 
 All `Outlet` objects must define an `out` property containing an `OutletIdentity` object. 
 
-All `OutletIdentity` objects must either contain a `local` property set to `true`. An `OutletIdentity` object may optionally include the additional attributes `address`, `mask` and `manage`.
+All `OutletIdentity` objects must contain a `local` property set to `true`. A `local` property set to `false` or not set instead denotes an `AdjOutPeerIdentity`, which is not valid for an `Outlet`.
+
+An `OutletIdentity` object may optionally include the additional attributes `address`, `mask` and `manage`.
 
 It is recommended that all `OutletIdentity` objects contain an `address` property with an IP address value. If the `address` property is not defined, then the `Engine` shall respond to any request bearing the correct `name` and `secret` defined in the containing `Outlet` object. 
 
@@ -1187,6 +1224,8 @@ The JSON Schema for `LocalPayload` (see [schema.json](schema.json)):
 }
 ```
 
+## Payload Subcomponents
+
 ### PayloadIdentity
 
 The `PayloadIdentity` object is represented under the `identity` property of all `Payload`, `TransitPayload` and `LocalPayload` objects. It is a globally unique compound key that denotes the logical entity to which a payload pertains. This allows an originator to safely update any property in a payload message, so long as the `identity` is retained.
@@ -1372,16 +1411,18 @@ The JSON Schema for `PayloadLocalJournalEntry` (see [schema.json](schema.json)):
 
 A `PayloadLocalJournalEntry` object is generated by way of the `AdjInTranslate` operation from each `PayloadTransitJournalEntry.journal` array element, and it is contained as an element within the `Payload.journal` array.
 
-If `AdjOutTransform` changes any `Payload.attributes.use` or `Payload.attributes.require` attribute, a `PayloadLocalJournalEntry` object must be modified within `Payload.journal` as follows:
+If a transform changes any `Payload.attributes.use` or `Payload.attributes.require` attribute, a `PayloadLocalJournalEntry` object must be modified within `Payload.journal` as follows:
 
 1. If the last element in the `Payload.journal` has an `originator` UUID corresponding to the UUID of the node, the element should be modified to make additional changes and the timestamp should be updated to the current time.
 2. Otherwise, a new journal element should be appended to the end of the `Payload.journal` array. This element must include an `originator` property with an UUID corresponding to the id of the current node, the current timestamp conforming to RFC 3339, and either a use property or a require property or both corresponding to changes that the node made to the attributes by way of `AdjOutTransform`.
 
-A `Payload.journal` entry may not be removed from `Payload.journal` unless it is the last element in `Payload.journal`, has an `originator` UUID corresponding to the UUID of the node and `AdjOutTransform` has not changed either `Payload.attributes.use` and `Payload.attributes.require`. Equivalently, the node may only remove the last `Payload.journal` entry if it has an `originator` UUID corresponding to the current node and the `Payload.attributes` values after `AdjInSquash` are equivalent to the attributes after `AdjOutTransform`.
+A `Payload.journal` entry may not be removed from `Payload.journal` unless it is the last element in `Payload.journal`, has an `originator` UUID corresponding to the UUID of the node and `AdjOutTransform` has not changed either `Payload.attributes.use` and `Payload.attributes.require`. Equivalently, the node may only remove the last `Payload.journal` entry if it has an `originator` UUID corresponding to the current node and the `Payload.attributes` values after `AdjInSquash` are equivalent to the attributes after the transform.
+
+NOTE: A payload may have different journals in the `AdjIn`, `Local` and `AdjOut` persistence stores. The `AdjIn` journal represents only those entries made by other nodes before the payload was received; the `Local` journal represents entries made by other nodes before the payload was received, plus transformations in `AdjInTransform` that are conveyed to outlets; and the `AdjOut` journal represents entries made by other nodes before the payload was received, plus transformations in `AdjOutTransform` that are conveyed to peers querying the node.
 
 ### Attributes
 
-Attributes describe the state of a payload at a particular point in the process. The `Payload.original` structure is a set of attributes as set by the originator when the payload was introduced into the network, and the `Payload.attributes` structure is a set of attributes computed by way of: `AdjInTranslate` to map from transit machine-readable UUID representation to local human-readable name representation; `AdjInSquash` to process `Payload.original` and `Payload.journal` to arrive at a set of `Payload.attributes` send from `AdjInPeer`; and either `AdjInTransform` for `Outlet` queries or `AdjOutTransform for `AdjOutPeer` queries to modify the `use` and `require` properties.
+Attributes describe the state of a payload at a particular point in the process. The `Payload.original` structure is a set of attributes as set by the originator when the payload was introduced into the network, and the `Payload.attributes` structure is a set of attributes computed by way of: `AdjInTranslate` to map from transit machine-readable UUID representation to local human-readable name representation; `AdjInSquash` to process `Payload.original` and `Payload.journal` to arrive at a set of `Payload.attributes` send from `AdjInPeer`; and either `AdjInTransform` for `Outlet` queries or `AdjOutTransform` for `AdjOutPeer` queries to modify the `use` and `require` properties.
 
 If `AdjOutTransform` modifies the `use` or `require` properties, a journal entry must be written.
 
@@ -1682,42 +1723,9 @@ In a similar way, other requirements such as an IMS Learning Tools Interoperabil
 
 **INCOMPLETE** This section is currently a work-in-progress and not yet complete.
 
-## GET /payloads
+## GET /in/filters
 
-Method that aliases based on context:
-
-* If requesting agent is `Outlet`, see [GET /local/payloads](#get-localpayloads)
-* If requesting agent is `AdjOutPeer`, see [GET /out/payloads](#get-outpayloads)
-
-## GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]
-
-Method that aliases based on context:
-
-* If requesting agent is `Outlet`, see [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
-* If requesting agent is `AdjOutPeer`, see [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
-
-## GET /local/payloads
-
-If the requesting agent is an `Outlet`, returns an array of `LocalPayload` objects; otherwise, an error is thrown.
-
-### Request
-
-```
-GET /local/payloads?secret=[secret] HTTP/1.1
-```
-
-### Response
-
-#### 200 Success
-
-```js
-{
-  "type": "array",
-  "items": {
-    "$ref": "#/definitions/Payload"
-  }
-}
-```
+TODO
 
 #### 401 Unauthorized
 
@@ -1729,11 +1737,37 @@ Requesting agent must send secret.
 
 #### 403 Forbidden
 
-If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+If the requesting agent is not an `Outlet` with the `out.manage` property set to `true`:
 
 ```
-Secret was not accepted for requesting agent.
+Method not allowed for requesting agent.
 ```
+
+## GET /local/payloads
+
+If the requesting agent is an `Outlet`, returns an array of `LocalPayload` objects; otherwise, an error is thrown.
+
+### Request
+
+```
+GET /local/payloads HTTP/1.1
+```
+
+### Response
+
+#### 200 Success
+
+If `Outlet`, array of [LocalPayload](#localpayload) objects.
+
+#### 401 Unauthorized
+
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Requesting agent must send secret.
+```
+
+#### 403 Forbidden
 
 If the requesting agent is not an `Outlet`:
 
@@ -1748,28 +1782,16 @@ If the requesting agent is an `Outlet` and payload in `Local` persistence has a 
 ### Request
 
 ```
-GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]?secret=[secret] HTTP/1.1
+GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID] HTTP/1.1
 ```
 
 ### Response
 
 #### 200 Success
 
-If the `Outlet` has the `out.manage` property set to `true`:
+If `Outlet` with `out.manage == true`, [Payload](#payload) object.
 
-```js
-{
-  "$ref": "#/definitions/Payload"
-}
-```
-
-If the `Outlet` does not have the `out.manage` property or it is not set to `true`:
-
-```js
-{
-  "$ref": "#/definitions/Payload"
-}
-```
+Else if `Outlet`, [LocalPayload](#localpayload) object.
 
 #### 401 Unauthorized
 
@@ -1780,12 +1802,6 @@ Requesting agent must send secret.
 ```
 
 #### 403 Forbidden
-
-If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Secret was not accepted for requesting agent.
-```
 
 If the requesting agent is not an `Outlet`:
 
@@ -1801,41 +1817,9 @@ If no payload in `Local` persistence with `PayloadIdentity` matching `[ORIGINATO
 Payload not found.
 ```
 
-## GET /out/payloads
+## GET /in/transforms
 
-If the requesting agent is an `AdjOutPeer`, returns an array of `TransitPayload` objects; else, if requesting agent is an `Outlet` with the `out.manage` property set to `true`, returns an array of `LocalPayload` objects; otherwise, an error is thrown.
-
-### Request
-
-```
-GET /out/payloads?secret=[secret] HTTP/1.1
-```
-
-### Response
-
-#### 200 Success
-
-If requesting agent is an `AdjOutPeer`:
-
-```js
-{
-  "type": "array",
-  "items": {
-    "$ref": "#/definitions/TransitPayload"
-  }
-}
-```
-
-If requesting agent is an `Outlet` with the `out.manage` property set to `true`:
-
-```js
-{
-  "type": "array",
-  "items": {
-    "$ref": "#/definitions/LocalPayload"
-  }
-}
-```
+TODO
 
 #### 401 Unauthorized
 
@@ -1847,11 +1831,59 @@ Requesting agent must send secret.
 
 #### 403 Forbidden
 
-If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+If the requesting agent is not an `Outlet` with the `out.manage` property set to `true`:
 
 ```
-Secret was not accepted for requesting agent.
+Method not allowed for requesting agent.
 ```
+
+## GET /out/filters
+
+TODO
+
+#### 401 Unauthorized
+
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Requesting agent must send secret.
+```
+
+#### 403 Forbidden
+
+If the requesting agent is not an `Outlet` with the `out.manage` property set to `true`:
+
+```
+Method not allowed for requesting agent.
+```
+
+## GET /out/payloads
+
+If the requesting agent is an `AdjOutPeer`, returns an array of `TransitPayload` objects; else, if requesting agent is an `Outlet` with the `out.manage` property set to `true`, returns an array of `LocalPayload` objects; otherwise, an error is thrown.
+
+### Request
+
+```
+GET /out/payloads HTTP/1.1
+```
+
+### Response
+
+#### 200 Success
+
+If `AdjOutPeer`, array of [TransitPayload](#transitpayload) objects.
+
+If `Outlet` with `out.manage == true`, array of [LocalPayload](#localpayload) objects.
+
+#### 401 Unauthorized
+
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Requesting agent must send secret.
+```
+
+#### 403 Forbidden
 
 If the requesting agent is neither an `AdjOutPeer` nor an `Outlet` with the `out.manage` property set to `true`:
 
@@ -1866,28 +1898,16 @@ If the requesting agent is an `AdjOutPeer` or an `Outlet` with an `out.manage` p
 ### Request
 
 ```
-GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]?secret=[secret] HTTP/1.1
+GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID] HTTP/1.1
 ```
 
 ### Response
 
 #### 200 Success
 
-If requesting agent is an `AdjOutPeer`:
+If `AdjOutPeer`, [TransitPayload](#transitpayload) object.
 
-```js
-{
-  "$ref": "#/definitions/TransitPayload"
-}
-```
-
-If requesting agent is an `Outlet` with the `out.manage` property set to `true`:
-
-```js
-{
-  "$ref": "#/definitions/Payload"
-}
-```
+If `Outlet` with `out.manage == true`, [Payload](#payload) object.
 
 #### 401 Unauthorized
 
@@ -1898,12 +1918,6 @@ Requesting agent must send secret.
 ```
 
 #### 403 Forbidden
-
-If a secret was specified and `in.address, in.mask` would match if the correct secret was specified:
-
-```
-Secret was not accepted for requesting agent.
-```
 
 If the requesting agent is neither an `AdjOutPeer` nor an `Outlet` with the `out.manage` property set to `true`:
 
@@ -1919,72 +1933,237 @@ If no payload in `AdjOut` persistence with `PayloadIdentity` matching `[ORIGINAT
 Payload not found.
 ```
 
+## GET /out/transforms
+
+TODO
+
+#### 401 Unauthorized
+
+If no secret was specified and `in.address, in.mask` would match if the correct secret was specified:
+
+```
+Requesting agent must send secret.
+```
+
+#### 403 Forbidden
+
+If the requesting agent is not an `Outlet` with the `out.manage` property set to `true`:
+
+```
+Method not allowed for requesting agent.
+```
+
+## GET /payloads
+
+If requesting agent is `Outlet`, implements [GET /local/payloads](#get-localpayloads)
+
+If requesting agent is `AdjOutPeer`, implements [GET /out/payloads](#get-outpayloads)
+
+## GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]
+
+If requesting agent is `Outlet`, implements [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
+
+If requesting agent is `AdjOutPeer`, implements [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
+
 # Internal Routines
 
 **INCOMPLETE** This section is currently a work-in-progress and not yet complete.
 
 **NON-NORMATIVE** This section should be regarded as non-normative at this time, as it may be heavily reworked.
 
+The CASA Protocol defines internal routines to implement its defined [Operations](#operations).
+
 ## FILTER-IN
 
 Filter that runs on all payloads that arrives from any `AdjInPeer` before reaching `AdjIn`.
 
-A payload must be dropped unless a module is running that supports each `:require` attribute:
+### FILTER-IN-REQUIRE
 
-```ruby
-@attributes['required'].keys.each do |attribute_name|
-  drop unless @modules.include?(attribute_name)
-end
-```
+It is required that a payload be dropped if any attribute in `Payload.attributes.require` is not recognized.
 
-A payload must be dropped if one or more modules do not accept their corresponding `:require` attribute:
+Further, it is required that a payload be dropped if any attribute in `Payload.attributes.require` does not validate when processed.
 
-```ruby
-@attributes['required'].each do |attribute_name, attribute|
-  if @modules[attribute].respond_to? 'accepts?'
-    drop unless @modules[attribute].accepts? attribute
-  end
-end
-```
+### FILTER-IN-STALE
 
-It is recommended that a payload be dropped if its creation time is older than the version already in persistence:
-
-```ruby
-drop if @original['timestamp'] < AdjIn.find(@identity).original['timestamp']
-```
-
-## TRANSFORM-IN
-
-Transform that runs on all payloads from `AdjIn` before delivery to `Local`.
-
-### ALWAYS
-
-Payload not shared beyond node if propagation is not set true:
-
-```ruby
-@attributes['share] = false unless @attributes.has_key?('propagate') and @attributes['propagate']
-```
-
-## TRANSFORM-OUT
-
-Transform that runs on all payloads from `Local` before delivery to `AdjOut`.
-
-### ALWAYS
-
-Payloads in `Local` originating from the node itself do not have an `:original` field, so ensure that this field exists for all payloads in `AdjOut`:
-
-```ruby
-@original = @attributes unless @payload.has_key? 'original'
-```
+It is recommended that a payload be dropped if its `Payload.original.timestamp` value is older than the version already in `AdjIn`.
 
 ## FITLER-OUT
 
 Filter that runs on all payloads in `AdjOut` before delivery to any `AdjOutPeer`.
 
-### ALWAYS
+### FILTER-OUT-NO-SHARE
 
-Drop any application unless it is flagged for sharing:
+It is required that a payload be dropped if `Payload.attributes.share` is not `true`.
 
-```ruby
-drop payload unless @attributes.has_key?('share') and @attributes['share']
-```
+## PROCESS-IN
+
+At some regular interval, all entries within `AdjIn` must be processed through TRANSFORM-IN and stored in `Local`. Any entry that already exists within `Local` should be replaced by the new version. 
+
+Two entries with the same `Payload.identity` may not concurrently exist within `Local`. 
+
+## PROCESS-OUT
+
+At some regular interval, all entries within `AdjIn` must be processed through TRANSFORM-OUT and stored in `AdjOut`. Any entry that already exists within `AdjOut` should be replaced by the new version.
+
+Two entries with the same `Payload.identity` may not concurrently exist within `AdjOut`. 
+
+## RECEIVE-IN
+
+Request must be passed through TRANSLATE-IN, SQUASH-IN and FILTER-IN and then be stored within `AdjIn`. Any entry that already exists within `AdjIn` should be replaced by the new version. 
+
+Two entries with the same `Payload.identity` may not concurrently exist within `AdjIn`. 
+
+## SEND-OUT
+
+Response must be prepared from `AdjOut` after passing through FILTER-OUT and TRANSLATE-OUT.
+
+If is required that, if requesting agent is not an `AdjOutPeer`, an HTTP 401 or 403 error response must be sent.
+
+## SEND-LOCAL
+
+Response must be prepared from `Local`.
+
+If is required that, if requesting agent is not an `Outlet`, an HTTP 401 or 403 error response must be sent.
+
+It is required that, if requesting agent is not a manager (`out.manage` is not `true`), `Payload.journal` and `Payload.original` must be removed before sending.
+
+## TRANSFORM-IN
+
+Transform that runs on all payloads from `AdjIn` before delivery to `Local`.
+
+## TRANSFORM-OUT
+
+Transform that runs on all payloads from `Local` before delivery to `AdjOut`.
+
+The required order is:
+
+1. [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+2. [TRANSFORM-OUT-NO-PROPAGATE](#transform-out-no-propagate)
+3. [TRANSFORM-OUT-ATTRIBUTES](#transform-out-attributes)
+4. Engine-defined TRANSFORM-OUT rules
+
+### TRANSFORM-OUT-ORIGINAL
+
+It is required that, if `Payload.original` is not defined, `Payload.attributes` must be copied into `Payload.original`.
+
+### TRANSFORM-OUT-NO-PROPAGATE
+
+It is required that `Payload.attributes.share` is set `false` if `Payload.attributes.propagate` is `false`.
+
+### TRANSFORM-OUT-ATTRIBUTES
+
+It is required that `Payload.attributes` is removed from `Payload`.
+
+# Conformance
+
+Not all nodes in the Community App Sharing Architecture must implement all structures and external interfaces defined by this protocol; instead, in the case of solely publishing apps or in the case of acting as a relay, only a subset of structures, external interfaces and internal routines must be implemented.
+
+## PUBLISH Conformance
+
+This conformance level implies that all functionality is provided for publishing to peers; however, it does not imply support for querying from peers or producing information to outlets.
+
+This conformance level may be useful for publishers that simply want to share apps as an `AdjInPeer` for others.
+
+### Structures
+
+* [TransitPayload](#transitpayload)
+
+### External Interfaces
+
+* [GET /payloads](#get-payloads) (only [GET /out/payloads](#get-outpayloads) functionality)
+
+## RELAY Conformance
+
+This conformance level implies that all functionality is provided for publishing to and querying from peers; however, it does not imply support for functions meant to convey data to outlets such as front-ends or management tools. 
+
+This conformance level may be useful for nodes acting as aggregators or propagators.
+
+### Structures
+
+* [TransitPayload](#transitpayload)
+
+### External Interfaces
+
+* [GET /payloads](#get-payloads) (only [GET /out/payloads](#get-outpayloads) functionality)
+
+### Internal Routines
+
+* [FILTER-IN-REQUIRE](#filter-in-require)
+* [FILTER-OUT-NO-SHARE](#filter-out-no-share)
+* [PROCESS-OUT](#process-out)
+* [RECEIVE-IN](#receive-in)
+* [SEND-OUT](#send-out)
+* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+* [TRANSFORM-OUT-NO-PROPAGATE](#transform-out-no-propagate)
+* [TRANSFORM-OUT-ATTRIBUTES](#transform-out-attributes)
+
+## ENGINE Conformance
+
+This conformance level implies that all functionality is provided for publishing to peers, querying from peers and providing data to front-end outlets; however, it does not imply support for functions meant for manipulating data within the engine.
+
+This conformance level may be useful for engines that choose to implement their own scheme for managing filters, transforms and payloads.
+
+### Structures
+
+* [LocalPayload](#localpayload)
+* [Outlet](#outlet)
+* [TransitPayload](#transitpayload)
+
+### External Interfaces
+
+* [GET /payloads](#get-payloads)
+
+### Internal Routines
+
+* [FILTER-IN-REQUIRE](#filter-in-require)
+* [FILTER-OUT-NO-SHARE](#filter-out-no-share)
+* [PROCESS-IN](#process-in)
+* [PROCESS-OUT](#process-out)
+* [RECEIVE-IN](#receive-in)
+* [SEND-OUT](#send-out)
+* [SEND-LOCAL](#send-local)
+* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+* [TRANSFORM-OUT-NO-PROPAGATE](#transform-out-no-propagate)
+* [TRANSFORM-OUT-ATTRIBUTES](#transform-out-attributes)
+
+## FULL Conformance
+
+This conformance level implies that all functionality is provided for publishing to peers, querying from peers, providing data to front-end outlets and manipulating data within the engine.
+
+This conformance level is useful for engines that wish to provide the full functionality described by the CASA Protocol.
+
+### Structures
+
+* [AdjInPeer](#adjinpeer)
+* [AdjInOutPeer](#adjinoutpeer)
+* [AdjOutPeer](#adjoutpeer)
+* [LocalPayload](#localpayload)
+* [Outlet](#outlet)
+* [Payload](#payload)
+* [TransitPayload](#transitpayload)
+
+### External Interfaces
+
+* [GET /in/filters](#get-infilters)
+* [GET /in/transforms](#get-intransforms)
+* [GET /local/payloads](#get-localpayloads)
+* [GET /local/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-localpayloadsoriginator-uuidpayload-uid)
+* [GET /out/filters](#get-outfilters)
+* [GET /out/payloads](#get-outpayloads)
+* [GET /out/payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-outpayloadsoriginator-uuidpayload-uid)
+* [GET /out/transforms](#get-outtransforms)
+* [GET /payloads](#get-payloads)
+* [GET /payloads/[ORIGINATOR-UUID]/[PAYLOAD-UID]](#get-payloadsoriginator-uuidpayload-uid)
+
+### Internal Routines
+
+* [FILTER-IN-REQUIRE](#filter-in-require)
+* [FILTER-OUT-NO-SHARE](#filter-out-no-share)
+* [PROCESS-IN](#process-in)
+* [PROCESS-OUT](#process-out)
+* [RECEIVE-IN](#receive-in)
+* [SEND-OUT](#send-out)
+* [SEND-LOCAL](#send-local)
+* [TRANSFORM-OUT-ORIGINAL](#transform-out-original)
+* [TRANSFORM-OUT-NO-PROPAGATE](#transform-out-no-propagate)
+* [TRANSFORM-OUT-ATTRIBUTES](#transform-out-attributes)
