@@ -180,7 +180,7 @@ The key word **timestamp** in this document is to be interpreted as a string wri
 
 The key word **idempotent** in this document is to be interpreted as defined by [RFC 2616](http://tools.ietf.org/rfc/rfc2616.txt) ["Hypertext Transfer Protocol -- HTTP/1.1"]. 
 
-The key word **wildcard mask** (alternatively: **mask**) in this document is to be interpreted as the binary inverse of the key word "network mask" as described by [RFC 4632](http://tools.ietf.org/rfc/rfc4632.txt) ["Classless Inter-domain Routing (CIDR)"].
+The key word **wildcard mask** (alternatively: **mask**) in this document is to be interpreted as the key word "network mask" as described by [RFC 4632](http://tools.ietf.org/rfc/rfc4632.txt) ["Classless Inter-domain Routing (CIDR)"].
 
 The key word **JavaScript Object Notation** (alternatively: **JSON**) in this document is to be interpreted as the data format described by [RFC 4627](http://tools.ietf.org/rfc/rfc4627.txt) ["The application/json Media Type for JavaScript Object Notation (JSON)"].
 
@@ -561,7 +561,7 @@ An example of an `AdjOutPeer` structure:
   "secret": "foobar",
   "out"     : {
     "address": "10.0.0.0",
-    "mask": "0.255.255.255",
+    "mask": "255.0.0.0",
     "local": false
   }
 }
@@ -575,7 +575,7 @@ An `AdjOutPeerIdentity` object may optionally include the additional attributes 
 
 It is recommended that all `AdjOutPeerIdentity` objects contain an `address` property with an IP address value. If the `address` property is not defined, then the `Engine` shall respond to any request bearing the correct `name` and `secret` defined in the containing `AdjOutPeer` object. 
 
-Additionally, the `AdjOutPeerIdentity` object may include a `mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued within a subnet. If neither the `mask` nor the `hostname` property are set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `255.255.255.255`. If the `mask` property is not set but the `hostname` property is set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `0.0.0.0`. A `mask` property set without a `hostname` property shall be disregarded and treated as though neither are set.
+Additionally, the `AdjOutPeerIdentity` object may include a `mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued within a subnet. If neither the `mask` nor the `hostname` property are set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `0.0.0.0`. If the `mask` property is not set but the `hostname` property is set, then the `AdjOutPeerIdentity` should be regarded with a `mask` value of `255.255.255.255`. A `mask` property set without a `hostname` property shall be disregarded and treated as though neither are set.
 
 The `out` object for an `AdjOutPeerIdenity` may be set in concurrence with an `in` property containing an `AdjInPeerIdentity`. Under this case, the peer should be treated as both an `AdjInPeer` and an `AdjOutPeer`. See `AdjInOutPeer` for more.
 
@@ -672,7 +672,7 @@ An example of an `AdjOutPeer` structure:
   },
   "out"     : {
     "address": "127.0.0.1",
-    "mask": "0.0.0.0",
+    "mask": "255.255.255.255",
     "local": false
   }
 }
@@ -776,7 +776,7 @@ An example of an `Outlet` structure:
   "secret": "foobar",
   "out"     : {
     "address": "10.0.0.0",
-    "mask": "0.255.255.255",
+    "mask": "255.0.0.0",
     "local": true
   }
 }
@@ -790,7 +790,7 @@ An `OutletIdentity` object may optionally include the additional attributes `add
 
 It is recommended that all `OutletIdentity` objects contain an `address` property with an IP address value. If the `address` property is not defined, then the `Engine` shall respond to any request bearing the correct `name` and `secret` defined in the containing `Outlet` object. 
 
-Additionally, the `OutletIdentity` object may include a `mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued within a subnet. If neither the `mask` nor the `hostname` property are set, then the `Outlet` should be regarded with a `mask` value of `255.255.255.255`. If the `mask` property is not set but the `hostname` property is set, then the `Outlet` should be regarded with a `mask` value of `0.0.0.0`.
+Additionally, the `OutletIdentity` object may include a `mask` property with an wildcard value in the event that the `Engine` shall respond to any request issued within a subnet. If neither the `mask` nor the `hostname` property are set, then the `Outlet` should be regarded with a `mask` value of `0.0.0.0`. If the `mask` property is not set but the `hostname` property is set, then the `Outlet` should be regarded with a `mask` value of `255.255.255.255`.
 
 The `OutletIdentity` may also include a `manage` property. If it contains a `manage` property set to `true`, then the `Outlet` may issue mutator (`POST`, `PUT` and `DELETE`) requests against the `Engine`. If the `manage` property is false or not set, then the `Outlet` will not have access to mutator requests.
 
