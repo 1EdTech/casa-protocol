@@ -336,19 +336,16 @@ The JSON Schema for `Node`:
 
 ```json
 {
-  "title":"Node",
-  "type":"object",
-  "properties":{
-    "name":{
-      "type":"string"
-    },
-    "secret":{
-      "type":"string"
-    }
-  },
-  "required":[
-    "name"
-  ]
+   "title":"Node",
+   "type":"object",
+   "properties":{
+      "name":{
+         "type":"string"
+      }
+   },
+   "required":[
+      "name"
+   ]
 }
 ```
 
@@ -361,9 +358,12 @@ An example of a `Node` structure:
 }
 ```
 
-All `Node` objects must have a `name` property.  The `name` property must be unique among all nodes defined for an `Engine`. This is a local value. Each `Engine` may define neighbors under its own naming scheme, and these values will never be shared beyond the `Engine` itself. This name is completely different from a publisher's UUID. It is meant purely for reference by `Engine` administrators, as opposed to the publisher's UUID, which is meant to establish identity within a payload.
+All `Node` objects must have a `name` property. This property defines a description for an entry in the Engine's `Node` table. It is recommended that this name be a descriptive name that helps the Engine administrator identify the record, and it must be unique among all `Node.name` values defined for an `Engine`. However, it should be noted that the `Node.name` property is a local value, and it shall never be shared or used beyond the `Engine` itself. 
 
-All `Node` objects may define a `secret` property. If the secret property is set, it must be included in all RESTful web service requests issued against the `Engine`.
+The `Node.name` property differs substantially from two other identifiers:
+
+1. The `name` property on `Node` is not used when querying against or receiving queries from other nodes; instead, the name/secret pairs within the `in` and `out` objects of `AdjInPeer`, `AdjInOutPeer`, `AdjOutPeer` and `Outlet` are used for this purpose.
+2. The `name` property on `Node` is completely different from a publisher's UUID; it is meant purely for reference by Engine administrators, as opposed to the publisher's UUID, which is meant to establish identity within a payload.
 
 ### AdjInPeer and AdjInPeerIdentity
 
@@ -373,30 +373,37 @@ The JSON Schema for `AdjInPeerIdentity` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "title":"AdjInPeerIdentity",
-  "type":"object",
-  "properties":{
-    "hostname":{
-      "type":"string"
-    },
-    "scheme":{
-      "type":"string",
-      "default":"https"
-    },
-    "path":{
-      "type":"string",
-      "default":"/"
-    },
-    "port":{
-      "type":"integer",
-      "default":443,
-      "minimum":1,
-      "maximum":65535
-    }
-  },
-  "required":[
-    "hostname"
-  ]
+   "title":"AdjInPeerIdentity",
+   "type":"object",
+   "properties":{
+      "name":{
+         "type":"string"
+      },
+      "secret":{
+         "type":"string"
+      },
+      "hostname":{
+         "type":"string"
+      },
+      "scheme":{
+         "type":"string",
+         "default":"https"
+      },
+      "path":{
+         "type":"string",
+         "default":"/"
+      },
+      "port":{
+         "type":"integer",
+         "default":443,
+         "minimum":1,
+         "maximum":65535
+      }
+   },
+   "required":[
+      "name",
+      "hostname"
+   ]
 }
 ```
 
@@ -404,46 +411,50 @@ The JSON Schema for `AdjInPeer` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "title":"AdjInPeer",
-  "type":"object",
-  "properties":{
-    "name":{
-      "type":"string"
-    },
-    "secret":{
-      "type":"string"
-    },
-    "in":{
-      "title":"AdjInPeerIdentity",
-      "type":"object",
-      "properties":{
-        "hostname":{
-          "type":"string"
-        },
-        "scheme":{
-          "type":"string",
-          "default":"https"
-        },
-        "path":{
-          "type":"string",
-          "default":"/"
-        },
-        "port":{
-          "type":"integer",
-          "default":443,
-          "minimum":1,
-          "maximum":65535
-        }
+   "title":"AdjInPeer",
+   "type":"object",
+   "properties":{
+      "name":{
+         "type":"string"
       },
-      "required":[
-        "hostname"
-      ]
-    }
-  },
-  "required":[
-    "name",
-    "in"
-  ]
+      "in":{
+         "title":"AdjInPeerIdentity",
+         "type":"object",
+         "properties":{
+            "name":{
+               "type":"string"
+            },
+            "secret":{
+               "type":"string"
+            },
+            "hostname":{
+               "type":"string"
+            },
+            "scheme":{
+               "type":"string",
+               "default":"https"
+            },
+            "path":{
+               "type":"string",
+               "default":"/"
+            },
+            "port":{
+               "type":"integer",
+               "default":443,
+               "minimum":1,
+               "maximum":65535
+            }
+         },
+         "required":[
+            "name",
+            "hostname"
+         ]
+      }
+   },
+   "required":[
+      "name",
+      "in"
+   ]
 }
 ```
 
@@ -465,12 +476,15 @@ An example of an `AdjInPeer` structure:
 
 All `AdjInPeer` objects must define an `in` property containing an `AdjInPeerIdentity` object. 
 
-All `AdjInPeerIdentity` objects must define a `hostname` property. An `AdjInPeerIdentity` object may optionally include the additional attributes `scheme`, `path` and `port`; if any of these attributes are not set, the unset attributes default to `https`, `/` and `443` respectively.
+All `AdjInPeerIdentity` objects must define the `name` property and may optionally define a `secret` property. The `name` property, as well as the `secret` property if defined, are transmitted when a request is sent to `AdjInPeer`.
+
+All `AdjInPeerIdentity` objects must define the `hostname` property.
+
+An `AdjInPeerIdentity` object may optionally include the additional attributes `scheme`, `path` and `port`; if any of these attributes are not set, the unset attributes default to `https`, `/` and `443` respectively.
 
 The `in` object may be set in concurrence with an `out` property containing an `AdjOutPeerIdentity`. Under this case, the peer should be treated as both an `AdjInPeer` and an `AdjOutPeer`. See `AdjInOutPeer` for more.
 
 ### AdjOutPeer and AdjOutPeerIdentity
-
 
 The `AdjOutPeer` object extends the `Node` object, specifying a peer to which the `Engine` will respond with a set of payloads from `AdjOut` when queried by a node with a matching `AdjOutPeerIdentity`. In addition to the inherited properties of `Node`, an `AdjOutPeer` object includes an additional `AdjOutPeerIdentity` object under the key `out`.
 
@@ -478,30 +492,37 @@ The JSON Schema for `AdjOutPeerIdentity` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "title":"AdjOutPeerIdentity",
-  "type":"object",
-  "properties":{
-    "address":{
-      "type":"string"
-    },
-    "mask":{
-      "type":"string"
-    },
-    "local":{
-      "type":"boolean",
-      "anyOf":[
-        {
-          "enum":[
-            false
-          ]
-        }
-      ],
-      "default":false
-    }
-  },
-  "required":[
-    "local"
-  ]
+   "title":"AdjOutPeerIdentity",
+   "type":"object",
+   "properties":{
+      "name":{
+         "type":"string"
+      },
+      "secret":{
+         "type":"string"
+      },
+      "address":{
+         "type":"string"
+      },
+      "mask":{
+         "type":"string"
+      },
+      "local":{
+         "type":"boolean",
+         "anyOf":[
+            {
+               "enum":[
+                  false
+               ]
+            }
+         ],
+         "default":false
+      }
+   },
+   "required":[
+      "name",
+      "local"
+   ]
 }
 ```
 
@@ -512,42 +533,46 @@ The JSON Schema for `AdjOutPeer` (see see [schema.json](schema.json)):
   "title":"AdjOutPeer",
   "type":"object",
   "properties":{
-    "name":{
-      "type":"string"
-    },
-    "secret":{
-      "type":"string"
-    },
-    "out":{
-      "title":"AdjOutPeerIdentity",
-      "type":"object",
-      "properties":{
-        "address":{
-          "type":"string"
+     "name":{
+        "type":"string"
+     },
+     "out":{
+        "title":"AdjOutPeerIdentity",
+        "type":"object",
+        "properties":{
+           "name":{
+              "type":"string"
+           },
+           "secret":{
+              "type":"string"
+           },
+           "address":{
+              "type":"string"
+           },
+           "mask":{
+              "type":"string"
+           },
+           "local":{
+              "type":"boolean",
+              "anyOf":[
+                 {
+                    "enum":[
+                       false
+                    ]
+                 }
+              ],
+              "default":false
+           }
         },
-        "mask":{
-          "type":"string"
-        },
-        "local":{
-          "type":"boolean",
-          "anyOf":[
-            {
-              "enum":[
-                false
-              ]
-            }
-          ],
-          "default":false
-        }
-      },
-      "required":[
-        "local"
-      ]
-    }
+        "required":[
+           "name",
+           "local"
+        ]
+     }
   },
   "required":[
-    "name",
-    "out"
+     "name",
+     "out"
   ]
 }
 ```
@@ -568,6 +593,8 @@ An example of an `AdjOutPeer` structure:
 ```
 
 All `AdjOutPeer` objects must define an `out` property containing an `AdjOutPeerIdentity` object. 
+
+All `AdjOutPeerIdentity` objects must define the `name` property and may optionally define a `secret` property. The `name` property, as well as the `secret` property is defined, are used to identify an `AdjOutPeer` when it queries the engine.
 
 All `AdjOutPeerIdentity` objects must either contain a `local` property set to `false` or else not contain a `local` property. If set `true`, it is an `OutletIdentity` instead of an `AdjOutPeerIdentity`. 
 
@@ -590,69 +617,80 @@ The JSON Schema for `AdjInOutPeer` (see see [schema.json](schema.json)):
   "title":"AdjInOutPeer",
   "type":"object",
   "properties":{
-    "name":{
-      "type":"string"
-    },
-    "secret":{
-      "type":"string"
-    },
-    "in":{
-      "title":"AdjInPeerIdentity",
-      "type":"object",
-      "properties":{
-        "hostname":{
-          "type":"string"
+     "name":{
+        "type":"string"
+     },
+     "in":{
+        "title":"AdjInPeerIdentity",
+        "type":"object",
+        "properties":{
+           "name":{
+              "type":"string"
+           },
+           "secret":{
+              "type":"string"
+           },
+           "hostname":{
+              "type":"string"
+           },
+           "scheme":{
+              "type":"string",
+              "default":"https"
+           },
+           "path":{
+              "type":"string",
+              "default":"/"
+           },
+           "port":{
+              "type":"integer",
+              "default":443,
+              "minimum":1,
+              "maximum":65535
+           }
         },
-        "scheme":{
-          "type":"string",
-          "default":"https"
+        "required":[
+           "name",
+           "hostname"
+        ]
+     },
+     "out":{
+        "title":"AdjOutPeerIdentity",
+        "type":"object",
+        "properties":{
+           "name":{
+              "type":"string"
+           },
+           "secret":{
+              "type":"string"
+           },
+           "address":{
+              "type":"string"
+           },
+           "mask":{
+              "type":"string"
+           },
+           "local":{
+              "type":"boolean",
+              "anyOf":[
+                 {
+                    "enum":[
+                       false
+                    ]
+                 }
+              ],
+              "default":false
+           }
         },
-        "path":{
-          "type":"string",
-          "default":"/"
-        },
-        "port":{
-          "type":"integer",
-          "default":443,
-          "minimum":1,
-          "maximum":65535
-        }
-      },
-      "required":[
-        "hostname"
-      ]
-    },
-    "out":{
-      "title":"AdjOutPeerIdentity",
-      "type":"object",
-      "properties":{
-        "address":{
-          "type":"string"
-        },
-        "mask":{
-          "type":"string"
-        },
-        "local":{
-          "type":"boolean",
-          "anyOf":[
-            {
-              "enum":[
-                false
-              ]
-            }
-          ],
-          "default":false
-        }
-      },
-      "required":[
-        "local"
-      ]
-    }
+        "required":[
+           "name",
+           "local"
+        ]
+     }
   },
   "required":[
-    "name",
-    "in",
-    "out"
+     "name",
+     "in",
+     "out"
   ]
 }
 ```
@@ -686,34 +724,41 @@ The JSON Schema for `OutletIdentity` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "title":"OutletIdentity",
-  "type":"object",
-  "properties":{
-    "address":{
-      "type":"string"
-    },
-    "mask":{
-      "type":"string"
-    },
-    "local":{
-      "type":"boolean",
-      "anyOf":[
-        {
-          "enum":[
-            true
-          ]
-        }
-      ],
-      "default":true
-    },
-    "manage":{
-      "type":"boolean",
-      "default":false
-    }
-  },
-  "required":[
-    "local"
-  ]
+   "title":"OutletIdentity",
+   "type":"object",
+   "properties":{
+      "name":{
+         "type":"string"
+      },
+      "secret":{
+         "type":"string"
+      },
+      "address":{
+         "type":"string"
+      },
+      "mask":{
+         "type":"string"
+      },
+      "local":{
+         "type":"boolean",
+         "anyOf":[
+            {
+               "enum":[
+                  true
+               ]
+            }
+         ],
+         "default":true
+      },
+      "manage":{
+         "type":"boolean",
+         "default":false
+      }
+   },
+   "required":[
+      "name",
+      "local"
+   ]
 }
 ```
 
@@ -721,50 +766,54 @@ The JSON Schema for `Outlet` (see see [schema.json](schema.json)):
 
 ```json
 {
-  "title":"Outlet",
-  "type":"object",
-  "properties":{
-    "name":{
-      "type":"string"
-    },
-    "secret":{
-      "type":"string"
-    },
-    "out":{
-      "title":"OutletIdentity",
-      "type":"object",
-      "properties":{
-        "address":{
-          "type":"string"
-        },
-        "mask":{
-          "type":"string"
-        },
-        "local":{
-          "type":"boolean",
-          "anyOf":[
-            {
-              "enum":[
-                true
-              ]
-            }
-          ],
-          "default":true
-        },
-        "manage":{
-          "type":"boolean",
-          "default":false
-        }
+   "title":"Outlet",
+   "type":"object",
+   "properties":{
+      "name":{
+         "type":"string"
       },
-      "required":[
-        "local"
-      ]
-    }
-  },
-  "required":[
-    "name",
-    "out"
-  ]
+      "out":{
+         "title":"OutletIdentity",
+         "type":"object",
+         "properties":{
+            "name":{
+               "type":"string"
+            },
+            "secret":{
+               "type":"string"
+            },
+            "address":{
+               "type":"string"
+            },
+            "mask":{
+               "type":"string"
+            },
+            "local":{
+               "type":"boolean",
+               "anyOf":[
+                  {
+                     "enum":[
+                        true
+                     ]
+                  }
+               ],
+               "default":true
+            },
+            "manage":{
+               "type":"boolean",
+               "default":false
+            }
+         },
+         "required":[
+            "name",
+            "local"
+         ]
+      }
+   },
+   "required":[
+      "name",
+      "out"
+   ]
 }
 ```
 
@@ -783,6 +832,8 @@ An example of an `Outlet` structure:
 ```
 
 All `Outlet` objects must define an `out` property containing an `OutletIdentity` object. 
+
+All `OutletIdentity` objects must define the `name` property and may optionally define a `secret` property. The `name` property, as well as the `secret` property is defined, are used to identify an `Outlet` when it queries the engine.
 
 All `OutletIdentity` objects must contain a `local` property set to `true`. A `local` property set to `false` or not set instead denotes an `AdjOutPeerIdentity`, which is not valid for an `Outlet`.
 
@@ -1945,23 +1996,49 @@ Two entries with the same `Payload.identity` may not concurrently exist within `
 
 ## RECEIVE-IN
 
-Request must be passed through TRANSLATE-IN, SQUASH-IN and FILTER-IN and then be stored within `AdjIn`. Any entry that already exists within `AdjIn` should be replaced by the new version. 
+For an `AdjInPeer` node, the Engine shall issue a [GET /payloads](#get-payloads) request using `out.hostname`, `out.scheme`, `out.path` and `out.port`, with scheme, path and port defaulting to `https`, `/` and `443` if not defined. With this request, it shall include either as GET parameters or as a JSON-encoded request body, `out.name` as `_name` and, if set, `out.secret` as `_secret`.
 
-Two entries with the same `Payload.identity` may not concurrently exist within `AdjIn`. 
+If the credentials are accepted by the [SEND-OUT](#send-out) operation of the `AdjInPeer`, then the [GET /payloads](#get-payloads) response will come in the form of a JSON-encoded array of `TransitPayload` objects.
+
+Upon receiving a payload, this operation must validate the payload against the `TransitPayload` schema. If validation fails, it must disregard the payload.
+
+If validation passes, the payload should then be passed through [TRANSLATE-IN](#translate-in), [SQUASH-IN](#squash-in) and [FILTER-IN](#filter-in). 
+
+If the payload is not dropped by FILTER-IN, it should then be stored within `AdjIn`. Any entry that already exists within `AdjIn` should be replaced by the new version. Two entries with the same `Payload.identity` may not concurrently exist within `AdjIn`. 
 
 ## SEND-OUT
 
-Response must be prepared from `AdjOut` after passing through FILTER-OUT and TRANSLATE-OUT.
+This operation occurs when a node issues a [GET /payloads](#get-payloads) request. This request will include, either as GET parameters or as a JSON-encoded request body, `_name` and optionally `_secret`.
 
-If is required that, if requesting agent is not an `AdjOutPeer`, an HTTP 401 or 403 error response must be sent.
+The engine should determine if the requestor's IP address and it's specified `_name` and (optional) `_secret` match an `AdjOutPeer` record. A match is defined as:
+
+* For `AdjOutPeer` records with no `address` or `secret`, if `_name` matches `out.name`;
+* For `AdjOutPeer` records with no `address` but with `secret`, if `_name` matches `out.name` and `_secret` matches `out.secret`;
+* For `AdjOutPeer` records with no `mask` but with `address and `secret`, if `_name` matches `out.name`, `secret` matches `out.secret` and `address` matches `out.address.
+* For `AdjOutPeer` records with `address`, `mask` and `secret`, if `_name` matches `out.name`, `_secret` matches `out.secret` and `address` masked by `mask` matches requestor's IP address masked by `mask`.
+* For `AdjOutPeer` records with no `secret` but with `address` and `mask`, if `_name` matches `out.name` and `address` masked by `mask` matches requestor's IP address masked by `mask`.
+
+If no matching `AdjOutPeer` record is found, the engine shall return an HTTP 403 error response.
+
+If a matching `AdjOutPeer` record is found, then all payloads in `AdjOut` shall be passed through [FILTER-OUT](#filter-out) and [TRANSLATE-OUT](#translate-out) and then be returned as a JSON-encoded array of `TransitPayload` objects.
+
+**NOTE** A static JSON-encoded file containing an array of `TransitPayload` objects is equivalent to a set of AdjOutPeers with all names and no secret or address constrains. Consequently, it conforms to this standard. This use case may be implemented to satisfy the [PUBLISH Conformance](#publish-conformance).
 
 ## SEND-LOCAL
 
-Response must be prepared from `Local`.
+This operation occurs when a node issues a [GET /payloads](#get-payloads) request. This request will include, either as GET parameters or as a JSON-encoded request body, `_name` and optionally `_secret`.
 
-If is required that, if requesting agent is not an `Outlet`, an HTTP 403 error response must be sent.
+The engine should determine if the requestor's IP address and it's specified `_name` and (optional) `_secret` match an `Outlet` record. A match is defined as:
 
-It is required that, if requesting agent is not a manager (`out.manage` is not `true`), `Payload.journal` and `Payload.original` must be removed before sending.
+* For `Outlet` records with no `address` or `secret`, if `_name` matches `out.name`;
+* For `Outlet` records with no `address` but with `secret`, if `_name` matches `out.name` and `_secret` matches `out.secret`;
+* For `Outlet` records with no `mask` but with `address and `secret`, if `_name` matches `out.name`, `secret` matches `out.secret` and `address` matches `out.address.
+* For `Outlet` records with `address`, `mask` and `secret`, if `_name` matches `out.name`, `_secret` matches `out.secret` and `address` masked by `mask` matches requestor's IP address masked by `mask`.
+* For `Outlet` records with no `secret` but with `address` and `mask`, if `_name` matches `out.name` and `address` masked by `mask` matches requestor's IP address masked by `mask`.
+
+If no matching `Outlet` record is found, the engine shall return an HTTP 403 error response.
+
+If a matching `Outlet` record is found, then all payloads in `Local` shall be returned as a JSON-encoded array of either (1) `Payload` objects, if `out.manage` is `true`, or else (2) `LocalPayload` objects, namely `Payload` objects without `original` or `journal`.
 
 ## TRANSFORM-IN
 
