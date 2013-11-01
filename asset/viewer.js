@@ -33,7 +33,8 @@ var VIEWER = new function(){
 
                 $('#content').append(page.render(viewer));
                 $('#content > :not(header)').find('h1').each(function(){
-                    var ref = $(this).text().toLowerCase().replace(/ /g,'_');
+                    var ref = $(this).attr('data-ref') ? $(this).attr('data-ref') : $(this).text();
+                    ref = ref.toLowerCase().replace(/ /g,'-');
                     var count = false;
                     if($('#s-'+ref).length > 0){
                         count = 1;
@@ -51,7 +52,6 @@ var VIEWER = new function(){
                     var href = $(this).attr('href');
                     if(href){
                         href = href.replace('#',':')
-                        console.log(href)
                         if(href.indexOf(':') === 0){
                             href = name+href;
                         }
@@ -89,23 +89,35 @@ var VIEWER = new function(){
                     }
                 });
 
-
                 document.title = $('#content > header > *:not(hgroup), #content > header > hgroup > *').map(function(){ 
                     return $(this).text().replace('Community App Sharing Architecture','CASA'); 
                 }).get().join(' - ');
 
-                prettyPrint();
-                $('body').scrollTop(0)
-
-
-                $('#content, #colophon').fadeIn(fadeTime, function(){
-                    if(anchor && $('#s-'+anchor).length > 0){
-                        $("html,body").animate({ scrollTop: $('#s-'+anchor).position().top-25 }, "slow")
-                    }
-                });
-                
                 $('#hide_non-normative').change();
                 $('#show_issues-only').change();
+
+                var finish = function(){
+                    prettyPrint();
+                    $('body').scrollTop(0)
+                    $('#content, #colophon').fadeIn(fadeTime, function(){
+                        if(anchor && $('#s-'+anchor).length > 0){
+                            $("html,body").animate({ scrollTop: $('#s-'+anchor).position().top-25 }, "slow")
+                        }
+                    });
+                }
+                
+                if($('[data-schema]').length == 0)
+                    finish();
+                else{
+                    $.get('support/schema.json', function(data){
+                        $('[data-schema]').each(function(){
+                            $(this).addClass('prettyprint')
+                                   .addClass('lang-json')
+                                   .html(JSON.stringify(data.definitions[$(this).attr('data-schema')], null, 2));
+                        })
+                        finish();
+                    })
+                }
             
             });
         
