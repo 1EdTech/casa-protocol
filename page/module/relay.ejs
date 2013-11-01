@@ -5,6 +5,104 @@
     </hgroup>
 </header>
 
+<footer>
+    
+    <section>
+        <h1>Status of this Memo</h1>
+        <p>This memorandum specifies the CASA Protocol Relay Module, which defines how to make inter-system queries to retrieve payloads and then publish those payloads inter-system. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+    </section>
+    
+    <section>
+        <h1>Copyright Notice</h1>
+        <p>Copyright (c) 2013, Regents of the University of California. All rights reserved.</p>
+    </section>
+    
+    <section>
+        
+        <h1>Requirements</h1>
+        
+        <p>The following specifications must be implemented with this module:</p>
+        
+        <dl>
+            <dt><a href="overview">CASA Protocol</a></dt>
+            <dd>Must implement basic protocol definition.</dd>
+            <dt><a href="module/payload#transitpayload">CASA Protocol Payload Module - TransitPayload</a></dt>
+            <dd>Must implement TransitPayload with journal attribute.</dd>
+            <dt><a href="module/payload#transitpayload">CASA Protocol Payload Module - LocalPayload</a></dt>
+            <dd>Must implement LocalPayload with original attribute and journal attribute.</dd>
+            <dt><a href="module/publisher#sendout">CASA Protocol Publisher Module - SendOut</a></dt>
+            <dd>Must implement SendOut; may implement with access control.</dd>
+            <dt><a href="module/receiver#receivein">CASA Protocol Receiver Module - ReceiveIn</a></dt>
+            <dd>Must implement ReceiveIn; may implement with access control.</dd>
+            <dt><a href="module/receiver#adjintranslate">CASA Protocol Receiver Module - AdjInTranslate</a></dt>
+            <dd>Must implement AdjInTranslate.</dd>
+            <dt><a href="module/receiver#adjinsquash">CASA Protocol Receiver Module - AdjInSquash</a></dt>
+            <dd>Must implement AdjInSquash.</dd>
+            <dt><a href="module/receiver#adjinsquash">CASA Protocol Receiver Module - AdjInFilter</a></dt>
+            <dd>Must implement AdjInFilter; may implement with custom rules.</dd>
+            <dt><a href="module/receiver#adjinstore">CASA Protocol Receiver Module - AdjInStore</a></dt>
+            <dd>Must implement AdjInStore.</dd>
+        </dl>
+        
+    </section>
+    
+    <section>
+        
+        <h1>Terminology</h1>
+        <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
+        
+    </section>
+    
+</footer>
+
 <main>
+    
+    <section data-requirement="must" data-status="incomplete">
+        
+        <h1>AdjOutTranslate</h1>
+        
+    </section>
+    
+    <section data-requirement="must" data-status="incomplete">
+        
+        <h1>AdjOutFilter</h1>
+        
+        <section data-requirement="may">
+            
+            <h1 data-ref="adjoutfilter-custom">AdjOutFilter with Custom Rules</h1>
+            
+            <section data-requirement="should" data-status="undefined">
+                
+                <h1>AdjOutFilterRules</h1>
+                
+            </section>
+            
+        </section>
+        
+    </section>
+    
+    <section data-requirement="must" data-status="incomplete">
+        
+        <h1>AdjOutTransform</h1>
+        
+        <section data-requirement="may">
+            
+            <h1 data-ref="adjouttransform-custom">AdjOutTransform with Custom Rules</h1>
+            
+            <section data-requirement="should" data-status="undefined">
+                
+                <h1>AdjOutTransformRules</h1>
+                
+            </section>
+            
+        </section>
+        
+    </section>
+    
+    <section data-requirement="may" data-status="incomplete">
+        
+        <h1>AdjOutStore</h1>
+        
+    </section>
     
 </main>
