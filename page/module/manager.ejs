@@ -5,6 +5,161 @@
     </hgroup>
 </header>
 
+<footer>
+    
+    <section>
+        <h1>Status of this Memo</h1>
+        <p>This memorandum specifies the CASA Protocol Manager Module, which defines how intra-system outlets may manage payloads. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+    </section>
+    
+    <section>
+        <h1>Copyright Notice</h1>
+        <p>Copyright (c) 2013, Regents of the University of California. All rights reserved.</p>
+    </section>
+    
+    <section data-requirement="must">
+        
+        <h1>Requirements</h1>
+        
+        <p>The following specifications must be implemented with this module:</p>
+        
+        <dl>
+            <dt><a href="overview">CASA Protocol</a></dt>
+            <dd>Must implement basic protocol definition.</dd>
+        </dl>
+        
+    </section>
+    
+    <section>
+        
+        <h1>Terminology</h1>
+        <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
+    </section>
+    
+</footer>
+
 <main>
+    
+    <section data-requirement="may" data-status="incomplete">
+        
+        <h1>OutletReceivePayloads</h1>
+    
+        <section data-requirement="must">
+
+            <h1>Requirements</h1>
+
+            <p>The following specifications must be implemented with this module:</p>
+
+            <dl>
+                <dt><a href="module/payload#localpayload">CASA Protocol Payload Module - LocalPayload</a></dt>
+                <dd>Must implement LocalPayload with original attribute and journal attribute.</dd>
+                <dt><a href="module/local#localstore">CASA Protocol Local Module - LocalStore</a></dt>
+                <dd>Must implement LocalStore.</dd>
+                <dt><a href="module/local#localpublisher-submodule">CASA Protocol Local Module - LocalPublisher Submodule</a></dt>
+                <dd>Must implement LocalPublisher submodule.</dd>
+            </dl>
+
+        </section>
+        
+    </section>
+    
+    <section data-requirement="may" data-status="incomplete">
+        
+        <h1>OutletReceiveAdjOutTransformRules</h1>
+    
+        <section data-requirement="must">
+
+            <h1>Requirements</h1>
+
+            <p>The following specifications must be implemented with this module:</p>
+
+            <dl>
+                <dt><a href="module/relay#adjouttransformrules">CASA Protocol Relay Module - AdjOutTransformRules</a></dt>
+                <dd>Must implement AdjOutTransformRules.</dd>
+            </dl>
+
+        </section>
+        
+    </section>
+    
+    <section data-requirement="may" data-status="incomplete">
+        
+        <h1>OutletReceiveAdjOutFilterRules</h1>
+    
+        <section data-requirement="must">
+
+            <h1>Requirements</h1>
+
+            <p>The following specifications must be implemented with this module:</p>
+
+            <dl>
+                <dt><a href="module/relay#adjoutfilterrules">CASA Protocol Relay Module - AdjOutFilterRules</a></dt>
+                <dd>Must implement AdjOutFilterRules.</dd>
+            </dl>
+
+        </section>
+        
+    </section>
+    
+    <section data-requirement="may" data-status="incomplete">
+        
+        <h1>OutletReceiveAdjInFilterRules</h1>
+    
+        <section data-requirement="must">
+
+            <h1>Requirements</h1>
+
+            <p>The following specifications must be implemented with this module:</p>
+
+            <dl>
+                <dt><a href="module/receiver#adjinfilterrules">CASA Protocol Receiver Module - AdjInFilterRules</a></dt>
+                <dd>Must implement AdjInFilterRules.</dd>
+            </dl>
+
+        </section>
+        
+    </section>
+    
+    <section data-requirement="may" data-status="incomplete">
+        
+        <h1>OutletReceiveLocalTransformRules</h1>
+    
+        <section data-requirement="must">
+
+            <h1>Requirements</h1>
+
+            <p>The following specifications must be implemented with this module:</p>
+
+            <dl>
+                <dt><a href="module/receiver#localtransformrules">CASA Protocol Local Module - LocalTransformRules</a></dt>
+                <dd>Must implement LocalTransformRules.</dd>
+            </dl>
+
+        </section>
+        
+    </section>
+    
+    <section data-requirement="may" data-status="incomplete">
+        
+        <h1>OutletReceiveNode</h1>
+    
+        <section data-requirement="must">
+
+            <h1>Requirements</h1>
+
+            <p>The following specifications must be implemented with this module:</p>
+
+            <dl>
+                <dt><a href="module/publisher#adjoutpeer">CASA Protocol Publisher Module - AdjOutPeer</a></dt>
+                <dd>Must implement AdjOutPeer.</dd>
+                <dt><a href="module/receiver#adjinpeer">CASA Protocol Receiver Module - AdjInPeer</a></dt>
+                <dd>Must implement AdjInPeer.</dd>
+                <dt><a href="module/local#outlet">CASA Protocol Local Module - Outlet</a></dt>
+                <dd>Must implement Outlet.</dd>
+            </dl>
+
+        </section>
+        
+    </section>
     
 </main>

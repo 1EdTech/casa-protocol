@@ -34,7 +34,7 @@ var VIEWER = new function(){
                 $('#content').append(page.render(viewer));
                 $('#content > :not(header)').find('h1').each(function(){
                     var ref = $(this).attr('data-ref') ? $(this).attr('data-ref') : $(this).text();
-                    ref = ref.toLowerCase().replace(/ /g,'-');
+                    ref = ref.toLowerCase().replace(/ /g,'-').replace(/:/g, '-');
                     var count = false;
                     if($('#s-'+ref).length > 0){
                         count = 1;
