@@ -70,9 +70,10 @@ var VIEWER = new function(){
                     'non-normative': 'This section is non-normative',
                     'conflict': 'This section is flagged as in conflict',
                     'revision': 'This section is flagged for revision',
-                    'incomplete': 'This section is flagged as incomplete'
+                    'incomplete': 'This section is flagged as incomplete',
+                    'undefined': 'This section is flagged as undefined'
                 };
-                var issueStatuses = ['conflict','revision','incomplete'];
+                var issueStatuses = ['conflict','revision','incomplete','undefined'];
                 
                 // requires aria mappings
                 $('[data-status]').each(function(){

@@ -54,4 +54,7 @@ h1 + .status_message { margin-top: -10px; }
 .status_section.incomplete { border-left: 3px solid #c93; }
 .status_section.incomplete .status_message { color: #c93; }
 
+.status_section.undefined { border-left: 3px solid #606; }
+.status_section.undefined .status_message { color: #606; }
+
 .hide_non-normative .status_section.non-normative { display: none; }
