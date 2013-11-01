@@ -60,19 +60,21 @@
                 <li>produces front-end user interfaces with which end users may interact.</li>
             </ol>
             
+            <p>Information is conveyed intra- and inter- system by way of <dfn>payloads</dfn>.</p>
+            
             <section>
                 
-                <h1>Logical Entities</h1>
+                <h1>Logical Nodes</h1>
             
-                <p>Each autonomous system may recognize any of three logical, and in some cases concrete, entities:</p>
+                <p>Each autonomous system may recognize any of three logical, and in some cases concrete, nodes:</p>
 
                 <dl>
                     <dt>AdjInPeer</dt>
-                    <dd>An inter-organizational entity from which information may be accept information.</dd>
+                    <dd>An inter-organizational node from which information may be accept information.</dd>
                     <dt>AdjOutPeer</dt>
-                    <dd>An inter-organizational entity to which information may be shared.</dd>
+                    <dd>An inter-organizational node to which information may be shared.</dd>
                     <dt>Outlet</dt>
-                    <dd>A intra-organizational entity through which information is exposed to organizational users.</dd>
+                    <dd>A intra-organizational node through which information is exposed to organizational users.</dd>
                 </dl>
             
             </section>
@@ -144,7 +146,7 @@
     
     <section>
         
-        <h1>Protocol Structure</h1>
+        <h1>Organization</h1>
         
         <p>Large specifications present a number of problems:</p>
         
@@ -154,11 +156,18 @@
             <li>For implementers, they're hard to understand.</li>
         </ul>
         
-        <p>Consequently, the CASA Protocol is divided into a number of CASA Protocol Modules ("protocol modules"):</p>
+        <p>Consequently, the architecture structure is modularized under two broad classifications:</p>
+        
+        <dl>
+            <dt>Protocol Modules</dt>
+            <dd>Implementation guidelines for a core function of the architecture.</dd>
+            <dt>Attribute Specifications</dt>
+            <dd>Structural definitions for particular attributes that may be marked for use or as required by a payload.</dd>
+        </dl>
         
         <section>
             
-            <h1>Modules</h1>
+            <h1>Protocol Modules</h1>
 
             <dl>
                 <dt><a href="Module/Payload">Payload Module</a></dt>
@@ -175,22 +184,28 @@
                 <dl>Defines how intra-system outlets may manage payloads.</dl>
             </dl>
         
+            <section>
+
+                <h1>Conformance</h1>
+
+                <p>To conform with a protocol module, three expectations are imposed upon an implementation:</p>
+
+                <dl>
+                    <dt>Intra-Module Requirements</dt>
+                    <dd>All modules should define requirement levels for each operation or structure ("component") it defines.</dd>
+                    <dt>Inter-Module Requirements</dt>
+                    <dd>A module or component of a module may impose requirements upon other modules or components. When such a constraint is imposed, all requirements imposed by the other module must be met; additionally, such a constraint may increase the strength of the requirement level for any given component of the other module.</dd>
+                    <dt>This Document</dt>
+                    <dd>All module must conform to all requirements imposed by this document.</dd>
+                </dl>
+
+            </section>
+            
         </section>
         
-        <section>
+        <section data-status="incomplete">
             
-            <h1>Conformance</h1>
-            
-            <p>To conform with a protocol module, three expectations are imposed upon an implementation:</p>
-                
-            <dl>
-                <dt>Intra-Module Requirements</dt>
-                <dd>All modules should define requirement levels for each operation or structure ("component") it defines.</dd>
-                <dt>Inter-Module Requirements</dt>
-                <dd>A module or component of a module may impose requirements upon other modules or components. When such a constraint is imposed, all requirements imposed by the other module must be met; additionally, such a constraint may increase the strength of the requirement level for any given component of the other module.</dd>
-                <dt>This Document</dt>
-                <dd>All module must conform to all requirements imposed by this document.</dd>
-            </dl>
+            <h1>Attribute Specifications</h1>
             
         </section>
         
