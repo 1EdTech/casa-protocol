@@ -59,6 +59,10 @@ var VIEWER = new function(){
                         $(this).attr('href',href);
                     }
                 })
+                
+                $('#content a[rel="external"]').each(function(){
+                    $(this).attr('target', '_blank');
+                })
 
                 $('#content').ariaMapper();
                 
