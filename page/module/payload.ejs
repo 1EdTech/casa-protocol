@@ -37,81 +37,205 @@
         <p>The key word <strong>UUID</strong> (alternatively: <strong>Universally Unique IDentifier</strong>, <strong>Globally Unique IDentifier</strong> or <strong>uuid</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4122.txt" rel="external">RFC 4122</a></strong> ["A Universally Unique IDentifier (UUID) URN Namespace"].</p>
         <p>The key word <strong>UID</strong> (alternatively: <strong>Unique IDentifier</strong> or <strong>uid</strong>) in this document is to be interpreted as an identifier that is unique within a non-global context.</p>
         <p>The key word <strong>timestamp</strong> in this document is to be interpreted as a string written in the format of <strong><a href="http://tools.ietf.org/rfc/rfc3339.txt" rel="external">RFC 3339</a></strong> ["Date and Time on the Internet: Timestamps"].</p>
+        <p>The key word <strong>object</strong> in this document is to be interpreted as an unordered data structure of key-value pairs, referred to in language systems by terms including, but not limited to, "object", "associative array", "hash map", "dictionary" and "key-value store".</p>
+        <p>The key word <strong>property</strong> (alternatively: <strong>attribute</strong> or <strong>section</strong>) in this document is to be interpreted as synonymous with the key within an object that returns an associated value.</p>
+        <p>The key word <strong>abstract object</strong> in this document is to be interpreted as a structure that may be extended by other structures but that must not be implemented by itself.</p>
         <p>The key word <strong>JavaScript Object Notation</strong> (alternatively: <strong>JSON</strong>) in this document is to be interpreted as the data format described by <strong><a href="http://tools.ietf.org/rfc/rfc4627.txt" rel="external">RFC 4627</a></strong> ["The application/json Media Type for JavaScript Object Notation (JSON)"].</p>
         <p>The key word <strong>JSON Schema</strong> in this document is to be interpreted as a JSON format defined by the <strong><a href="http://json-schema.org/latest/json-schema-core.html" rel="external">json-schema-core</a></strong> ["JSON Schema: core definitions and terminology"] and <strong><a href="http://json-schema.org/latest/json-schema-validation.html" rel="external">json-schema-validation</a></strong> ["JSON Schema: interactive and non interactive validation"] specifications.</p>
+        
     </section>
     
 </footer>
 
 <main>
     
-    <section data-status="incomplete">
+    <section>
+        
+        <h1>Payload</h1>
+        
+        <p>A <dfn>payload</dfn> is a data structure conveying identity and metadata for a logical entity known by the system. It is the fundamental constituent accepted from other systems, presented within a system and shared out from the system.</p>
+        
+        <p>A <dfn>logical entity</dfn> is an application, data or other addressable content that a system recognizes. One or more payloads may be introduced intra- and inter- system for a logical entity, and the only thing that must remain constant for continued representation of the entity is the identity section of the payload.</p>
+        
+        <section data-status="non-normative">
+        
+            <p>All payloads must contain an <var>identity</var> property. This property is an object that remains constant throughout a payload's lifetime in the network.</p>
+
+            <p>While within the boundaries of the system, all payloads must contain an <var>attributes</var> property. This property is an object with required and optional metadata. This attribute should not be shared beyond the boundaries of the system.</p>
+
+            <p>When shared outside the boundaries of a system, all payloads must contain an <var>original</var> property. This property is an object with required and optional metadata. If this payload was received from another system, then it must be identical to the value when received; if this payload was introduced from within the system, then it should be identical to the attributes property.</p>
+
+            <p>All payloads may contain a <var>journal</var> property. This property is an array of objects. Each object in the array denotes sequential changes made to attributes. Starting with the original property and then walking sequentially through the journal, a system is able to construct an attributes section. If a payload received inter-system includes a journal property, all entries in that array must be the same when sharing the payload beyond the boundaries of the system; if the system chooses to introduce further changes, and wishes to convey those properties inter-system, then another object should be pushed onto the end of the journal array.</p>
+        
+        </section>
+        
+    </section>
+    
+    <section>
         
         <h1>Payload Sub-structures</h1>
     
         <section data-requirement="must">
 
             <h1>PayloadIdentity</h1>
+            
+            <p>The <dfn>PayloadIdentity</dfn> structure is a compound key containing a <var>originator_id</var> UUID property, corresponding to the UUID of the system that created the payload, and an <var>id</var> UID property, corresponding to the logical entity represented by the payload.</p>
+            
+            <p data-status="non-normative">The non-changing nature of the <var>PayloadIdentity</var> allows future payloads to be introduced into the network that modify any attribute of a payload, including its URI.</p>
+            
+            <p>The <dfn id="PayloadIdentity-originator_id"><var>originator_id</var></dfn> property must be the UUID of the system that created the payload. The UUID must conform to RFC 4122, and it is recommended that a system sign all payloads it creates with the same <var>originator_id</var> value.</p>
+            
+            <p>The <dfn id="PayloadIdentity-id"><var>id</var></dfn> property must be a unique identifier for the logical entity represented by the payload in the context of all logical entities with payloads created by the system.</p>
+        
+            <section>
 
-            <pre data-schema="PayloadIdentity"></pre>
+                <h1 data-ref="payloadidentity-schema">Schema</h1>
+
+                <pre data-schema="PayloadIdentity"></pre>
+
+            </section>
 
         </section>
 
         <section data-requirement="should">
 
             <h1>PayloadAttributes</h1>
+            
+            <p><dfn>PayloadAttributes</dfn> describe the state of a payload at a point in time under a particular context.</p>
+            
+            <section data-status="non-normative">
+            
+                <p>Attributes are used in a number of contexts: the <var>original</var> section of a payload contains metadata about a payload at the time the payload was created; the <var>journal</var> section of a payload contains an array of entries that specify modifications made to attributes during the payload's lifetime; and the <var>attributes</var> section of a payload contains metadata about a payload once the <var>original</var> and <var>journal</var> sections have been parsed.</p>
+
+                <p>An attributes section has a number of properties. All properties besides <var>use</var> and <var>require</var> must be specified on any attributes object. The <var>use</var> property is an optional object that, if set, contains key-value pairs that may be regarded by a system. The <var>require</var> property is an optional object that, if set, contains key-value pairs that must be regarded by a system. During inter-system communication, the keys of the <var>use</var> and <var>require</var> objects must be UUIDs to ensure for long-term extensibility, but within the boundaries of a system, they may be mapped to human-readable equivalents.</p>
+                
+            </section>
 
             <section data-requirement="must">
 
                 <h1 data-ref="PayloadAbstractAttributes">Abstract</h1>
+            
+                <p>The <dfn>PayloadAbstractAttributes</dfn> structure is an abstract object that defines a base set of properties extended by all payloads.</p>
+            
+                <p data-status="editor-challenged" data-message="The editor does not see the usefullness of this property. While required under the JSON Schema file, it's purpose is not clear and has not been previously documented. Identity of the payload originator is available from the payload's identity section, and each journal entry carries an identity.">The <dfn id="PayloadAbstractAttributes-originator"><var>originator</var></dfn> property must be the UUID of the system that...</p>
+                
+                <p>The <dfn id="PayloadAbstractAttributes.timestamp">timestamp</dfn> property must be set as a timestamp conforming to RFC 3339.</p>
+                
+                <p data-status="non-normative">The <var>timestamp</var> attribute denotes when the attributes section was created. When contained within the payload <var>original</var> section, it denotes when the payload was introduced into the network; when contained within the <var>attributes</var> section, it denotes the timestamp of the last entry in the journal that affected a change of the attributes.</p>
+                
+                <p>The <dfn id="PayloadAbstractAttributes.uri">uri</dfn> property must be set and must define the current URI of the payload.</p>
+                
+                <p>The <dfn id="PayloadAbstractAttributes.share">share</dfn> property may be set and denotes whether a payload should be shared.</p>
+                
+                <p data-status="non-normative">The <var>share</var> attribute is meant to advise whether a system should share the payload. If this property is not set when receiving a payload, it should be assumed as true, as the other system was willing to share it; if this property is not set when sharing payloads, this payload should not be shared.</p>
+                
+                <p>The <dfn id="PayloadAbstractAttributes.propagate">propagate</dfn> property may be set and denotes whether a payload should be shared beyond those systems that directly peer with the sharing system.</p>
+                
+                <p data-status="non-normative">The <var>propagate</var> attribute is meant to advise whether a payload should be shared throughout the peer-to-peer network or not. When this property is false and a system discovers the payload from another system, the system should not share this payload further.</p>
+        
+                <section>
 
-                <pre data-schema="PayloadAbstractAttributes"></pre>
+                    <h1 data-ref="payloadabstractattributes-schema">Schema</h1>
 
+                    <pre data-schema="PayloadAbstractAttributes"></pre>
+
+                </section>
+                
             </section>
 
             <section data-requirement="should">
 
                 <h1 data-ref="PayloadLocalAttributes">Local</h1>
+            
+                <p>The <dfn>PayloadLocalAttributes</dfn> structure is an object that extends the <var>PayloadAbstractAttributes</var> abstract object with optional <var>use</var> and <var>require</var> sections, each of which are themselves an object comprised of zero or more key-value pairs. No constraints are imposed on the format of keys in a <dfn>PayloadLocalAttributes</dfn> object.</p>
+                
+                <section data-status="non-normative">
+                
+                    <p>While the keys under <var>use</var> and <var>require</var> are encoded as UUIDs during inter-system communication (see <a href="#payloadtransitattributes"><var>PayloadTransitAttributes</var></a>), the <var>PayloadLocalAttributes</var> object makes it easier for a payload to be understood intra-system as keys may be mapped to human-readable names.</p>
+                
+                    <p>The <a href="module/receiver#adjintranslate">AdjInTranslate (Receiver Module)</a> converts the <var>use</var> and <var>require</var> sections of <var>PayloadTransitAttributes</var> into the respective sections of <var>PayloadLocalAttributes</var> as part of the conversion from <var>TransitPayload</var> to <var>LocalPayload</var>; the <a href="module/relay#adjouttranslate">AdjOutTranslate (Relay Module)</a> performs the inverse of this operation.</p>
+                    
+                </section>
+        
+                <section>
 
-                <pre data-schema="PayloadLocalAttributes"></pre>
+                    <h1 data-ref="payloadlocalattributes-schema">Schema</h1>
+
+                    <pre data-schema="PayloadLocalAttributes"></pre>
+
+                </section>
 
             </section>
 
             <section data-requirement="should">
 
                 <h1 data-ref="PayloadTransitAttributes">Transit</h1>
+            
+                <p>The <dfn>PayloadTransitAttributes</dfn> structure is an object that extends the <var>PayloadAbstractAttributes</var> abstract object with optional <var>use</var> and <var>require</var> sections, each of which are themselves an object comprised of zero or more key-value pairs. All keys for the <var>use</var> and <var>require</var> sections must be formatted as UUIDs conforming to RFC 4122. All values should be formatted per the <a href="overview#attribute-specifications">attribute specification</a> corresponding to the key name.</p>
+                
+                <section data-status="non-normative">
+                    
+                    <p>It is likely that several implementations of a particular type of attribute may exist. The use of UUIDs for all inter-system communication avoids namespace conflicts so that, for example, two different ratings modules may exist in the <var>use</var> section.</p>
+                
+                    <p>When <a href="module/receiver#adjintranslate">AdjInTranslate (Receiver Module)</a> converts the <var>use</var> and <var>require</var> sections of <var>PayloadTransitAttributes</var> into the respective sections of <var>PayloadLocalAttributes</var>, it leaves key names as UUIDs for any keys it does not recognize. In this way, if a key under <var>require</var> is not recognized when it reaches <a href="module/receiver#adjinfilter">AdjInFilter (Receiver Module)</a>, the paylod will be dropped.</p>
+                    
+                </section>
+        
+                <section>
 
-                <pre data-schema="PayloadTransitAttributes"></pre>
+                    <h1 data-ref="payloadtransitattributes-schema">Schema</h1>
+
+                    <pre data-schema="PayloadTransitAttributes"></pre>
+
+                </section>
 
             </section>
 
         </section>
 
-        <section data-requirement="should">
+        <section data-requirement="should" data-status="incomplete">
 
             <h1>PayloadJournal</h1>
 
             <section data-requirement="must">
 
                 <h1 data-ref="PayloadAbstractJournalEntry">Abstract</h1>
+        
+                <section>
 
-                <pre data-schema="PayloadAbstractJournalEntry"></pre>
+                    <h1 data-ref="payloadabstractjournalentry-schema">Schema</h1>
+
+                    <pre data-schema="PayloadAbstractJournalEntry"></pre>
+
+                </section>
 
             </section>
-
-            <section data-requirement="should">
+ 
+           <section data-requirement="should">
 
                 <h1 data-ref="PayloadLocalJournalEntry">Local</h1>
+        
+                <section>
 
-                <pre data-schema="PayloadLocalJournalEntry"></pre>
+                    <h1 data-ref="payloadlocaljournalentry-schema">Schema</h1>
+
+                    <pre data-schema="PayloadLocalJournalEntry"></pre>
+
+                </section>
 
             </section>
 
             <section data-requirement="should">
 
                 <h1 data-ref="PayloadTransitJournalEntry">Transit</h1>
+        
+                <section>
 
-                <pre data-schema="PayloadTransitJournalEntry"></pre>
+                    <h1 data-ref="payloadtransitjournalentry-schema">Schema</h1>
+
+                    <pre data-schema="PayloadTransitJournalEntry"></pre>
+
+                </section>
 
             </section>
 
@@ -166,6 +290,8 @@
     <section data-requirement="must" data-status="incomplete">
         
         <h1>LocalPayload</h1>
+                
+        <p>This structure should be used within the boundaries of a system, but this structure must not be conveyed between systems.</p>
         
         <section>
             

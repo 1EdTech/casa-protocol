@@ -59,6 +59,7 @@
                 <h1>View Options</h1>
                 <label><input type="checkbox" id="hide_non-normative"> Hide Non-normative Sections</label>
                 <label><input type="checkbox" id="show_issues-only"> Only Show Issues</label>
+                <label><input type="checkbox" id="hide_status-notices"> Hide Status Notices</label>
             </form>
         </div>
         
@@ -83,6 +84,11 @@
             $('#hide_non-normative').change(function(){
                 var fn = $(this).prop('checked') ? 'addClass' : 'removeClass';
                 $('#content')[fn]('hide_non-normative');
+            })
+            
+            $('#hide_status-notices').change(function(){
+                var fn = $(this).prop('checked') ? 'addClass' : 'removeClass';
+                $('#content')[fn]('hide_status-notices');
             })
             
             $('#show_issues-only').change(function(){

@@ -69,11 +69,13 @@ var VIEWER = new function(){
                 var statuses = {
                     'non-normative': 'This section is non-normative',
                     'conflict': 'This section is flagged as in conflict',
+                    'editor-challenged': 'This section is flagged as challenged by the editor',
+                    'board-challenged': 'This section is flagged as challenged by the board',
                     'revision': 'This section is flagged for revision',
                     'incomplete': 'This section is flagged as incomplete',
                     'undefined': 'This section is flagged as undefined'
                 };
-                var issueStatuses = ['conflict','revision','incomplete','undefined'];
+                var issueStatuses = ['conflict','editor-challenged','revision','incomplete','undefined'];
                 
                 // requires aria mappings
                 $('[data-status]').each(function(){
@@ -85,7 +87,7 @@ var VIEWER = new function(){
                         var str  = '<footer role="status" class="status_message">';
                         str += '<h1>'+statuses[status]+'</h1>';
                         if($(this).attr('data-message'))
-                            str += $(this).attr('data-message');
+                            str += '<p>'+$(this).attr('data-message')+'</p>';
                         str += '</footer>';
                         if($(this).find('#'+$(this).attr('aria-labeledby')).length)
                             $(this).find('#'+$(this).attr('aria-labeledby')).after(str)
