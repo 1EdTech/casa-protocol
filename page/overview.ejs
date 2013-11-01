@@ -1,0 +1,199 @@
+<header>
+    <hgroup>
+        <h2>Community App Sharing Architecture</h2>
+        <h1>Overview</h1>
+    </hgroup>
+</header>
+
+<footer>
+    <section>
+        <h1>Status of this Memo</h1>
+        <p>This memorandum specifies the Community App Sharing Architecture ("CASA") Protocol, which allows peers to propagate and share information about web applications in their ecosystem. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+    </section>
+    <section>
+        <h1>Copyright Notice</h1>
+        <p>Copyright (c) 2013, Regents of the University of California. All rights reserved.</p>
+    </section>
+    <section>
+        <h1>Terminology</h1>
+        <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119 ["Key words for use in RFCs to Indicate Requirement Levels"]</a></strong>.</p>
+    </section>
+</footer>
+
+<main>
+    
+    <section> 
+        
+        <h1>Overview</h1>
+        
+        <p>The CASA Protocol enables the sharing of knowledge about web applications and associated metadata throughout a peer-to-peer topology with support for heterogeneous and asymmetric world views. Through this protocol, each peer develops from its neighbors a knowledge of the ecosystem as suited to its needs, taking into consideration trust relationships and policies around acceptance and sharing.<p>
+
+        <p>The motivating use case for this protocol is web app stores, such as in the context of a mobile dashboard, an IMS LTI Tool Consumer or a W3C Packaged Web Apps launcher. This protocol originated as an attempt to serve these use cases; however, given its flexibility, it is generic enough to comport with other use cases whereby URIs and metadata are propagated across a peer-to-peer topology.</p>
+        
+        <section data-status="non-normative">
+            
+            <h1>Background</h1>
+            
+            <p>Information propagation throughout a network is conventionally handled as either:</p>
+
+            <dl>
+                <dt>Complete Topology</dt>
+                <dd>Nodes in an infrastructure each contact every other node in the infrastructure in order to gain full knowledge of the environment. This approach requires 0.5*N*(N-1) edges for N nodes, thus imposing high control overhead to retain accurate knowledge of the ecosystem.</dd>
+                <dt>Star Topology</dt>
+                <dd>Nodes in an infrastructure each contact one central node to share their knowledge and collect knowledge from others. This approach requires a homogeneous world view and centralized trust, and it places significant load and responsibility upon the central aggregator.</dd>
+            </dl>
+            
+            <p>Neither of these approaches adequately model the real world. Traditionally, web portals build their ecosystem by directly contacting trusted peers, learning about apps they offer and apps about which they know. In such a scenario, neither global knowledge nor a fully-connected mesh are viable, nor will consensus ever be achieved for a central hub. Consequently, CASA implements an alternative peer-to-peer network that, while more complex, allows for the formation of small-world topologies that more adequately model real-world relationships.</p>
+            
+        </section>
+        
+        <section>
+            
+            <h1>Approach</h1>
+            
+            <p>The CASA protocol presents a model that treats each organization in the network as an autonomous system, whereby each autonomous system:</p>
+            
+            <ol>
+                <li>defines their own trust, acceptance and sharing policies;</li>
+                <li>queries neighboring peers and processes their responses;</li>
+                <li>responds to neighboring peers when queried;</li>
+                <li>produces front-end user interfaces with which end users may interact.</li>
+            </ol>
+            
+            <section>
+                
+                <h1>Logical Entities</h1>
+            
+                <p>Each autonomous system may recognize any of three logical, and in some cases concrete, entities:</p>
+
+                <dl>
+                    <dt>AdjInPeer</dt>
+                    <dd>An inter-organizational entity from which information may be accept information.</dd>
+                    <dt>AdjOutPeer</dt>
+                    <dd>An inter-organizational entity to which information may be shared.</dd>
+                    <dt>Outlet</dt>
+                    <dd>A intra-organizational entity through which information is exposed to organizational users.</dd>
+                </dl>
+            
+            </section>
+            
+            <section>
+                
+                <h1>Automated Processes</h1>
+
+                <p>For automation, each autonomous system may define a number of operations:</p>
+
+                <dl>
+                    <dt>AdjInTranslate</dt>
+                    <dd>Translates payloads from machine-readable to human-readable.</dd>
+                    <dt>AdjInSquash</dt>
+                    <dd>Squashes the journal to determine payload state.</dd>
+                    <dt>AdjInFilter</dt>
+                    <dd>Drops payloads not suited for the organization.</dd>
+                    <dt>LocalTransform</dt>
+                    <dd>Transforms payloads to suite the organization.</dd>
+                    <dt>AdjOutTransform</dt>
+                    <dd>Transforms payloads for sharing beyond the organization.</dd>
+                    <dt>AdjOutFilter</dt>
+                    <dd>Drop payloads not suited for sharing beyond organization.</dd>
+                    <dt>AdjOutTranslate</dt>
+                    <dd>Translates payloads from human-readable to machine-readable.</dd>
+                </dl>
+                
+            </section>
+            
+        </section>
+        
+        <section data-status="non-normative">
+        
+            <h1>Use Cases</h1>
+
+            <section>
+
+                <h1>Mobile Dashboard</h1>
+
+                <p>Many organizations with mobile web apps arrange them in a dashboard. In some cases, they make this dashboard configurable and seek out apps from peers. Further, they may choose to share their own apps with these or other peers. For example, take the case of the UC System, where a campus may have both location-specific mobile web apps, as well as academic reference apps that can be shared. An example of a mobile web app that can be referenced and shared as a resource is an organic chemistry glossary, where the glossary itself is a growing body of work.</p>
+
+                <p>Satisfaction of this use case requires that (1) the heterogeneous and asymmetric peering relationships must be satisfied and (2) it must be possible to filter URIs based on whether or not they provide a mobile view to content.</p>
+
+            </section>
+
+            <section>
+
+                <h1>Tool Launcher</h1>
+
+                <p>Content management systems, learning management systems, and many other versatile systems provide mechanisms for adding external tools. In some cases, such a tool is represented solely as a URI, while in other cases it has tighter integration achieved through standards such as IMS Learning Tools Interoperability (LTI) or W3C Packaged Web Apps (PWA).</p>
+
+                <p>Satisfaction of this use case requires that (1) an application may be launched directly by URI, (2) an outlet may be provided adequate information to launch the app with IMS LTI or W3C PWA and (3) an outlet can determine whether an IMS LTI or W3C PWA launch is required or the URI can also simply be launched directly. Further, this use case imposes that, while IMS LTI and W3C PWA are used as examples here, the mechanisms presented must be able to support any launch standard describable by metadata.</p>
+
+            </section>
+
+            <section>
+
+                <h1>Authorization</h1>
+
+                <p>Many applications implement authorization schemes. For example, an application may support only certain OAuth providers or a certain SAML-based schemes. In the case of SAML, even within a middleware such as Shibboleth, it may only support certain federations or identity providers. While authorization for a URI remains with the URI host, this protocol must adequately describe metadata such that a receiving peer may determine whether or not a URI is relevant or shall be dropped.</p>
+
+                <p>Satisfaction of this use case requires that authorization may be specified such that, if the peer does not recognize the scheme or does not support the properties specified by the scheme, then the URI is dropped.</p>
+
+            </section>
+
+        </section>
+        
+    </section>
+    
+    <section>
+        
+        <h1>Protocol Structure</h1>
+        
+        <p>Large specifications present a number of problems:</p>
+        
+        <ul>
+            <li>For editors, they're hard to maintain.</li>
+            <li>For oversight, they're hard to govern.</li>
+            <li>For implementers, they're hard to understand.</li>
+        </ul>
+        
+        <p>Consequently, the CASA Protocol is divided into a number of CASA Protocol Modules ("protocol modules"):</p>
+        
+        <section>
+            
+            <h1>Modules</h1>
+
+            <dl>
+                <dt><a href="Module/Payload">Payload Module</a></dt>
+                <dl>Defines the data format of inter- and intra- system communication.</dl>
+                <dt><a href="Module/Publisher">Publisher Module</a></dt>
+                <dl>Defines how inter-system peers may access payloads.</dl>
+                <dt><a href="Module/Receiver">Receiver Module</a></dt>
+                <dl>Defines how to make inter-system queries to retrieve payloads.</dl>
+                <dt><a href="Module/Relay">Relay Module</a></dt>
+                <dl>Defines how to make inter-system queries to retrieve payloads and then publish those payloads inter-system.</dl>
+                <dt><a href="Module/Local">Local Module</a></dt>
+                <dl>Defines how intra-system outlets may access payloads.</dl>
+                <dt><a href="Module/Manager">Manager Module</a></dt>
+                <dl>Defines how intra-system outlets may manage payloads.</dl>
+            </dl>
+        
+        </section>
+        
+        <section>
+            
+            <h1>Conformance</h1>
+            
+            <p>To conform with a protocol module, three expectations are imposed upon an implementation:</p>
+                
+            <dl>
+                <dt>Intra-Module Requirements</dt>
+                <dd>All modules should define requirement levels for each operation or structure ("component") it defines.</dd>
+                <dt>Inter-Module Requirements</dt>
+                <dd>A module or component of a module may impose requirements upon other modules or components. When such a constraint is imposed, all requirements imposed by the other module must be met; additionally, such a constraint may increase the strength of the requirement level for any given component of the other module.</dd>
+                <dt>This Document</dt>
+                <dd>All module must conform to all requirements imposed by this document.</dd>
+            </dl>
+            
+        </section>
+        
+    </section>
+    
+</main>

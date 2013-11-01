@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+        
+        <title>CASA</title>
+        
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        
+        <script type="text/javascript" src="asset/vendor/jquery.js"></script>
+        <script type="text/javascript" src="asset/vendor/jquery.ba-hashchange.js"></script>
+        <script type="text/javascript" src="asset/vendor/jquery.ariaMapper.js"></script>
+        <script type="text/javascript" src="asset/vendor/jquery.ariaMapperHelper.js"></script>
+        <script type="text/javascript" src="asset/vendor/ejs.js"></script>
+        <script type="text/javascript" src="asset/vendor/ejs_views.js"></script>
+        <script type="text/javascript" src="asset/vendor/prettify/prettify.js"></script>
+        <script type="text/javascript" src="asset/viewer.js"></script>
+        
+        <link rel="stylesheet" href="asset/vendor/prettify/prettify.css">
+        <link rel="stylesheet" href="asset/outline.css">
+        
+        <link rel="stylesheet" href="asset/style.css">
+        <script type="text/javascript" src="asset/style.js"></script>
+        
+    </head>
+    
+    <body>
+        
+        <div id="nav-suite-container">
+            <nav id="nav-suite" role="navigation">
+                <header>
+                    <h1>CASA Specification</h1>
+                </header>
+                <ul>
+                    <li><a href="#Overview">Overview</a></li>
+                    <li>
+                        <h1>Modules</h1>
+                        <ul>
+                            <li><a href="#Module/Payload">Payload</a></li>
+                            <li><a href="#Module/Publisher">Publisher</a></li>
+                            <li><a href="#Module/Receiver">Receiver</a></li>
+                            <li><a href="#Module/Relay">Relay</a></li>
+                            <li><a href="#Module/Local">Local</a></li>
+                            <li><a href="#Module/Manager">Manager</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        
+        <div id="content">
+            
+        </div>
+        
+        <div id="controls-container">
+            <form id="controls">
+                <h1>View Options</h1>
+                <label><input type="checkbox" id="hide_non-normative"> Hide Non-normative Sections</label>
+                <label><input type="checkbox" id="show_issues-only"> Only Show Issues</label>
+            </form>
+        </div>
+        
+        <script type="text/javascript">
+            $(window).hashchange( function(){
+                
+                var hash = location.hash,
+                    page = hash.substring(1)
+                
+                if(hash == '')
+                    page = 'Overview'
+                
+                VIEWER.go(page, VIEWER.page ? 200 : 0)
+                
+                $('#menu a').each(function(){
+                    var that = $(this);
+                    that[ that.attr( 'href' ) === hash.split('/')[0] ? 'addClass' : 'removeClass' ]('active');
+                })
+            })
+            $(window).hashchange();
+            
+            $('#hide_non-normative').change(function(){
+                var fn = $(this).prop('checked') ? 'addClass' : 'removeClass';
+                $('#content')[fn]('hide_non-normative');
+            })
+            
+            $('#show_issues-only').change(function(){
+                var fn = $(this).prop('checked') ? 'hide' : 'show';
+                $('#content *').filter(function(){ 
+                    if($(this).hasClass('issue') || $(this).closest('.issue').length || $(this).find('.issue').length)
+                        return false;
+                    if($(this).is('header') || $(this).closest('header').length)
+                        return false;
+                    if($(this).is('h1') && $(this).siblings('.issue'))
+                        return false;
+                    return true;
+                })[fn]();
+            })
+        </script>
+        
+    </body>
+    
+</html>
