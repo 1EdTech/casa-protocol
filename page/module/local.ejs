@@ -5,6 +5,154 @@
     </hgroup>
 </header>
 
+<footer>
+    
+    <section>
+        <h1>Status of this Memo</h1>
+        <p>This memorandum specifies the CASA Protocol Local Module, which defines how intra-system outlets may access payloads. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+    </section>
+    
+    <section>
+        <h1>Copyright Notice</h1>
+        <p>Copyright (c) 2013, Regents of the University of California. All rights reserved.</p>
+    </section>
+    
+    <section data-requirement="must">
+        
+        <h1>Requirements</h1>
+        
+        <p>The following specifications must be implemented with this module:</p>
+        
+        <dl>
+            <dt><a href="overview">CASA Protocol</a></dt>
+            <dd>Must implement basic protocol definition.</dd>
+            <dt><a href="module/payload#localpayload">CASA Protocol Payload Module - LocalPayload</a></dt>
+            <dd>Must implement LocalPayload; should implement with original attribute; may implement with journal attribute.</dd>
+        </dl>
+        
+    </section>
+    
+    <section>
+        
+        <h1>Terminology</h1>
+        <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
+        
+    </section>
+    
+</footer>
+
 <main>
+    
+    <section data-requirement="must" data-status="incomplete">
+        
+        <h1>SendLocal</h1>
+        
+        <section data-requirement="may">
+            
+            <h1 data-ref="sendlocal-access-controls">SendLocal with Access Controls</h1>
+            
+            <section data-requirement="should">
+                
+                <h1 data-ref="outlet">Outlet</h1>
+                
+            </section>
+            
+        </section>
+        
+    </section>
+    
+    <section data-requirement="may" data-status="incomplete">
+        
+        <h1>LocalStore</h1>
+        
+    </section>
+    
+    <section data-requirement="may">
+        
+        <h1>Submodule: LocalReceiver</h1>
+        
+        <footer>
+            
+            <section data-requirement="must">
+                
+                <h1>Requirements</h1>
+        
+                <p>The following specifications must be implemented with this sub-module:</p>
+
+                <dl>
+                    <dt><a href="module/receiver#receivein">CASA Protocol Receiver Module - ReceiveIn</a></dt>
+                    <dd>Must implement ReceiveIn; may implement with access control.</dd>
+                    <dt><a href="module/receiver#adjintranslate">CASA Protocol Receiver Module - AdjInTranslate</a></dt>
+                    <dd>Must implement AdjInTranslate.</dd>
+                    <dt><a href="module/receiver#adjinsquash">CASA Protocol Receiver Module - AdjInSquash</a></dt>
+                    <dd>Must implement AdjInSquash.</dd>
+                    <dt><a href="module/receiver#adjinsquash">CASA Protocol Receiver Module - AdjInFilter</a></dt>
+                    <dd>Must implement AdjInFilter; may implement with custom rules.</dd>
+                    <dt><a href="module/receiver#adjinstore">CASA Protocol Receiver Module - AdjInStore</a></dt>
+                    <dd>Must implement AdjInStore.</dd>
+                    <dt><a href="module/local#localstore">CASA Protocol Receiver Module - LocalStore</a></dt>
+                    <dd>Must implement LocalStore.</dd>
+                </dl>
+                
+            </section>
+            
+        </footer>
+        
+        <section data-requirement="must" data-status="incomplete">
+            
+            <h1>AdjInStoreToLocalStore</h1>
+            
+        </section>
+        
+        <section data-requirement="may" data-status="incomplete">
+            
+            <h1>LocalTransform</h1>
+            
+            <section data-requirement="should" data-status="undefined">
+                
+                <h1>LocalTransformRules</h1>
+                
+            </section>
+            
+        </section>
+        
+    </section>
+    
+    <section data-requirement="may">
+        
+        <h1>Submodule: LocalPublisher</h1>
+        
+        <footer>
+            
+            <section data-requirement="must">
+                
+                <h1>Requirements</h1>
+        
+                <p>The following specifications must be implemented with this sub-module:</p>
+
+                <dl>
+                    <dt><a href="module/relay#adjouttranslate">CASA Protocol Relay Module - AdjOutTranslate</a></dt>
+                    <dd>Must implement AdjOutTranslate.</dd>
+                    <dt><a href="module/relay#adjoutfilter">CASA Protocol Relay Module - AdjOutFilter</a></dt>
+                    <dd>Must implement AdjOutFilter; may implement with custom rules.</dd>
+                    <dt><a href="module/relay#adjouttransform">CASA Protocol Relay Module - AdjOutTransform</a></dt>
+                    <dd>Must implement AdjOutTransform; may implement with custom rules.</dd>
+                    <dt><a href="module/relay#adjoutstore">CASA Protocol Receiver Module - AdjOutStore</a></dt>
+                    <dd>Must implement AdjOutStore.</dd>
+                    <dt><a href="module/local#localstore">CASA Protocol Receiver Module - LocalStore</a></dt>
+                    <dd>Must implement LocalStore.</dd>
+                </dl>
+                
+            </section>
+            
+        </footer>
+        
+        <section data-requirement="must" data-status="incomplete">
+            
+            <h1>LocalStoreToAdjOutStore</h1>
+            
+        </section>
+        
+    </section>
     
 </main>

@@ -106,7 +106,7 @@ var VIEWER = new function(){
                     $('body').scrollTop(0)
                     $('#content, #colophon').fadeIn(fadeTime, function(){
                         if(anchor && $('#s-'+anchor).length > 0){
-                            $("html,body").animate({ scrollTop: $('#s-'+anchor).position().top-25 }, "slow")
+                            $("html,body").animate({ scrollTop: $('#s-'+anchor).position().top - 40 }, "slow")
                         }
                     });
                 }
