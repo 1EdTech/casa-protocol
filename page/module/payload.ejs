@@ -5,6 +5,191 @@
     </hgroup>
 </header>
 
+<footer>
+    <section>
+        <h1>Status of this Memo</h1>
+        <p>This memorandum specifies the CASA Payload Module, which defines data formats for inter- and intra- system communication under the architecture. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+    </section>
+    <section>
+        <h1>Copyright Notice</h1>
+        <p>Copyright (c) 2013, Regents of the University of California. All rights reserved.</p>
+    </section>
+    <section>
+        <h1>Terminology</h1>
+        <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119 ["Key words for use in RFCs to Indicate Requirement Levels"]</a></strong>.</p>
+    </section>
+    <section>
+        <h1>Requirements</h1>
+        <p>The following specifications are required for this module:</p>
+        <dl>
+            <dt><a href="overview">CASA Protocol</a></dt>
+            <dd>Base definition of the CASA Protocol</dd>
+        </dl>
+    </section>
+</footer>
+
 <main>
+    
+    <section>
+        
+        <h1>Payload Sub-structures</h1>
+    
+        <section data-requirement="must">
+
+            <h1>PayloadIdentity</h1>
+
+            <pre data-schema="PayloadIdentity"></pre>
+
+        </section>
+
+        <section data-requirement="should">
+
+            <h1>PayloadAttributes</h1>
+
+            <section data-requirement="must">
+
+                <h1 data-ref="PayloadAbstractAttributes">Abstract</h1>
+
+                <pre data-schema="PayloadAbstractAttributes"></pre>
+
+            </section>
+
+            <section data-requirement="should">
+
+                <h1 data-ref="PayloadLocalAttributes">Local</h1>
+
+                <pre data-schema="PayloadLocalAttributes"></pre>
+
+            </section>
+
+            <section data-requirement="should">
+
+                <h1 data-ref="PayloadTransitAttributes">Transit</h1>
+
+                <pre data-schema="PayloadTransitAttributes"></pre>
+
+            </section>
+
+        </section>
+
+        <section data-requirement="should">
+
+            <h1>PayloadJournal</h1>
+
+            <section data-requirement="must">
+
+                <h1 data-ref="PayloadAbstractJournalEntry">Abstract</h1>
+
+                <pre data-schema="PayloadAbstractJournalEntry"></pre>
+
+            </section>
+
+            <section data-requirement="should">
+
+                <h1 data-ref="PayloadLocalJournalEntry">Local</h1>
+
+                <pre data-schema="PayloadLocalJournalEntry"></pre>
+
+            </section>
+
+            <section data-requirement="should">
+
+                <h1 data-ref="PayloadTransitJournalEntry">Transit</h1>
+
+                <pre data-schema="PayloadTransitJournalEntry"></pre>
+
+            </section>
+
+        </section>
+        
+    </section>
+    
+    <section data-requirement="must">
+        
+        <h1>TransitPayload</h1>
+        
+        <section>
+            
+            <h1 data-ref="transitpayload-components">Components</h1>
+        
+            <section data-requirement="must">
+
+                <h1>TransitPayload.identity</h1>
+
+            </section>
+
+            <section data-requirement="must">
+
+                <h1>TransitPayload.original</h1>
+
+            </section>
+
+            <section data-requirement="may">
+
+                <h1>TransitPayload.journal</h1>
+
+            </section>
+
+            <section data-requirement="should-not">
+
+                <h1>TransitPayload.attributes</h1>
+
+            </section>
+            
+        </section>
+        
+        <section>
+            
+            <h1 data-ref="transitpayload-schema">Schema</h1>
+
+            <pre data-schema="TransitPayload"></pre>
+            
+        </section>
+        
+    </section>
+    
+    <section data-requirement="must">
+        
+        <h1>LocalPayload</h1>
+        
+        <section>
+            
+            <h1 data-ref="localpayload-components">Components</h1>
+        
+            <section data-requirement="must">
+
+                <h1>LocalPayload.identity</h1>
+
+            </section>
+
+            <section data-requirement="must">
+
+                <h1>LocalPayload.original</h1>
+
+            </section>
+
+            <section data-requirement="may">
+
+                <h1>LocalPayload.journal</h1>
+
+            </section>
+
+            <section data-requirement="should-not">
+
+                <h1>LocalPayload.attributes</h1>
+
+            </section>
+            
+        </section>
+        
+        <section>
+            
+            <h1 data-ref="localpayload-schema">Schema</h1>
+
+            <pre data-schema="LocalPayload"></pre>
+            
+        </section>
+        
+    </section>
     
 </main>
