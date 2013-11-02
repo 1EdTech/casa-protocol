@@ -174,7 +174,7 @@
         
         <p data-status="non-normative">While all <var>use</var> and <var>require</var> keys in <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects must be encoded as machine-readable UUIDs corresponding to <a href="core#attribute-specifications">Attribute Specifications (Core)</a>, working directly with UUIDs is considered cumbersome for system maintenance. This operation thus allows for intra-system treatment of attributes under a common name. This is especially useful for <a href="module/local#outlet"><var>Outlets</var> (Local Module)</a>, which are administered by human users who prefer human-readable names.</p>
                 
-        <p>For payload <var>original</var> property and, if set, for each element in the <var>journal</var> property, conversion must proceed as follows:</p>
+        <p>For payload <var>original</var> property and, if set, for each element in the <var>journal</var> property, this operation must follow this algorithm:</p>
         
         <ol>
             <li>
@@ -196,11 +196,11 @@
 # Assume: recognizes?(k) method returns true if UUID to human-readable mapping
 # Assume: translate(k) method returns human-readable mapping for UUID
 
-['use', 'require'].each { |property|
+['use', 'require'].each { |type|
   
-  if payload['original'].include? property
+  if payload['original'].include? type
 
-    payload['original'][property] = Hash[payload['journal'][property].map { |k,v|
+    payload['original'][type] = Hash[payload['journal'][type].map { |k,v|
         [ recognizes?(k) ? translate(k) : k, v ]
     }]
 
@@ -210,9 +210,9 @@
 
     payload['journal'].each_index { |index|
 
-      if payload['journal'][index].contains? property
+      if payload['journal'][index].contains? type
 
-        payload['journal'][index][property] = Hash[payload['journal'][index][property].map { |k,v|
+        payload['journal'][index][type] = Hash[payload['journal'][index][type].map { |k,v|
             [ recognizes?(k) ? translate(k) : k, v ]
         }]
 
@@ -227,9 +227,66 @@
         
     </section>
     
-    <section data-requirement="must" data-status="incomplete">
+    <section data-requirement="must">
         
         <h1>AdjInSquash</h1>
+        
+        <p>The <var>AdjInTranslate</var> operation accepts a <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> object that must have already been passed through <a href='#adjintranslate'><var>AdjInTranslate</var></a>, and it produces an <a href='#module/payload#localpayload'><var>LocalPayload</var> (Payload Module)</a> by constructing an <var>attributes</var> section from the <var>original</var> property and optionally the <var>journal</var> section if defined.</p>
+        
+        <p>This operation must following this algorithm:</p>
+        
+        <ol>
+            <li>If <var>attributes</var> property already exists, discard it.</li>
+            <li>Copy <var>original</var> property into new <var>attributes</var> property.</li>
+            <li>If <var>journal</var> is defined, for each entry sequentially in the <var>journal</var> section:
+                <ol>
+                    <li>For each property in <var>use</var> property, if defined, and for each index in <var>require</var> property, if defined:
+                        <ol>
+                            <li>Apply property into respective section of <var>attributes</var></li>
+                        </ol>
+                    </li>
+                </ol>
+            </li>
+        </ol>
+        
+        <p>An <a href='core#attribute-specification'>Attribute Specification</a> may define custom rules for how (3)(a)(i) is performed. If an attribute specification does not define custom rules, the value must be copied directly from the entry into the attribute section by key name.</p>
+        
+        <section data-status='non-normative'>
+                    
+            <h1>Implementation Example</h1>
+
+            <pre data-lang="ruby"># Assume: payload object with:
+#  - original: PayloadTransitAttributes object
+#  - journal: undefined or array of PayloadTransitJournalEntry objects
+# Assume: custom_apply_attributes?(key) returns true if custom operation for key
+# Assume: apply_attributes(key, payload, value) method applies the value to 
+#                  payload attribute by key with custom operation defined by key
+
+payload['attributes'] = payload['original']
+
+if payload.include? 'journal'
+
+  ['use','require'].each { |type|
+
+    payload['journal'].each { |entry|
+
+      entry.each { |key, value|
+
+        if custom_apply_attributes? key
+          apply_attributes(key, payload, value) 
+        else
+          payload['attributes'][key] = value
+        end
+
+      }
+
+    }
+
+  }
+
+end</pre>
+
+        </section>
         
     </section>
     
