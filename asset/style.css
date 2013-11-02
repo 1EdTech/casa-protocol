@@ -3,7 +3,7 @@
     html, body { font-size: 12px; }
 }
 
-html, body { margin: 0; padding: 0; font-family: Verdana, sans-serif; font-size:14px; min-width:690px; }
+html, body { margin: 0; padding: 0; font-family: Verdana, sans-serif; font-size:14px; }
 
 .clearfix:before, .clearfix:after { content: " "; display: table; }
 .clearfix:after { clear: both; }
@@ -22,7 +22,7 @@ html, body { margin: 0; padding: 0; font-family: Verdana, sans-serif; font-size:
 #nav-suite > ul > li, #nav-suite > header { float: left; position: relative; }
 #nav-suite > ul > li > :not(ul) { padding-right: 20px; }
 #nav-suite > ul > li > ul { display: none; }
-#nav-suite > ul > li:hover > ul { display: block; position: absolute; top: 34px; z-index: 1; background-color: #fff; border: 1px solid #ccc; border-top: 0; font-weight: bold; padding-top: 4px; padding-bottom: 8px; }
+#nav-suite > ul > li:hover > ul { display: block; position: absolute; top: 33px; z-index: 1; background-color: #fff; border: 1px solid #ccc; border-top-color: #fff; font-weight: bold; padding-top: 4px; padding-bottom: 8px; }
 #nav-suite > header > * { font-size:18px; padding: 6px 24px 6px 0; margin: 0; }
 
 #controls-container { position: fixed; bottom: 0; left: 0; right: 0; background-color: #fff; padding: 4px; border-top: 1px solid #ccc; }
@@ -75,3 +75,11 @@ html, body { margin: 0; padding: 0; font-family: Verdana, sans-serif; font-size:
 .hide_non-normative .status_section.non-normative { display: none; }
 
 pre.prettyprint { padding: 10px; border-color: #ccc; }
+
+[data-requirement] > h1:first-child:after { font-size: 0.8em; font-weight: bold; display: block; opacity: 0.7;  }
+[data-requirement="must"] > h1:first-child:after { content: "MUST"; color: #900; }
+[data-requirement="must-not"] > h1:first-child:after { content: "MUST NOT"; color: #900; }
+[data-requirement="should"] > h1:first-child:after { content: "SHOULD"; color: #c60; }
+[data-requirement="should-not"] > h1:first-child:after { content: "SHOULD NOT"; color: #c60; }
+[data-requirement="may"] > h1:first-child:after { content: "MAY"; color: #aa0; }
+[data-requirement="may-not"] > h1:first-child:after { content: "MAY NOT"; color: #aa0; }
