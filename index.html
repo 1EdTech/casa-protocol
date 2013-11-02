@@ -60,6 +60,7 @@
                 <label><input type="checkbox" id="hide_non-normative"> Hide Non-normative Sections</label>
                 <label><input type="checkbox" id="show_issues-only"> Only Show Issues</label>
                 <label><input type="checkbox" id="hide_status-notices"> Hide Status Notices</label>
+                <label><input type="checkbox" id="hide_code"> Hide Code Blocks</label>
             </form>
         </div>
         
@@ -103,6 +104,16 @@
                     return true;
                 })[fn]();
             })
+            
+            $('#hide_code').change(function(){
+                var fn = $(this).prop('checked') ? 'hide' : 'show';
+                $('pre.prettyprint').each(function(){
+                    $(this)[fn]()
+                    if($(this).parent().children(':not(pre.prettyprint):not(h1)').length === 0)
+                        $(this).parent()[fn]()
+                })
+            })
+            
         </script>
         
     </body>

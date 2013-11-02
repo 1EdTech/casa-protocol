@@ -102,6 +102,8 @@ var VIEWER = new function(){
 
                 $('#hide_non-normative').change();
                 $('#show_issues-only').change();
+                $('#hide_status-notices').change();
+                $('#hide_code').change();
 
                 var finish = function(){
                     prettyPrint();

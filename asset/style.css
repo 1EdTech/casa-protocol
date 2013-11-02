@@ -1,3 +1,8 @@
+@media print { 
+    #nav-suite-container, #controls-container { display: none; }  
+    html, body { font-size: 12px; }
+}
+
 html, body { margin: 0; padding: 0; font-family: Verdana, sans-serif; font-size:14px; min-width:690px; }
 
 .clearfix:before, .clearfix:after { content: " "; display: table; }
