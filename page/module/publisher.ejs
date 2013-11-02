@@ -56,7 +56,7 @@
             
         </section>
         
-        <section>
+        <section data-status="editor-challenged" data-message="Portions of this are non-normative for this module and would be better suited within ReceiveIn (Receiver Module)">
             
             <h1 data-ref="sendout-request">Request</h1>
             
@@ -91,9 +91,9 @@
                 
             <p>A <var>200 OK</var> response should include a <var>Content-Type: application/json</var> header. If it does not include a <var>Content-Type</var> header, then the client should assume <var>application/json</var>. The host must not send any other <code>Content-Type</code> header.</p>
             
-            <section>
+            <section data-status='editor-challenged' data-message='This would be better suited within ReceiveIn (Receiver Module)'>
                 
-                <h1 data-ref="sendout-client-validation"></h1>
+                <h1 data-ref="sendout-client-validation">Client Response Validation</h1>
             
                 <p>When a client receives a <var>200 OK</var> response, it should validate the message body. Validation passes if:</p>
 
