@@ -308,9 +308,57 @@ end</pre>
 
     </section>
     
-    <section data-requirement="may" data-status="incomplete">
+    <section data-requirement="may">
         
         <h1>AdjInStore</h1>
+        
+        <p>The <dfn>AdjInStore</dfn> structure is a persistent data store that contains <a href='module/payloads#localpayload'><var>LocalPayload</var> (Payload Module)</a> objects. A payload stored in this structure must be received via <a href='#receivein'><var>ReceiveIn</var></a>, translated by <a href='#adjintranslate'><var>AdjInTranslate</var></a>, squashed by <a href='#adjinsquash'><var>AdjInSquash</var></a> and filtered by <a href='#adjintranslate'><var>AdjInFilter</var></a>.</p>
+        
+        <p data-status='non-normative'>This structure is used by the <a href='module/relay'>Relay Module</a> to generate payloads for inter-system propagation to peers; additionally, this structure is used by the <a href='module/local'>Local Module</a> to present inter-system payloads to intra-system outlets. Both modules use this structure with additional constraints before presenting payloads, so the payloads in this structure are never accessed directly by inter-system peers or intra-system outlets.</p>
+        
+        <section data-requirement='must'>
+            
+            <h1>Required Operations</h1>
+        
+            <p>This structure must support two operations:</p>
+
+            <dl>
+                <dt data-ref='adjinstore-create'>AdjInStore::create(LocalPayload)</dt>
+                <dd>Stores a new record in persistence; must not create a record if any record already exists in persistence with the same <var>identity</var> as the new record.</dd>
+                <dt data-ref='adjinstore-get'>AdjInStore::get(PayloadIdentity)</dt>
+                <dd>Gets a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method; must return false if no payload exists matching identity.</dd>
+            </dl>
+        
+            <p data-status='non-normative'>This structure will not store two payloads with identical <var>identity</var> sections.</p>
+            
+            <p>The <var>create</var> operation must not be used in any way except as defined by this protocol and its modules.</p>
+            
+            <p data-status='non-normative'>To add a payload for propagation via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, it must either arrive via <var>ReceiveIn</var> or be added to <a href='module/local#localstore'><var>LocalStore</var> (Local Module)</a>. It must not be added directly to <var>AdjInStore</var>, as this implies that the payload arrived from an external source.</p>
+        
+        </section>
+        
+        <section data-requirement='should'>
+            
+            <h1>Additional Operations</h1>
+        
+            <p>This structure should support two additional operations:</p>
+        
+            <dl>
+                <dt data-ref='adjinstore-update'>AdjInStore::update(LocalPayload)</dt>
+                <dd>Updates an existing payload record in persistence; must identify the payload to update by finding an existing record in persistence with the same <var>identity</var> attribute.</dd>
+                <dt data-ref='adjinstore-get'>AdjInStore::delete(PayloadIdentity)</dt>
+                <dd>Deletes a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method.</dd>
+            </dl>
+            
+            <p>The <var>update</var> and <var>delete</var> operations must not be used in any way except as defined by this protocol and its modules.</p>
+            
+            <p data-status='non-normative'>To change the way a payload is presented via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, use <a href='module/relay#adjouttransform'><var>AdjOutTransform</var> (Relay Module)</a>. To change the way a payload is presented via <a href='module/local#sendlocal'><var>SendLocal</var> (Local Module)</a>, use <a href='module/local#adjintransform'><var>AdjInTransform</var> (Local Module)</a>.</p>
+        
+            <p>The <var>delete</var> operation must be used to prune out stale entries.</p>
+            
+            <p data-status='non-normative'>To prevent a payload from being presented via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, use <a href='module/relay#adjoutfilter'><var>AdjOutFilter</var> (Relay Module)</a>. A payload may not be prevented from being presented via <a href='module/local#sendlocal'><var>SendLocal</var> (Local Module)</a> unless it is dropped by <a href='#adjinfilter'><var>AdjInFilter</var> prior to this step. This means that a payload must not be relayed via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a> unless it is also made available via <a href='module/local#sendlocal'><var>SendLocal</var> (Local Module)</a>.</p>
+            
+        </section>
         
     </section>
     
