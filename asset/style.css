@@ -52,24 +52,24 @@ html, body { margin: 0; padding: 0; font-family: Verdana, sans-serif; font-size:
 .status_section .status_section .status_section { margin-left: -15px; padding-left:15px; }
 
 .status_section.non-normative { border-color: #ccc; }
-.status_section.non-normative > .status_message { color: #777; }
+.status_section.non-normative > .status_message, .status_section.non-normative > .status_message h1 { color: #777; }
 
 .status_section.conflict { border-color: #c00; }
-.status_section.conflict > .status_message { color: #c00; }
+.status_section.conflict > .status_message, .status_section.conflict > .status_message h1 { color: #c00; }
 
 .status_section.editor-challenged { border-color: #c00; }
-.status_section.editor-challenged > .status_message { color: #c00; }
+.status_section.editor-challenged > .status_message, .status_section.editor-challenged > .status_message h1 { color: #c00; }
 
 .status_section.board-challenged { border-color: #c00; }
-.status_section.board-challenged > .status_message { color: #c00; }
+.status_section.board-challenged > .status_message, .status_section.board-challenged > .status_message h1 { color: #c00; }
 
 .status_section.revision { border-color: #f60; }
-.status_section.revision > .status_message { color: #f60; }
+.status_section.revision > .status_message, .status_section.revision > .status_message h1 { color: #f60; }
 
 .status_section.incomplete { border-color: #c93; }
-.status_section.incomplete > .status_message { color: #c93; }
+.status_section.incomplete > .status_message, .status_section.incomplete > .status_message h1 { color: #c93; }
 
 .status_section.undefined { border-color: #606; }
-.status_section.undefined > .status_message { color: #606; }
+.status_section.undefined > .status_message, .status_section.undefined > .status_message h1 { color: #606; }
 
 .hide_non-normative .status_section.non-normative { display: none; }
