@@ -36,7 +36,7 @@
         
         <h1>Terminology</h1>
         <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
-        <p>The key words <strong>HTTP request</strong>, <strong>HTTP response</strong> and <strong>HTTP GET</strong> in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2616.txt" rel="external">RFC 2616</a></strong> ["Hypertext Transfer Protocol -- HTTP/1.1"].</p>
+        <p>The key words <strong>HTTP request</strong>, <strong>HTTP response</strong>, <strong>HTTP GET request</strong>, <strong>HTTP Response Status Code</strong> (alternatively: <strong>response status</strong>), <strong>Client Error 4xx</strong> (alternatively: <strong>4xx Error</strong>) and <strong>Server Error 5xx</strong> (alternatively: <strong>5xx Error</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2616.txt" rel="external">RFC 2616</a></strong> ["Hypertext Transfer Protocol -- HTTP/1.1"].</p>
         
     </section>
     
@@ -44,22 +44,217 @@
 
 <main>
     
-    <section data-requirement="must" data-status="incomplete">
+    <section data-requirement="must">
         
         <h1>SendOut</h1>
         
-        <section data-requirement="may">
+        <p>The <dfn>SendOut</dfn> operation publish payloads externally by way of an HTTP request and response.</p>
+        
+        <section data-status="non-normative">
             
-            <h1 data-ref="sendout-access-controls">SendOut with Access Controls</h1>
-            
-            <section data-requirement="should">
-                
-                <h1 data-ref="adjoutpeer">AdjOutPeer</h1>
-                
-            </section>
+            <p>The HTTP GET request that initiates the <var>SendOut</var> operation is the only means of inter-system communication. By definition, the Community App Sharing Architecture is thus pull-based from the perspective of autonomous systems, allowing each system to determine its own refresh and expiration policies.</p>
             
         </section>
         
+        <section>
+            
+            <h1 data-ref="sendout-request">Request</h1>
+            
+            <p>A peering client initiates the <var>SendOut</var> operation by issuing an HTTP GET request to the <var>/payloads</var> route.</p>
+            
+            <p>The client may include a request body. If it includes a request body, it must be JSON-formatted.</p>
+            
+            <p data-status="non-normative">A request body is used to specify a secret in the event that the host implements access controls. This secret may also be specified in the query string of the GET request.</p>
+            
+            <p>Several headers are relevant to this request:</p>
+            
+            <dl>
+                <dt><var>Accept: application/json</var></dt>
+                <dd>The client should send this header. If the <var>Accept</var> header is omitted, the host must assume <var>application/json</var>. The client must not send any other <var>Accept</var> header.</dd>
+                <dt><var>Accept-Charset: utf-8</var></dt>
+                <dd>The client may send this header. If the <var>Accept-Charset</var> header is omitted, the host must assume <var>utf-8</var>. The client must not send any other <var>Accept-Charset</var> header.</dd>
+                <dt><var>Accept-Encoding</var></dt>
+                <dd>The client may send this header with acceptable encodings. The host may implement an encoding, but the client should accept a non-encoded response.</dd>
+                <dt><var>Content-Type: application/json</var></dt>
+                <dd>The client must send this header if the request includes a body section. If the <var>Content-Type</var> header is omitted, the host must assume <var>application/json</var> and the host must validate the body section as valid JSON. The client must not send any other <var>Content-Type</var> header.</dd>
+            </dl>
+            
+        </section>
+        
+        <section>
+            
+            <h1 data-ref="sendout-success">Success Response</h1>
+            
+            <p>If a host will fulfill the request, it must respond with a <var>200 OK</var> response status.</p>
+            
+            <p>A <var>200 OK</var> response must include a JSON-encoded array of <a href="module/payload#transitpayload"><var>TransitPayload</var> objects.</a></p>
+                
+            <p>A <var>200 OK</var> response should include a <var>Content-Type: application/json</var> header. If it does not include a <var>Content-Type</var> header, then the client should assume <var>application/json</var>. The host must not send any other <code>Content-Type</code> header.</p>
+            
+            <section>
+                
+                <h1 data-ref="sendout-client-validation"></h1>
+            
+                <p>When a client receives a <var>200 OK</var> response, it should validate the message body. Validation passes if:</p>
+
+                <ol>
+                    <li>Overall message is an array. If this condition fails, the entire response should be discarded.</li>
+                    <li>Each element of the array conforms to the <a href="module/payload#transitpayload"><var>TransitPayload</var></a> JSON Schema. If this condition fails, the non-conforming element should be discarded, but the client may still process conforming elements.</li>
+                </ol>
+            
+            </section>
+                
+        </section>
+        
+        <section>
+            
+            <h1 data-ref="sendout-success">Error Response</h1>
+            
+            <p>If a host will not fulfill the request, it must respond with a 4xx Error or 5xx Error.</p>
+            
+            <p>The following status codes are recommended:</p>
+            
+            <dl>
+                <dt>400 Bad Request</dt>
+                <dd>The request body contained malformed JSON.</dd>
+                <dt>406 Not Acceptable</dt>
+                <dd>The request specified a non-conforming <var>Accept</var> or <var>Accept-Charset</var> header.</dd>
+                <dt>415 Unsupported Media Type</dt>
+                <dd>The request specified a non-conforming <var>Content-Type</var> header.</dd>
+                <dd></dd>
+            </dl>
+            
+            <p>An error response may include a message body. If it includes the message body, it must be a plaintext body describing the error.</p>
+        
+        </section>
+        
+    </section>
+        
+    <section data-requirement="may">
+
+        <h1 data-ref="sendout-access-controls">SendOut with Access Controls</h1>
+
+        <p>A host may impose access controls on the <var>SendOut</var> operation.</p>
+        
+        <p>Two forms of access control are recommended:</p>
+        
+        <dl>
+            <dt>Address-based Access Control</dt>
+            <dd>Requests are only accepted from certain IP addresses and/or ranges.</dd>
+            <dt>Secret-based Access Control</dt>
+            <dd>Requests are only accepted when a valid secret is specified.</dd>
+        </dl>
+        
+        <p>If secret-based access control is imposed, the host must accept the secret when specified by the name <var>secret</var> in either an HTTP GET request query string or a JSON-encoded request body.</p>
+            
+        <p>If a host will not fulfill a <var>SendOut</var> request because of access controls, it must respond with the status code:</p>
+        
+        <dl>
+            <dt>403 Forbidden</dt>
+            <dd>The host implements access control and the request does not meet requirements.</dd>
+        </dl>
+        
+        <section data-requirement="may">
+
+            <h1 data-ref="adjoutpeer">AdjOutPeer</h1>
+
+            <p>The <dfn>AdjOutPeer</dfn> structure may be implemented to define access controls.</p>
+            
+            <p data-status="non-normative">This structure is useful under complex access controls situations where a host defines a number of systems it may support. For example, this structure is implemented for access controls in the <a href="module/manager#OutletReceiveNode"><var>OutletReceiveNode (Manager Module)</var></a> operation.</p>
+            
+            <section>
+                
+                <h1>Attributes</h1>
+                
+                <p>The <dfn id="AdjOutPeer-name">name</dfn> property must be set and must be unique among all <var>AdjOutPeer</var> objects defined within the system.</p>
+                
+                <p data-status="non-normative">The <var>name</var> property is used to identify a <var>AdjOutPeer</var>. For example, this property is used when creating/updating/deleting <var>AdjOutPeer</var> entities via the <a href="module/manager#OutletReceiveNode"><var>OutletReceiveNode (Manager Module)</var></a> operation.</p>
+                
+                <p>The <dfn id="AdjOutPeer-out">out</dfn> property must be set and must contain an object with, at minimum, a <var>local</var> property with a value of <var>false</var>.</p>
+                
+                <p data-status="non-normative">The <var>out.local</var> property denotes whether the entity is inter- or intra- system. If this property is <var>true</var>, then the structure is not an <var>AdjOutPeer</var> but rather an <a href="#module/local#outlet"><var>Outlet (Local Module)</var></a>.</p>
+                
+                <p>The <var>out</var> property may contain a <var>secret</var> property with a string value.</p>
+                
+                <p data-status="non-normative">If set, the <var>out.secret</var> property specifies a string that a client must provide when issuing a request.</p>
+                
+                <p>The <var>out</var> property may contain a <var>address</var> property conforming to the IP Address format.</p>
+                
+                <p data-status="non-normative">If set, the <var>out.address</var> property specifies an IP address required for a client to be considered as matching this structure.</p>
+                
+                <p>The <var>out</var> property may contain a <var>mask</var> property conforming to the IP Address format.</p>
+                
+                <p data-status="non-normative">If set, the <var>out.mask</var> property specifies a wildcard mask applied to <var>out.address</var>, where any request from a client within the specified range must be considered as matching this structure.</p>
+                
+            </section>
+            
+            <section>
+                
+                <h1>Resolving an AdjOutPeer</h1>
+                
+                <p>For each <var>AdjOutPeer</var>, the following routine may be used to determine a match:</p>
+                
+                <ol>
+                    <li>If <var>AdjOutPeer.out.secret</var> is specified but the request does not include a <var>secret</var> or the request <var>secret</var> does not match, <strong>not a match</strong>.
+                    <li>If <var>AdjOutPeer.out.address</var> is not specified, <strong>match</strong>.</li>
+                    <li>Unless <var>AdjOutPeer.out.mask</var> is specified:
+                        <ol>
+                            <li>If <var>AdjOutPeer.out.address</var> equals the the requesting client IP address, <strong>match</strong>.</li>
+                            <li>Otherwise, <strong>not a match.</strong></li>
+                        </ol>
+                    </li>
+                    <li>Apply <var>AdjOutPeer.out.mask</var> as a subnet mask over <var>AdjOutPeer.out.address</var> and the requesting client IP address:
+                        <ol>
+                            <li>If the addresses are equal once the mask is applied, <strong>match</strong>.</li>
+                            <li>Otherwise, <strong>not a match.</strong></li>
+                        </ol>
+                    </li>
+                </ol>
+                
+                <section data-status='non-normative'>
+                    
+                    <h1>Implementation Example</h1>
+                
+                    <pre data-lang="ruby"># Assume: request object with:
+#  - secret: string (from request query string or JSON-encoded body)
+#  - ip: string (IP Address format from requesting user agent)
+# Assume: AdjOutPeer array of objects with:
+#  - secret: string or false
+#  - address: string (IP Address format) or false
+#  - mask: string (IP address format) or false
+
+matches = AdjOutPeer.select { |peer|
+
+  if peer.secret
+    return false unless request.body.secret == peer.secret
+  end
+
+  return true unless peer.address
+  
+  unless peer.mask
+    return IPAddr.new(peer.address) == IPAddr.new(request.ip)
+  else
+
+  return IPAddr.new(peer.address).mask(peer.mask) == IPAddr.new(request.ip).mask(peer.mask)
+
+}</pre>
+                    
+                </section>
+                
+                <p>If the AdjOutPeer mechanism is implemented and no matching AdjOutPeer entries are found, a 403 Error must be thrown.</p>
+                
+            </section>
+
+            <section>
+                
+                <h1>Schema</h1>
+            
+                <pre data-schema="AdjOutPeer"></pre>
+            
+            </section>
+
+        </section>
+
     </section>
     
 </main>

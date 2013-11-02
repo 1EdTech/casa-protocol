@@ -96,8 +96,8 @@
             })
             
             $('#show_issues-only').change(function(){
-                var fn = $(this).prop('checked') ? 'hide' : 'show';
-                $('#content *').filter(function(){ 
+                //var fn = $(this).prop('checked') ? 'hide' : 'show';
+                var ele = $('#content *').filter(function(){ 
                     if($(this).hasClass('issue') || $(this).closest('.issue').length || $(this).find('.issue').length)
                         return false;
                     if($(this).is('header') || $(this).closest('header').length)
@@ -105,15 +105,29 @@
                     if($(this).is('h1') && $(this).siblings('.issue'))
                         return false;
                     return true;
-                })[fn]();
+                });
+                if($(this).prop('checked')){
+                    ele.hide();
+                }else{
+                    ele.css('display','')
+                }
             })
             
             $('#hide_code').change(function(){
-                var fn = $(this).prop('checked') ? 'hide' : 'show';
+                var checked = $(this).prop('checked');
                 $('pre.prettyprint').each(function(){
-                    $(this)[fn]()
-                    if($(this).parent().children(':not(pre.prettyprint):not(h1)').length === 0)
-                        $(this).parent()[fn]()
+                    if(checked){
+                        $(this).hide();
+                    }else{
+                        $(this).css('display','')
+                    }
+                    if($(this).parent().children(':not(pre.prettyprint):not(h1):not(.status_message)').length === 0){
+                        if(checked){
+                            $(this).parent().hide();
+                        }else{
+                            $(this).parent().css('display','')
+                        }
+                    }
                 })
             })
             

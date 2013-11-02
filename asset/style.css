@@ -73,3 +73,5 @@ html, body { margin: 0; padding: 0; font-family: Verdana, sans-serif; font-size:
 .status_section.undefined > .status_message, .status_section.undefined > .status_message h1 { color: #606; }
 
 .hide_non-normative .status_section.non-normative { display: none; }
+
+pre.prettyprint { padding: 10px; border-color: #ccc; }

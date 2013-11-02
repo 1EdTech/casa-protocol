@@ -124,6 +124,11 @@ var VIEWER = new function(){
                                    .addClass('lang-json')
                                    .html(JSON.stringify(data.definitions[$(this).attr('data-schema')], null, 2));
                         })
+                        $('[data-lang]').each(function(){
+                            $(this).addClass('prettyprint');
+                            if($(this).attr('data-lang'))
+                                   $(this).addClass('lang-'+$(this).attr('data-lang'))
+                        })
                         finish();
                     })
                 }
