@@ -115,6 +115,12 @@ var VIEWER = new function(){
                     });
                 }
                 
+                $('[data-lang]').each(function(){
+                    $(this).addClass('prettyprint');
+                    if($(this).attr('data-lang'))
+                           $(this).addClass('lang-'+$(this).attr('data-lang'))
+                })
+                
                 if($('[data-schema]').length == 0)
                     finish();
                 else{
@@ -123,11 +129,6 @@ var VIEWER = new function(){
                             $(this).addClass('prettyprint')
                                    .addClass('lang-json')
                                    .html(JSON.stringify(data.definitions[$(this).attr('data-schema')], null, 2));
-                        })
-                        $('[data-lang]').each(function(){
-                            $(this).addClass('prettyprint');
-                            if($(this).attr('data-lang'))
-                                   $(this).addClass('lang-'+$(this).attr('data-lang'))
                         })
                         finish();
                     })

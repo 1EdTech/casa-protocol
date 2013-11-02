@@ -166,17 +166,64 @@
 
     </section>
     
-    <section data-requirement="must" data-status="incomplete">
+    <section data-requirement="must">
         
         <h1>AdjInTranslate</h1>
         
         <p>The <var>AdjInTranslate</var> operation accepts a <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> object and converts recognized keys in the <var>use</var> and <var>require</var> properties of the <var>original</var> section and the array elements of the <var>journal</var> section, if defined, into human-readable keys.</p>
         
-        <p data-status="non-normative">While all <var>use</var> and <var>require</var> keys in <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects must be encoded as machine-readable UUIDs corresponding to <a href="core#attribute-specifications">Attribute Specifications (Core)</a>, working directly with UUIDs is considered cumbersome for system maintenance. This operation thus allows for intra-system treatment of attributes under a common name. This is useful for </p>
+        <p data-status="non-normative">While all <var>use</var> and <var>require</var> keys in <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects must be encoded as machine-readable UUIDs corresponding to <a href="core#attribute-specifications">Attribute Specifications (Core)</a>, working directly with UUIDs is considered cumbersome for system maintenance. This operation thus allows for intra-system treatment of attributes under a common name. This is especially useful for <a href="module/local#outlet"><var>Outlets</var> (Local Module)</a>, which are administered by human users who prefer human-readable names.</p>
+                
+        <p>For payload <var>original</var> property and, if set, for each element in the <var>journal</var> property, conversion must proceed as follows:</p>
         
-        While machine-readable names avoid namespace conflicts in the peer-to-peer communication layer, it is more convenient to treat attributes by their human-readable names within a node and its outlets.
+        <ol>
+            <li>
+                For each property in <var>use</var> property, if defined, and for each index in <var>require</var> property, if defined:
+                <ol>
+                    <li>If mapping exists from UUID to human-readable name, change key name from UUID to human-readable name;</li>
+                    <li>Otherwise, leave key name unchanged.</li>
+                </ol>
+            </li>
+        </ol>
+        
+        <section data-status='non-normative'>
+                    
+            <h1>Implementation Example</h1>
 
-When a payload is received, the first operation that must occur is translation of use and require attributes from machine-readable attribute UUIDs to human-readable names configured by the peer. This translation should occur for all recognized keys of the use and require structures of the original property and all recognized keys of the use and require structures of all entries within the journal. A recognized key is defined as one where the Engine has a module that has registered the mapping. If there is no mapping for a machine-readable attribute UUID, the key should be ignored.
+            <pre data-lang="ruby"># Assume: payload object with:
+#  - original: PayloadTransitAttributes object
+#  - journal: undefined or array of PayloadTransitJournalEntry objects
+# Assume: recognizes?(k) method returns true if UUID to human-readable mapping
+# Assume: translate(k) method returns human-readable mapping for UUID
+
+['use', 'require'].each { |property|
+  
+  if payload['original'].include? property
+
+    payload['original'][property] = Hash[payload['journal'][property].map { |k,v|
+        [ recognizes?(k) ? translate(k) : k, v ]
+    }]
+
+  end
+
+  if payload.include? 'journal'
+
+    payload['journal'].each_index { |index|
+
+      if payload['journal'][index].contains? property
+
+        payload['journal'][index][property] = Hash[payload['journal'][index][property].map { |k,v|
+            [ recognizes?(k) ? translate(k) : k, v ]
+        }]
+
+      end
+    }
+
+  end
+
+}</pre>
+
+        </section>
         
     </section>
     
