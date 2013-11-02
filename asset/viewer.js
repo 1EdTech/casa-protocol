@@ -70,12 +70,12 @@ var VIEWER = new function(){
                     'non-normative': 'This section is non-normative',
                     'conflict': 'This section is flagged as in conflict',
                     'editor-challenged': 'This section is flagged as challenged by the editor',
-                    'board-challenged': 'This section is flagged as challenged by the board',
+                    'council-challenged': 'This section is flagged as challenged by the council',
                     'revision': 'This section is flagged for revision',
                     'incomplete': 'This section is flagged as incomplete',
                     'undefined': 'This section is flagged as undefined'
                 };
-                var issueStatuses = ['conflict','editor-challenged','revision','incomplete','undefined'];
+                var issueStatuses = ['conflict','editor-challenged','council-challenged','revision','incomplete','undefined'];
                 
                 // requires aria mappings
                 $('[data-status]').each(function(){
