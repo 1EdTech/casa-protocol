@@ -48,35 +48,33 @@
         
         <h1>SendOut</h1>
         
-        <p>The <dfn>SendOut</dfn> operation publish payloads externally by way of an HTTP request and response.</p>
+        <p>The <dfn>SendOut</dfn> operation publish payloads externally by responding to an HTTP GET request on the <var>/payloads</var> route.</p>
         
         <section data-status="non-normative">
             
-            <p>The HTTP GET request that initiates the <var>SendOut</var> operation is the only means of inter-system communication. By definition, the Community App Sharing Architecture is thus pull-based from the perspective of autonomous systems, allowing each system to determine its own refresh and expiration policies.</p>
+            <p>The HTTP GET request that initiates the <var>SendOut</var> operation is the only means of inter-system communication. By definition, the Community App Sharing Architecture is pull-based from the perspective of autonomous systems, allowing each system to determine its own refresh and expiration policies.</p>
             
         </section>
         
-        <section data-status="editor-challenged" data-message="Portions of this are non-normative for this module and would be better suited within ReceiveIn (Receiver Module)">
+        <section>
             
-            <h1 data-ref="sendout-request">Request</h1>
+            <h1 data-ref="sendout-request">Processing Request</h1>
             
-            <p>A peering client initiates the <var>SendOut</var> operation by issuing an HTTP GET request to the <var>/payloads</var> route.</p>
+            <p data-status="non-normative">The request <var>GET /payloads</var> initiated by the client should include <var>Accept</var>, <var>Accept-Charset</var>, <var>Accept-Encoding</var> and <var>Content-Type</var>.</p>
             
-            <p>The client may include a request body. If it includes a request body, it must be JSON-formatted.</p>
-            
-            <p data-status="non-normative">A request body is used to specify a secret in the event that the host implements access controls. This secret may also be specified in the query string of the GET request.</p>
-            
-            <p>Several headers are relevant to this request:</p>
+            <p>The following rules should be applied when handling a request:</p>
             
             <dl>
-                <dt><var>Accept: application/json</var></dt>
-                <dd>The client should send this header. If the <var>Accept</var> header is omitted, the host must assume <var>application/json</var>. The client must not send any other <var>Accept</var> header.</dd>
-                <dt><var>Accept-Charset: utf-8</var></dt>
-                <dd>The client may send this header. If the <var>Accept-Charset</var> header is omitted, the host must assume <var>utf-8</var>. The client must not send any other <var>Accept-Charset</var> header.</dd>
-                <dt><var>Accept-Encoding</var></dt>
-                <dd>The client may send this header with acceptable encodings. The host may implement an encoding, but the client should accept a non-encoded response.</dd>
-                <dt><var>Content-Type: application/json</var></dt>
-                <dd>The client must send this header if the request includes a body section. If the <var>Content-Type</var> header is omitted, the host must assume <var>application/json</var> and the host must validate the body section as valid JSON. The client must not send any other <var>Content-Type</var> header.</dd>
+                <dt><var>Accept Header</var></dt>
+                <dd>Only <var>application/json</var> is valid for this header. The omission of this header must be assumed as <var>application/json</var>. If the client sends any other <var>Accept</var> header, a 4xx Error must be thrown.</dd>
+                <dt><var>Accept-Charset Header</var></dt>
+                <dd>Only <var>utf-8</var> is valid for this header. The omission of this header must be assumed as <var>utf-8</var>. If the client sends any other <var>Accept-Charset</var> header, a 4xx Error must be thrown.</dd>
+                <dt><var>Accept-Encoding Header</var></dt>
+                <dd>Any value for this header is valid. The host should attempt to implement this encoding for a response but it may ignore this header.</dd>
+                <dt><var>Content-Type Header</var></dt>
+                <dd>Only <var>application/json</var> is valid for this header. The omission of this header must be assumed as <var>application/json</var> if a request body is sent. If the client sends any other <var>Content-Type</var> header, a 4xx Error must be thrown.</dd>
+                <dt><var>Body Content</var></dt>
+                <dd>If the client includes a request body, it must be a JSON-formatted object of key-value pairs. If the client sends any other body content, a 4xx Error must be thrown.</dd>
             </dl>
             
         </section>
@@ -89,20 +87,9 @@
             
             <p>A <var>200 OK</var> response must include a JSON-encoded array of <a href="module/payload#transitpayload"><var>TransitPayload</var> objects.</a></p>
                 
-            <p>A <var>200 OK</var> response should include a <var>Content-Type: application/json</var> header. If it does not include a <var>Content-Type</var> header, then the client should assume <var>application/json</var>. The host must not send any other <code>Content-Type</code> header.</p>
+            <p>A <var>200 OK</var> response should include a <var>Content-Type: application/json</var> header. If it does not include a <var>Content-Type</var> header, then the client should assume <var>application/json</var>. The host must not send any other <var>Content-Type</var> header.</p>
             
-            <section data-status='editor-challenged' data-message='This would be better suited within ReceiveIn (Receiver Module)'>
-                
-                <h1 data-ref="sendout-client-validation">Client Response Validation</h1>
-            
-                <p>When a client receives a <var>200 OK</var> response, it should validate the message body. Validation passes if:</p>
-
-                <ol>
-                    <li>Overall message is an array. If this condition fails, the entire response should be discarded.</li>
-                    <li>Each element of the array conforms to the <a href="module/payload#transitpayload"><var>TransitPayload</var></a> JSON Schema. If this condition fails, the non-conforming element should be discarded, but the client may still process conforming elements.</li>
-                </ol>
-            
-            </section>
+            <p data-status="non-normative">Consult <a href="module/receiver#receivein-success-response"><var>ReceiveIn</var> (Receiver Module)</a> for client-side validation rules. The host must conform to this rules for the response to be accepted.</p>
                 
         </section>
         

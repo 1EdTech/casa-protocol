@@ -38,6 +38,8 @@
         
         <h1>Terminology</h1>
         <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
+        <p>The key words <strong>HTTP request</strong>, <strong>HTTP response</strong>, <strong>HTTP GET request</strong>, <strong>HTTP Response Status Code</strong> (alternatively: <strong>response status</strong>), <strong>Client Error 4xx</strong> (alternatively: <strong>4xx Error</strong>) and <strong>Server Error 5xx</strong> (alternatively: <strong>5xx Error</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2616.txt" rel="external">RFC 2616</a></strong> ["Hypertext Transfer Protocol -- HTTP/1.1"].</p>
+        <p>The key word <strong>exponential backoff</strong> in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2988.txt" rel="external">RFC 2988</a></strong> ["Computing TCP's Retransmission Timer"].</p>
         
     </section>
     
@@ -45,22 +47,123 @@
 
 <main>
     
-    <section data-requirement="must" data-status="incomplete">
+    <section>
+        
+        <h1>Process Flow</h1>
+        
+        <p>To receive a payload from a peering system:</p>
+        
+        <ol>
+            <li>Issue an <var>HTTP GET /payloads</var> request; may include a secret.
+            </li>
+            <li>
+                Must validate response.
+                <ol>
+                    <li>If invalid <var>Content-Type</var>, abort.</li>
+                    <li>If response body is not valid JSON array, abort.</li>
+                    <li>If an element of JSON array is not valid <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a>, discard element</li>
+                </ol>
+            </li>
+            <li>
+                For each valid <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a>:
+                <ol>
+                    <li>Must translate via <a href="#adjintranslate"><var>AdjInTranslate</var></a>;</li>
+                    <li>Must squash via <a href="#adjinsquash"><var>AdjInSquash</var></a>;</li>
+                    <li>Must filter via <a href="#adjintfilter"><var>AdjInFilter</var></a>; may filter with custom rules;</li>
+                    <li>May store within <a href="#adjinstore"><var>AdjInStore</var></a>.</li>
+                </ol>
+            </li>
+        </ol>
+        
+        <p>Upon successful completion of this process flow, a system shall have produced a set of valid <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects from a peering system.</p>
+        
+    </section>
+    
+    <section data-requirement="must">
         
         <h1>ReceiveIn</h1>
         
-        <section data-requirement="may">
+        <p>The <dfn>ReceiveIn</dfn> operation performed by a system ("client") queries payloads from a peering system ("host") by way of an HTTP request and response. The queried system must implement the <a href="module/publisher">Publisher Module</a> for this operation to succeed.</p>
+        
+        <section>
             
-            <h1 data-ref="receivein-access-controls">ReceiveIn with Access Controls</h1>
+            <h1>Request</h1>
             
-            <section data-requirement="should">
-                
-                <h1 data-ref="adjoutpeer">AdjInPeer</h1>
-                
-            </section>
+            <p>The client must issue an HTTP GET request to the <var>/payloads</var> route of the peering system.</p>
+            
+            <p>The client may include a request body. If it includes a request body, it must be JSON-formatted.</p>
+            
+            <p data-status="non-normative">A request body is used to specify a secret in the event that the host implements access controls. This secret may also be specified in the query string of the GET request.</p>
+            
+            <p>The following headers are relevant to this request:</p>
+            
+            <dl>
+                <dt><var>Accept: application/json</var></dt>
+                <dd>The client should send this header, although it may be implied by omission. The client must not send any other <var>Accept</var> header.</dd>
+                <dt><var>Accept-Charset: utf-8</var></dt>
+                <dd>The client may send this header, although it may be implied by omission. The client must not send any other <var>Accept-Charset</var> header.</dd>
+                <dt><var>Accept-Encoding</var></dt>
+                <dd>The client may send this header with acceptable encodings. The host may implement an encoding, but the client must be prepared to accept a non-encoded response.</dd>
+                <dt><var>Content-Type: application/json</var></dt>
+                <dd>The client must send this header if the request includes a body section, although it may be implied by omission. The client must not send any other <var>Content-Type</var> header.</dd>
+            </dl>
             
         </section>
         
+        <section>
+        
+            <h1 data-ref="receivein-success-response">Success Response</h1>
+            
+            <p>A successful response is denoted by a 200 OK.</p>
+            
+            <p>When a client receives a 200 OK response, it must validate the message body. Validation passes if:</p>
+
+            <ol>
+                <li>The response should have a <var>Content-Type</var> header of <var>application/json</var>, although it may be implied by omission. If the response is of other <var>Content-Type</var>, the entire response must be discarded.</li>
+                <li>Message body must be valid JSON. If this condition fails, the entire response must be discarded.</li>
+                <li>Message body must be an array. If this condition fails, the entire response must be discarded.</li>
+                <li>Each element of the array must conform to the TransitPayload JSON Schema. If this condition fails, the non-conforming element must be discarded, but the client may still process conforming elements.</li>
+            </ol>
+            
+            <p data-status="non-normative">Consult <a href="#process-flow">Process Flow</a> for the operations that must be performed against <var>TransitPayload</var> objects received via this operation.</p>
+        
+        </section>
+        
+        <section>
+            
+            <h1>Error Response</h1>
+            
+            <p>An error response is denoted by 4xx Error or 5xx Error.</p>
+            
+            <p>Except for the 404 Error status code, the client must not send an identical request after receiving a 4xx Error; however, it may attempt to resolve the issue by modifying the request headers and body:</p>
+            
+            <dl>
+                <dt><var>400 Bad Request</var></dt>
+                <dd>The client may correct the JSON format of the request body and try again.</dd>
+                <dt><var>406 Not Acceptable</var></dt>
+                <dd>The client may correct the <var>Accept</var> and <var>Accept-Charset</var> headers and try again.</dd>
+                <dt><var>415 Unsupported Media Type</var></dt>
+                <dd>The client may correct the <var>Accept</var> and <var>Accept-Charset</var> headers and try again.</dd>
+            </dl>
+            
+            <p>The client may send an identical request after receiving a 5xx Error; additionally, the client may send an identical request after receiving a 404 Error if the client administrator confirms the host is willing to serve the route. If the client sends an identical request, it should use exponential backoff.</p>
+            
+            <p data-status="non-normative">5xx Error responses (and 404 Error responses when a host is known to fulfill a route) are commonly sent because the host is overcapacity, unavailable or encountering internal errors. Exponential backoff lessens the load on a host and allows host administrator to resolve availability and internal logic errors.</p>
+            
+        </section>
+        
+    </section>
+        
+    <section data-requirement="may" data-status="incomplete">
+
+        <h1 data-ref="receivein-access-controls">ReceiveIn with Access Controls</h1>
+
+        <section data-requirement="should">
+
+            <h1 data-ref="adjoutpeer">AdjInPeer</h1>
+
+        </section>
+
     </section>
     
     <section data-requirement="must" data-status="incomplete">
@@ -79,18 +182,18 @@
         
         <h1>AdjInFilter</h1>
         
-        <section data-requirement="may">
-            
-            <h1 data-ref="adjinfilter-custom">AdjInFilter with Custom Rules</h1>
-            
-            <section data-requirement="should" data-status="undefined">
-                
-                <h1>AdjInFilterRules</h1>
-                
-            </section>
-            
-        </section>
+    </section>
         
+    <section data-requirement="may" data-status='incomplete'>
+
+        <h1 data-ref="adjinfilter-custom">AdjInFilter with Custom Rules</h1>
+
+        <section data-requirement="should" data-status="undefined">
+
+            <h1>AdjInFilterRules</h1>
+
+        </section>
+
     </section>
     
     <section data-requirement="may" data-status="incomplete">

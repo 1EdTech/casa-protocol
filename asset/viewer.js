@@ -110,7 +110,7 @@ var VIEWER = new function(){
                     $('body').scrollTop(0)
                     $('#content, #colophon').fadeIn(fadeTime, function(){
                         if(anchor && $('#s-'+anchor).length > 0){
-                            $("html,body").animate({ scrollTop: $('#s-'+anchor).position().top - 40 }, "slow")
+                            $("html,body").animate({ scrollTop: $('#s-'+anchor).position().top - 30 }, "slow")
                         }
                     });
                 }
@@ -138,7 +138,7 @@ var VIEWER = new function(){
         }else{
             
             if(anchor && $('#s-'+anchor).length > 0){
-                $("html,body").animate({ scrollTop: $('#s-'+anchor).position().top }, "slow")
+                $("html,body").animate({ scrollTop: $('#s-'+anchor).position().top - 30 }, "slow")
             }
             
         }
