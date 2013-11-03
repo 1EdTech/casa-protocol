@@ -34,16 +34,11 @@
         
         <h1>Terminology</h1>
         <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
-        <p>The key word <strong>UUID</strong> (alternatively: <strong>Universally Unique IDentifier</strong>, <strong>Globally Unique IDentifier</strong> or <strong>uuid</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4122.txt" rel="external">RFC 4122</a></strong> ["A Universally Unique IDentifier (UUID) URN Namespace"].</p>
-        <p>The key word <strong>UID</strong> (alternatively: <strong>Unique IDentifier</strong> or <strong>uid</strong>) in this document is to be interpreted as an identifier that is unique within a non-global context.</p>
         <p>The key word <strong>timestamp</strong> in this document is to be interpreted as a string written in the format of <strong><a href="http://tools.ietf.org/rfc/rfc3339.txt" rel="external">RFC 3339</a></strong> ["Date and Time on the Internet: Timestamps"].</p>
-        <p>The key word <strong>array</strong> in this document is to be interpreted as an ordered data structure of elements with sequential numeric indices.</p>
-        <p>The key word <strong>object</strong> in this document is to be interpreted as an unordered data structure of key-value pairs, referred to in language systems by terms including, but not limited to, "object", "associative array", "hash map", "dictionary" and "key-value store".</p>
-        <p>The key word <strong>property</strong> (alternatively: <strong>attribute</strong> or <strong>section</strong>) in this document is to be interpreted as synonymous with the key within an object that returns an associated value.</p>
-        <p>The key word <strong>abstract object</strong> in this document is to be interpreted as a structure that may be extended by other structures but that must not be implemented by itself.</p>
-        <p>The key word <strong>JavaScript Object Notation</strong> (alternatively: <strong>JSON</strong>) in this document is to be interpreted as the data format described by <strong><a href="http://tools.ietf.org/rfc/rfc4627.txt" rel="external">RFC 4627</a></strong> ["The application/json Media Type for JavaScript Object Notation (JSON)"].</p>
+        <p>The key word <strong>property</strong> (alternatively: <strong>attribute</strong> or <strong>section</strong>) in this document is to be interpreted as described by <strong><a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf" rel="external">ECMA-262 Edition 5.1</a></strong>.</p>
+        <p>The key words <strong>string</strong>, <strong>array</strong>, <strong>object</strong>, <strong>name/value pair</strong> (alternatively: <strong>key-value pair</strong>) and <strong>JavaScript Object Notation</strong> (alternatively: <strong>JSON</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4627.txt" rel="external">RFC 4627</a></strong> ["The application/json Media Type for JavaScript Object Notation (JSON)"].</p>
         <p>The key word <strong>JSON Schema</strong> in this document is to be interpreted as a JSON format defined by the <strong><a href="http://json-schema.org/latest/json-schema-core.html" rel="external">json-schema-core</a></strong> ["JSON Schema: core definitions and terminology"] and <strong><a href="http://json-schema.org/latest/json-schema-validation.html" rel="external">json-schema-validation</a></strong> ["JSON Schema: interactive and non interactive validation"] specifications.</p>
-        
+        <p>The key word <strong>UUID</strong> (alternatively: <strong>Universally Unique IDentifier</strong>, <strong>Globally Unique IDentifier</strong> or <strong>uuid</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4122.txt" rel="external">RFC 4122</a></strong> ["A Universally Unique IDentifier (UUID) URN Namespace"].</p>
     </section>
     
 </footer>
@@ -80,7 +75,7 @@
 
             <h1>PayloadIdentity</h1>
             
-            <p>The <dfn>PayloadIdentity</dfn> structure is a compound key containing a <var>originator_id</var> UUID property, corresponding to the UUID of the system that created the payload, and an <var>id</var> UID property, corresponding to the logical entity represented by the payload.</p>
+            <p>The <dfn>PayloadIdentity</dfn> structure is a compound key containing a <var>originator_id</var> UUID property, corresponding to the UUID of the system that created the payload (the "originator"), and an <var>id</var> UID property, corresponding to the logical entity represented by the payload.</p>
             
             <p data-status="non-normative">The non-changing nature of the <var>PayloadIdentity</var> allows future payloads to be introduced into the network that modify any attribute of a payload, including its URI.</p>
             
@@ -90,7 +85,7 @@
 
                 <p>The <dfn id="PayloadIdentity-originator_id"><var>originator_id</var></dfn> property must be the UUID of the system that created the payload. The UUID must conform to RFC 4122, and it is recommended that a system sign all payloads it creates with the same <var>originator_id</var> value.</p>
 
-                <p>The <dfn id="PayloadIdentity-id"><var>id</var></dfn> property must be a unique identifier for the logical entity represented by the payload in the context of all logical entities with payloads created by the system.</p>
+                <p>The <dfn id="PayloadIdentity-id"><var>id</var></dfn> property must be a string that uniquely identifies the local entity represented by the payload among all logical entities created by the system.</p>
 
             </section>
         

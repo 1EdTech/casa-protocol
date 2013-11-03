@@ -57,27 +57,28 @@
 
 <main>
     
-    <section data-requirement="must" data-status="incomplete">
+    <section data-requirement="must">
         
-        <h1>AdjOutTranslate</h1>
+        <h1>Data Path</h1>
         
-    </section>
-    
-    <section data-requirement="must" data-status="incomplete">
+        <p>To receive a payload received as described by the <a href="module/receiver">Receiver Module</a>:</p>
         
-        <h1>AdjOutFilter</h1>
+        <ol>
+            <li>Create empty array for payloads response.</li>
+            <li>
+                For each payload from <a href="module/receiver#adjinstore"><var>AdjInStore::get()</var> (Receiver Module)</a>:
+                <ol>
+                    <li>Must transform attributes via <a href="#adjouttransform"><var>AdjOutTransform</var></a>; may transform with custom rules;</li>
+                    <li>May store within <a href="#adjoutstore">AdjOutStore</a>;</li>
+                    <li>Must pass filtering by <a href="#adjoutfilter"><var>AdjOutFilter</var></a>; may filter with custom rules;</li>
+                    <li>Must translate via <a href="#adjouttranslate">AdjOutTranslate</a>;</li>
+                    <li>Should append to payloads response array</li>
+                </ol>
+            </li>
+            <li>Send payloads response array via <a href="module/publisher#sendout"><var>SendOut</var> (Publisher Module)</a>.</li>
+        </ol>
         
-        <section data-requirement="may">
-            
-            <h1 data-ref="adjoutfilter-custom">AdjOutFilter with Custom Rules</h1>
-            
-            <section data-requirement="should" data-status="stub">
-                
-                <h1>AdjOutFilterRules</h1>
-                
-            </section>
-            
-        </section>
+        <p>Upon successful completion of this data path, a system shall have produced a set of valid <a href="module/payloads#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects for inter-system retrieval by a peering system.</p>
         
     </section>
     
@@ -102,6 +103,30 @@
     <section data-requirement="may" data-status="incomplete">
         
         <h1>AdjOutStore</h1>
+        
+    </section>
+    
+    <section data-requirement="must" data-status="incomplete">
+        
+        <h1>AdjOutFilter</h1>
+        
+        <section data-requirement="may">
+            
+            <h1 data-ref="adjoutfilter-custom">AdjOutFilter with Custom Rules</h1>
+            
+            <section data-requirement="should" data-status="stub">
+                
+                <h1>AdjOutFilterRules</h1>
+                
+            </section>
+            
+        </section>
+        
+    </section>
+    
+    <section data-requirement="must" data-status="incomplete">
+        
+        <h1>AdjOutTranslate</h1>
         
     </section>
     
