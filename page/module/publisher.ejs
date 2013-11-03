@@ -210,7 +210,7 @@
 #  - address: string (IP Address format) or false
 #  - mask: string (IP address format) or false
 
-matches = AdjOutPeer.select { |peer|
+matches = adjOutPeers.select { |peer|
 
   if peer.secret
     return false unless request.body.secret == peer.secret

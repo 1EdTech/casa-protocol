@@ -73,9 +73,9 @@ var VIEWER = new function(){
                     'council-challenged': 'This section is flagged as challenged by the council',
                     'revision': 'This section is flagged for revision',
                     'incomplete': 'This section is flagged as incomplete',
-                    'undefined': 'This section is flagged as undefined'
+                    'stub': 'This section is flagged as a stub'
                 };
-                var issueStatuses = ['conflict','editor-challenged','council-challenged','revision','incomplete','undefined'];
+                var issueStatuses = ['conflict','editor-challenged','council-challenged','revision','incomplete','stub'];
                 
                 // requires aria mappings
                 $('[data-status]').each(function(){

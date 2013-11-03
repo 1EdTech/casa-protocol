@@ -69,7 +69,7 @@
                 <ol>
                     <li>Must translate via <a href="#adjintranslate"><var>AdjInTranslate</var></a>;</li>
                     <li>Must squash via <a href="#adjinsquash"><var>AdjInSquash</var></a>;</li>
-                    <li>Must filter via <a href="#adjintfilter"><var>AdjInFilter</var></a>; may filter with custom rules;</li>
+                    <li>Must pass filtering by <a href="#adjintfilter"><var>AdjInFilter</var></a>; may filter with custom rules;</li>
                     <li>May store within <a href="#adjinstore"><var>AdjInStore</var></a>.</li>
                 </ol>
             </li>
@@ -140,6 +140,8 @@
             <dl>
                 <dt><var>400 Bad Request</var></dt>
                 <dd>The client may correct the JSON format of the request body and try again.</dd>
+                <dt><var>403 Unauthorized</var></dt>
+                <dd>The client may add a secret to the query string or request body and try again (see <a href=#receivein-access-controls">ReceiveIn with Access Controls</a>).</dd>
                 <dt><var>406 Not Acceptable</var></dt>
                 <dd>The client may correct the <var>Accept</var> and <var>Accept-Charset</var> headers and try again.</dd>
                 <dt><var>415 Unsupported Media Type</var></dt>
@@ -154,13 +156,71 @@
         
     </section>
         
-    <section data-requirement="may" data-status="incomplete">
+    <section data-requirement="may">
 
         <h1 data-ref="receivein-access-controls">ReceiveIn with Access Controls</h1>
+
+        <p>A host may refuse to serve <var>GET /payloads</var> requests unless certain access criteria are met. If the client does not meet the host's access criteria, the HTTP response should be a 403 Error, and it must be within the 4xx Error and 5xx Error ranges.</p>
+        
+        <section data-status='non-normative'>
+            
+            <p><a href='module/publisher#sendout-access-controls'>SendOut with Access Controls (Publisher Module)</a> specifies two kinds of access control: <var>address-based</var> and <var>secret-based</var>. The former requires that a host must not respond to any request unless it matches a certain IP address or range, while the latter requires that the client provide a pre-negotiated <var>secret</var> property either via the query string or a JSON-encoded request body.</p>
+            
+        </section>
+        
+        <p>If the client has negotiated a <var>secret</var> parameter with the host, it must send this property either by the name <var>secret</var> within the query string or as a property <var>secret</var> within a JSON-encoded object in the request body.</p>
 
         <section data-requirement="should">
 
             <h1 data-ref="adjoutpeer">AdjInPeer</h1>
+
+            <p>The <dfn>AdjInpeer</dfn> structure may be implemented to define access requirements.</p>
+            
+            <p data-status="non-normative">This structure is useful when managing a number of in-bound peers that the host queries. This structure is implemented for access controls in the <a href="module/manager#OutletReceiveNode"><var>OutletReceiveNode (Manager Module)</var></a> operation.</p>
+
+            <section data-status="conflict" data-message="The path default should be empty string, and path should not be allowed to end with a slash as all routes already include a leading slash.">
+                
+                <h1>Schema</h1>
+            
+                <pre data-schema="AdjInPeer"></pre>
+            
+            </section>
+            
+            <section data-status='non-normative'>
+                    
+                <h1>Usage Example</h1>
+
+                <pre data-lang="ruby"># Assume: adjInPeers array of AdjInPeer objects
+# Assume: Net::HTTP::Get and Net::HTTP classes
+# Assume: process_response(response) method that:
+#  - validates response
+#  - runs AdjInTranslate -> AdjInSquash -> AdjInFilter
+#  - optionally stores in AdjInStore
+
+adjInPeers.each { |peer|
+
+  hostname  = peer['out']['hostname']
+  scheme    = peer['out'].include?('scheme') ? peer['out']['scheme'] : 'https'
+  path      = peer['out'].include?('path') ? peer['out']['path'] : ''
+  port      = peer['out'].include?('port') ? peer['out']['port'] : ( scheme == 'https' ? 443 : 80 )
+
+  request = Net::HTTP::Get.new(path+"/payloads")
+
+  request.add_field('Accept', 'application/json')
+  request.add_field('Accept-Charset', 'utf-8')
+  request.add_field('Content-Type', 'application/json')
+
+  if peer['out'].include? 'secret'
+    request.body = {'secret'=>secret}.to_json
+  end
+
+  response = Net::HTTP.new(hostname, port).request(request)
+
+  process_response(response)
+
+}</pre>
+
+            </section>
 
         </section>
 
@@ -290,22 +350,32 @@ end</pre>
         
     </section>
     
-    <section data-requirement="must" data-status="incomplete">
+    <section data-requirement="must">
         
         <h1>AdjInFilter</h1>
         
-    </section>
+        <p>The <var>AdjInFilter</var> operation determines whether the system may process a <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> object. A payload that fails this operation must not be delivered to any intra-system outlet or shared with any inter-system peer.</p>
         
-    <section data-requirement="may" data-status='incomplete'>
+        <p>This operation must not pass unless the following conditions are all true:</p>
+        
+        <ol>
+            <li>All keys under <var>attributes.require</var> must be recognized.</li>
+            <li>All key-value pairs under <var>attributes.require</var> must validate per the <a href='core#attribute-specification'>attribute specification</a> referred to by key.</li>
+            <li>If <a href='#adjinstore'><var>AdjInStore</var></a> is implemented and a payload matching <var>identity</var> already exists in persistence, <var>attributes.timestamp</var> must be more recent than the value in persistence.</li>
+        </ol>
+        
+        <p>An implementation may define additional criteria for this operation.</p>
 
-        <h1 data-ref="adjinfilter-custom">AdjInFilter with Custom Rules</h1>
-
-        <section data-requirement="should" data-status="undefined">
+        <section data-requirement="should" data-status="stub">
 
             <h1>AdjInFilterRules</h1>
 
-        </section>
+            <p>The <dfn>AdjInFilterRules</dfn> structure may be implemented as a methodology for specifying filter rules.</p>
+            
+            <p data-status="non-normative">While implementations may add <var>AdjInFilter</var> constraints internally, this structure is useful for allowing outlet- or user- defined rules, such as via the <a href="module/manager#OutletReceiveAdjInFilterRules"><var>OutletReceiveAdjInFilterRules (Manager Module)</var></a> operation.</p>
 
+        </section>
+        
     </section>
     
     <section data-requirement="may">
