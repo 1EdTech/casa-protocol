@@ -86,18 +86,21 @@
         
         <h1>AdjOutTransform</h1>
         
-        <section data-requirement="may">
-            
-            <h1 data-ref="adjouttransform-custom">AdjOutTransform with Custom Rules</h1>
-            
-            <section data-requirement="should" data-status="stub">
-                
-                <h1>AdjOutTransformRules</h1>
-                
-            </section>
+        <section data-status="conflict" data-message='By implication, this section is in conflict with <a href="module/payload#transitpayload-attributes"><var>TransitPayload.attributes</var> (Payload Module)</a> because it does nothing to remove the <var>attributes</var> section that is marked as "should not" under the other module.'>
+        
+            <ol>
+                <li>If <var>original</var> section is not defined, it must be created as a copy of the <var>attributes</var> section.</li>
+                <li>If <var>attributes.propagate</var> is <var>false</var>, the value of <var>attributes.share</var> must be set <var>false</var>.</li>
+            </ol>
             
         </section>
         
+        <section data-requirement="should" data-status="stub">
+
+            <h1>AdjOutTransformRules</h1>
+
+        </section>
+
     </section>
     
     <section data-requirement="may" data-status="incomplete">
@@ -106,20 +109,32 @@
         
     </section>
     
-    <section data-requirement="must" data-status="incomplete">
+    <section data-requirement="must">
         
         <h1>AdjOutFilter</h1>
         
-        <section data-requirement="may">
+        <p>The <var>AdjOutFilter</var> operation determines whether the system may share a payload beyond its boundaries. A payload that fails this operation must not be delivered to any inter-system peer.</p>
+        
+        <p>This operation must not pass unless the following conditions are all true:</p>
+        
+        <ol>
+            <li>The value of <var>attributes.share</var> must not be <var>false</var>.</li>
+        </ol>
+        
+        <p>An implementation may define additional criteria for this operation.</p>
             
-            <h1 data-ref="adjoutfilter-custom">AdjOutFilter with Custom Rules</h1>
+        <section data-requirement="should" data-status="stub">
+
+            <h1>AdjOutFilterRules</h1>
             
-            <section data-requirement="should" data-status="stub">
+            <p>The <var>AdjOutFilterRules</var> structure may be implemented as a methodology for specifying filter rules.</p>
+            
+            <section data-status="non-normative">
                 
-                <h1>AdjOutFilterRules</h1>
+                <p>While implementations may add AdjOutFilter constraints internally, this structure is useful for allowing outlet- or user- defined rules, such as via the <a href="module/manager#OutletReceiveAdjOutFilterRules"><var>OutletReceiveAdjOutFilterRules</var> (Manager Module)</a> operation.</p>
                 
             </section>
-            
+
         </section>
         
     </section>
