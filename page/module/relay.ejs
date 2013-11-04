@@ -100,6 +100,12 @@
             <p>An implementation may define additional criteria for this operation.</p>
             
         </section>
+            
+        <section data-requirement="must" data-status="stub">
+            
+            <h1>AdjOutTransformJournal</h1>
+            
+        </section>
         
         <section data-requirement="should" data-status="stub">
 
@@ -145,9 +151,143 @@
         
     </section>
     
-    <section data-requirement="must" data-status="incomplete">
+    <section data-requirement="must">
         
         <h1>AdjOutTranslate</h1>
+        
+        <p>The <dfn>AdjOutTranslate</dfn> operation accepts a <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> object and converts keys in the <var>use</var> and <var>require</var> properties of the <var>original</var> section, <var>attributes</var> section, if defined, and the array elements of the <var>journal</var> section, if defined, into their proper UUID.</p>
+        
+        <p data-status="non-normative">This operation is the inverse of <a href="module/receiver#adjintranslate"><var>AdjInTranslate</var> (Receiver Module)</a>.</p>
+        
+        <p data-status="non-normative">While it may be more useful intra-system to use a define set of strings for attribute key names, this may create namespace conflicts if more than one attribute exists for similar purpose. Consequently, inter-system communication of <var>use</var> and <var>require</var> attributes must use UUIDs from the corresponding <a href="core#attribute-specifications">attribute specifications</a> for all key names.</p>
+        
+        <p>For payload <var>original</var> property, the <var>attributes</var> property (if set), and for each element in the <var>journal</var> property (if set), this operation must follow this algorithm:</p>
+        
+        <ol>
+            <li>
+                For each property in <var>use</var> property, if defined:
+                <ol>
+                    <li>If mapping exists from human-readable name into UUID, change key name from UUID to human-readable name;</li>
+                    <li>Otherwise, if key name does not conform to RFC 4122, remove property;</li>
+                    <li>Otherwise, leave key name unchanged.</li>
+                </ol>
+            </li>
+            <li>
+                 For each index in <var>require</var> property, if defined:
+                <ol>
+                    <li>If mapping exists from human-readable name into UUID, change key name from UUID to human-readable name;</li>
+                    <li>Otherwise, if key name does not conform to RFC 4122, drop payload;</li>
+                    <li>Otherwise, leave key name unchanged.</li>
+                </ol>
+            </li>
+        </ol>
+        
+        <p>This operation must not share any payload with a <var>use</var> or <var>require</var> key-value pair where the key does not conform to RFC 4122. For the <var>use</var> section, it may remove the key-value pair from the object if it does not conform and then continue with the remaining attributes; for the <var>require</var> section, it must drop the entire payload and must not continue.</p>
+        
+        <p data-status='non-normative'>Once a payload has proceeded along the <a href='#data-path'>data path</a> and through <var>AdjOutTranslate</var>, it is ready for transmission via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>.</p>
+        
+        <section data-status='non-normative'>
+                    
+            <h1>Implementation Example</h1>
+
+            <pre data-lang="ruby"># Assume: payload object with:
+#  - original: PayloadTransitAttributes object
+#  - attributes: undefined or PayloadTransitAttributes object
+#  - journal: undefined or array of PayloadTransitJournalEntry objects
+# Assume: recognizes_name?(k) method returns true if human-readable to UUID mapping
+# Assume: translate(k) method returns UUID mapping for human-readable name
+
+if payload['original'].include? 'use'
+
+  payload['original']['use'].each { |k,v|
+    if recognized_name?(k)
+      payload['original']['use'][translate(k)] = payload['original']['use'][k]
+    end
+    payload['original']['use'].delete k
+  }
+
+end
+
+if payload['original'].include? 'require'
+
+  payload['original']['require'].each { |k,v|
+    if recognized_name?(k)
+      payload['original']['require'][translate(k)] = payload['original']['use'][k]
+      payload['original']['require'].delete k
+    else
+      unless k.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+        raise "Mapping does not exist for 'require` attribute #{k}"
+      end
+    end
+  }
+
+end
+
+if payload.include? 'attributes'
+
+  if payload['attributes'].include? 'use'
+
+    payload['attributes']['use'].each { |k,v|
+      if recognized_name?(k)
+        payload['attributes']['use'][translate(k)] = payload['attributes']['use'][k]
+      end
+      payload['attributes']['use'].delete k
+    }
+
+  end
+
+  if payload['attributes'].include? 'require'
+
+    payload['attributes']['require'].each { |k,v|
+      if recognized_name?(k)
+        payload['attributes']['require'][translate(k)] = payload['attributes']['use'][k]
+        payload['attributes']['require'].delete k
+      else
+        unless k.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+          raise "Mapping does not exist for 'require` attribute #{k}"
+        end
+      end
+    }
+
+  end
+
+end
+
+if payload.include? 'journal'
+
+  payload['journal'].each_index { |entry_index|
+
+    if payload['journal'][entry_index].include? 'use'
+
+      payload['journal'][entry_index]['use'].each { |k,v|
+        if recognized_name?(k)
+          payload['journal'][entry_index]['use'][translate(k)] = payload['journal'][entry_index]['use'][k]
+        end
+        payload['journal'][entry_index]['use'].delete k
+      }
+
+    end
+
+    if payload['journal'][entry_index].include? 'require'
+
+      payload['journal'][entry_index]['require'].each { |k,v|
+        if recognized_name?(k)
+          payload['journal'][entry_index]['require'][translate(k)] = payload['journal'][entry_index]['use'][k]
+          payload['journal'][entry_index]['require'].delete k
+        else
+          unless k.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+            raise "Mapping does not exist for 'require` attribute #{k}"
+          end
+        end
+      }
+
+    end
+
+  }
+
+end</pre>
+
+        </section>
         
     </section>
     
