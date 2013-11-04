@@ -428,9 +428,9 @@ end</pre>
             
             <p data-status='non-normative'>To change the way a payload is presented via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, use <a href='module/relay#adjouttransform'><var>AdjOutTransform</var> (Relay Module)</a>. To change the way a payload is presented via <a href='module/local#sendlocal'><var>SendLocal</var> (Local Module)</a>, use <a href='module/local#adjintransform'><var>AdjInTransform</var> (Local Module)</a>.</p>
         
-            <p>The <var>delete</var> operation must be used to prune out stale entries.</p>
+            <p>The <var>delete</var> operation should be used to prune out stale entries.</p>
             
-            <p data-status='non-normative'>To prevent a payload from being presented via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, use <a href='module/relay#adjoutfilter'><var>AdjOutFilter</var> (Relay Module)</a>. A payload may not be prevented from being presented via <a href='module/local#sendlocal'><var>SendLocal</var> (Local Module)</a> unless it is dropped by <a href='#adjinfilter'><var>AdjInFilter</var> prior to this step. This means that a payload must not be relayed via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a> unless it is also made available via <a href='module/local#sendlocal'><var>SendLocal</var> (Local Module)</a>.</p>
+            <p data-status='non-normative'>To prevent a payload from being presented via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, use <a href='module/relay#adjoutfilter'><var>AdjOutFilter</var> (Relay Module)</a>. A payload must not be prevented from being presented via <a href='module/local#sendlocal'><var>SendLocal</var> (Local Module)</a> unless it is dropped by <a href='#adjinfilter'><var>AdjInFilter</var></a> prior to this step. This means that a payload must not be relayed via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a> unless it is also made available via <a href='module/local#sendlocal'><var>SendLocal</var> (Local Module)</a>.</p>
             
         </section>
         
