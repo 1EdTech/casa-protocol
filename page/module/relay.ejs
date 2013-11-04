@@ -82,16 +82,22 @@
         
     </section>
     
-    <section data-requirement="must" data-status="incomplete">
+    <section data-requirement="must">
         
         <h1>AdjOutTransform</h1>
         
-        <section data-status="conflict" data-message='By implication, this section is in conflict with <a href="module/payload#transitpayload-attributes"><var>TransitPayload.attributes</var> (Payload Module)</a> because it does nothing to remove the <var>attributes</var> section that is marked as "should not" under the other module.'>
+        <p>The <dfn>AdjOutTransform</dfn> operation makes changes to all payloads before they are shared outbound. This operation must be performed over any payload before it may be conveyed beyond the boundaries of the system.</p>
+        
+        <section data-status="conflict" data-message="By implication, this section is in conflict with <a href='module/payload#transitpayload-attributes'><var>TransitPayload.attributes</var> (Payload Module)</a> because it does nothing to remove the <var>attributes</var> section that is marked as 'should not' under the other module. It is likely that the 'should not' classification should be changed to 'may' rather than this section adjusted, as there's no good reason for not allowing its inclusion.">
+            
+            <p>This operation must perform the following transformations:</p>
         
             <ol>
                 <li>If <var>original</var> section is not defined, it must be created as a copy of the <var>attributes</var> section.</li>
                 <li>If <var>attributes.propagate</var> is <var>false</var>, the value of <var>attributes.share</var> must be set <var>false</var>.</li>
             </ol>
+            
+            <p>An implementation may define additional criteria for this operation.</p>
             
         </section>
         
