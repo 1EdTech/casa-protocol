@@ -17,7 +17,7 @@ html, body { margin: 0; padding: 0; font-family: Verdana, sans-serif; font-size:
 #nav-suite-container { border-bottom: 1px solid #ccc; font-weight: bold; margin-bottom: 16px; position: fixed; left: 0; right: 0; background-color: #fff; z-index: 10; }
 #nav-suite ul { list-style-type: none; padding: 0; margin: 0; }
 #nav-suite li { margin-top: 0; margin-bottom: 0; }
-#nav-suite li > *:not(ul) { padding: 8px 24px; display: block; font-size: 14px; margin: 0; color: #225; cursor: pointer; text-decoration: none; }
+#nav-suite li > *:not(ul) { white-space: nowrap; padding: 8px 24px; display: block; font-size: 14px; margin: 0; color: #225; cursor: pointer; text-decoration: none; }
 #nav-suite li > a:hover { text-decoration: underline; color: #337; }
 #nav-suite > ul > li, #nav-suite > header { float: left; position: relative; }
 #nav-suite > ul > li > :not(ul) { padding-right: 20px; }

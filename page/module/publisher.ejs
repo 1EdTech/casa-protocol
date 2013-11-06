@@ -9,7 +9,7 @@
     
     <section>
         <h1>Status of this Memo</h1>
-        <p>This memorandum specifies the CASA Protocol Publisher Module, which defines how inter-system peers may access payloads. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+        <p>This memorandum specifies the CASA Protocol Publisher Module, which defines payloads must be presented for access by inter-system outlets. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
     </section>
     
     <section>
@@ -52,7 +52,7 @@
         
         <h1>SendOut</h1>
         
-        <p>The <dfn>SendOut</dfn> operation publish payloads externally by responding to an HTTP GET request on the <var>/payloads</var> route.</p>
+        <p>The <dfn>SendOut</dfn> operation publish payloads externally. It responds to an HTTP GET request on the <var>/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a 4xx or 5xx Error Response.</p>
         
         <section data-status="non-normative">
             
@@ -64,7 +64,7 @@
             
             <h1 data-ref="sendout-request">Processing Request</h1>
             
-            <p data-status="non-normative">The request <var>GET /payloads</var> initiated by the client should include <var>Accept</var>, <var>Accept-Charset</var>, <var>Accept-Encoding</var> and <var>Content-Type</var>.</p>
+            <p data-status="non-normative">The request <var>GET /payloads</var> initiated by the client should include <var>Accept</var>, <var>Accept-Charset</var>, <var>Accept-Encoding</var> and <var>Content-Type</var> headers.</p>
             
             <p>The following rules should be applied when handling a request:</p>
             
@@ -89,7 +89,7 @@
             
             <p>If a host will fulfill the request, it must respond with a <var>200 OK</var> response status.</p>
             
-            <p>A response body of a <var>200 OK</var> response must be an array of <a href="module/payload#transitpayload"><var>TransitPayload</var> objects</a>. This response must be JSON-formatted use the utf-8 charset. Consequently, this response should include <var>Content-Type: application/json; charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
+            <p>A response body of a <var>200 OK</var> response must be an array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects. This response must be JSON-formatted and use the utf-8 charset. Consequently, this response should include <var>Content-Type: application/json; charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
             
             <p data-status="non-normative">Consult <a href="module/receiver#receivein-success-response"><var>ReceiveIn</var> (Receiver Module)</a> for client-side validation rules. The host must conform to this rules for the response to be accepted.</p>
                 
@@ -97,7 +97,7 @@
         
         <section>
             
-            <h1 data-ref="sendout-success">Error Response</h1>
+            <h1 data-ref="sendout-error">Error Response</h1>
             
             <p>If a host will not fulfill the request, it must respond with a 4xx Error or 5xx Error.</p>
             

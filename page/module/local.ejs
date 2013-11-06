@@ -9,7 +9,7 @@
     
     <section>
         <h1>Status of this Memo</h1>
-        <p>This memorandum specifies the CASA Protocol Local Module, which defines how intra-system outlets may access payloads. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+        <p>This memorandum specifies the CASA Protocol Local Module, which defines how payloads must be presented for access by intra-system outlets. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
     </section>
     
     <section>
@@ -36,6 +36,11 @@
         
         <h1>Terminology</h1>
         <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
+        <p>The key words <strong>HTTP request</strong>, <strong>HTTP response</strong>, <strong>HTTP header</strong>, <strong>HTTP GET Request</strong>, <strong>HTTP Response Status Code</strong> (alternatively: <strong>response status</strong>), <strong>Client Error 4xx</strong> (alternatively: <strong>4xx Error</strong>) and <strong>Server Error 5xx</strong> (alternatively: <strong>5xx Error</strong>) in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2616.txt" rel="external">RFC 2616</a></strong> ["Hypertext Transfer Protocol -- HTTP/1.1"].</p>
+        <p>The key word <strong>utf-8</strong> in this document is to be interpreted as described by <strong><a href='http://tools.ietf.org/rfc/rfc3629.txt' rel='external'>RFC 3629</a></strong> ["UTF-8, a transformation format of ISO 10646"].</p>
+        <p>The key word <strong>property</strong> (alternatively: <strong>attribute</strong> or <strong>section</strong>) in this document is to be interpreted as described by <strong><a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf" rel="external">ECMA-262 Edition 5.1</a></strong>.</p>
+        <p>The key words <strong>string</strong>, <strong>array</strong>, <strong>object</strong>, <strong>name/value pair</strong> (alternatively: <strong>key-value pair</strong>) and <strong>JavaScript Object Notation</strong> (alternatively: <strong>JSON</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4627.txt" rel="external">RFC 4627</a></strong> ["The application/json Media Type for JavaScript Object Notation (JSON)"].</p>
+        <p>The key word <strong>JSON Schema</strong> in this document is to be interpreted as a JSON format defined by the <strong><a href="http://json-schema.org/latest/json-schema-core.html" rel="external">json-schema-core</a></strong> ["JSON Schema: core definitions and terminology"] and <strong><a href="http://json-schema.org/latest/json-schema-validation.html" rel="external">json-schema-validation</a></strong> ["JSON Schema: interactive and non interactive validation"] specifications.</p>
         
     </section>
     
@@ -43,9 +48,70 @@
 
 <main>
     
-    <section data-requirement="must" data-status="incomplete">
+    <section data-requirement="must">
         
         <h1>SendLocal</h1>
+        
+        <p>The <dfn>SendLocal</dfn> operation publish payloads internally. It responds to an HTTP GET request on the <var>/local/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a 4xx or 5xx Error Response.</p>
+        
+        <p data-status="non-normative">This operation must be used intra-system only. Inter-system sharing of payloads occurs via the <a href="module/publisher#sendout"><var>SendOut</var> (Publisher Module)</a> operation.</p>
+        
+        <section>
+            
+            <h1 data-ref="sendlocal-request">Processing Request</h1>
+            
+            <p data-status="non-normative">The request <var>GET /payloads</var> initiated by the client should include <var>Accept</var>, <var>Accept-Charset</var>, <var>Accept-Encoding</var> and <var>Content-Type</var> headers.</p>
+            
+            <p>The following rules should be applied when handling a request:</p>
+            
+            <dl>
+                <dt><var>Accept Header</var></dt>
+                <dd>Only <var>application/json</var> is valid for this header. The omission of this header must be assumed as <var>application/json</var>. If the client sends any other <var>Accept</var> header, a 4xx Error must be thrown.</dd>
+                <dt><var>Accept-Charset Header</var></dt>
+                <dd>Only <var>utf-8</var> is valid for this header. The omission of this header must be assumed as <var>utf-8</var>. If the client sends any other <var>Accept-Charset</var> header, a 4xx Error must be thrown.</dd>
+                <dt><var>Accept-Encoding Header</var></dt>
+                <dd>Any value for this header is valid. The host should attempt to implement this encoding for a response but it may ignore this header.</dd>
+                <dt><var>Content-Type Header</var></dt>
+                <dd>Only <var>application/json</var> is valid for this header. The omission of this header must be assumed as <var>application/json</var> if a request body is sent. If the client sends any other <var>Content-Type</var> header, a 4xx Error must be thrown.</dd>
+                <dt><var>Body Content</var></dt>
+                <dd>If the client includes a request body, it must be a JSON-formatted object of key-value pairs. If the client sends any other body content, a 4xx Error must be thrown.</dd>
+            </dl>
+            
+        </section>
+        
+        <section>
+            
+            <h1 data-ref="sendlocal-success">Success Response</h1>
+            
+            <p>If a host will fulfill the request, it must respond with a <var>200 OK</var> response status.</p>
+            
+            <p>A response body of a <var>200 OK</var> response must be an array of <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects. This response must be JSON-formatted and use the utf-8 charset. Consequently, this response should include <var>Content-Type: application/json; charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
+            
+            <p data-status="non-normative">Consult <a href="module/local-client#receivelocal"><var>ReceiveLocal</var> (Local Client Module)</a> for client-side validation rules. The host must conform to this rules for the response to be accepted.</p>
+                
+        </section>
+        
+        <section>
+            
+            <h1 data-ref="sendlocal-error">Error Response</h1>
+            
+            <p>If a host will not fulfill the request, it must respond with a 4xx Error or 5xx Error.</p>
+            
+            <p>The following status codes are recommended:</p>
+            
+            <dl>
+                <dt>400 Bad Request</dt>
+                <dd>The request body contained malformed JSON.</dd>
+                <dt>406 Not Acceptable</dt>
+                <dd>The request specified a non-conforming <var>Accept</var> or <var>Accept-Charset</var> header.</dd>
+                <dt>415 Unsupported Media Type</dt>
+                <dd>The request specified a non-conforming <var>Content-Type</var> header.</dd>
+                <dd></dd>
+            </dl>
+            
+            <p>An error response may include a message body. If it includes the message body, it must be a plaintext body describing the error.</p>
+        
+        </section>
         
     </section>
         
@@ -67,7 +133,7 @@
         
     </section>
     
-    <section data-requirement="may" data-status="incomplete">
+    <section data-requirement="may">
         
         <h1 data-ref="localreceiver-submodule">Submodule: LocalReceiver</h1>
         
@@ -98,13 +164,13 @@
             
         </footer>
         
-        <section data-requirement="must">
+        <section data-requirement="must" data-status="incomplete">
             
             <h1>AdjInStoreToLocalStore</h1>
             
         </section>
         
-        <section data-requirement="may">
+        <section data-requirement="may" data-status="incomplete">
             
             <h1>LocalTransform</h1>
             
@@ -118,7 +184,7 @@
         
     </section>
     
-    <section data-requirement="may" data-status="incomplete">
+    <section data-requirement="may">
         
         <h1 data-ref="localpublisher-submodule">Submodule: LocalPublisher</h1>
         
@@ -147,7 +213,7 @@
             
         </footer>
         
-        <section data-requirement="must">
+        <section data-requirement="must" data-status="incomplete">
             
             <h1>LocalStoreToAdjOutStore</h1>
             
