@@ -26,7 +26,7 @@
         
         <h1>Overview</h1>
         
-        <p>The CASA Protocol enables the sharing of knowledge about web applications and associated metadata throughout a peer-to-peer topology with support for heterogeneous and asymmetric world views. Through this protocol, each peer develops from its neighbors a knowledge of the ecosystem as suited to its needs, taking into consideration trust relationships and policies around acceptance and sharing.<p>
+        <p>The CASA Protocol enables the sharing of knowledge about web applications throughout a peer-to-peer topology with support for heterogeneous and asymmetric world views. Through this protocol, each peer develops a knowledge of the ecosystem as suited for its needs, taking into consideration trust relationships and policies around acceptance and sharing.<p>
 
         <p>The motivating use case for this protocol is web app stores, such as in the context of a mobile dashboard, an IMS LTI Tool Consumer or a W3C Packaged Web Apps launcher. This protocol originated as an attempt to serve these use cases; however, given its flexibility, it is generic enough to comport with other use cases whereby URIs and metadata are propagated across a peer-to-peer topology.</p>
         
@@ -51,22 +51,28 @@
             
             <h1>Approach</h1>
             
-            <p>The CASA protocol presents a model that treats each organization in the network as an autonomous system, whereby each autonomous system:</p>
+            <p>The CASA protocol presents a model that regards each organization in the network as an autonomous system, whereby each autonomous system:</p>
             
             <ol>
-                <li>defines their own trust, acceptance and sharing policies;</li>
-                <li>queries neighboring peers and processes their responses;</li>
-                <li>responds to neighboring peers when queried;</li>
-                <li>produces front-end user interfaces with which end users may interact.</li>
+                <li>defines its own trust, acceptance and sharing policies;</li>
+                <li>queries neighboring systems and processes their responses;</li>
+                <li>responds to neighboring systems when queried;</li>
+                <li>produces front-end interfaces with which end users may interact.</li>
             </ol>
             
-            <p>Information is conveyed intra- and inter- system by way of <dfn>payloads</dfn>.</p>
+            <p>Information is conveyed intra- and inter- system by way of payloads.</p>
+            
+            <p>A <dfn>payload</dfn> is a logical representation of an application and its associated metadata.</p>
+            
+            <p><dfn>Intra-system communication</dfn> is defined as communication within the autonomous system, such as with a front-end user interface.</p>
+            
+            <p><dfn>Inter-system communication</dfn> is defined as communication between autonomous system, such as when issuing a request to another system or responding to another system.</p>
             
             <section>
                 
-                <h1>Logical Nodes</h1>
+                <h1>Logical Entities</h1>
             
-                <p>Each autonomous system may recognize any of three logical, and in some cases concrete, nodes:</p>
+                <p>Each autonomous system may recognize any of three logical, and in some cases concrete, entities:</p>
 
                 <dl>
                     <dt>AdjInPeer</dt>
@@ -83,7 +89,7 @@
                 
                 <h1>Automated Processes</h1>
 
-                <p>For automation, each autonomous system may define a number of operations:</p>
+                <p>For automation, each autonomous system may implement a number of operations, either logical or concrete:</p>
 
                 <dl>
                     <dt>AdjInTranslate</dt>
@@ -105,6 +111,83 @@
             </section>
             
         </section>
+    
+    <section>
+        
+        <h1>Organization</h1>
+        
+        <section data-status="non-normative">
+        
+            <p>Large specifications present a number of problems:</p>
+
+            <ul>
+                <li>For editors, they're hard to maintain.</li>
+                <li>For oversight, they're hard to govern.</li>
+                <li>For implementers, they're hard to understand.</li>
+            </ul>
+        
+        </section>
+        
+        <p>The CASA Protocol is implemented as a combination of:</p>
+        
+        <dl>
+            <dt>Protocol Modules</dt>
+            <dd>Implementation guidelines for a core function of the architecture.</dd>
+            <dt>Attribute Specifications</dt>
+            <dd>Structural definitions for particular attributes that may be marked for use or as required by a payload.</dd>
+        </dl>
+        
+        <p>Each autonomous system must implement one or more Protocol Modules ("modules") and zero or more Attribute Specifications ("specifications"). Modules dictate the behaviors of a system, and specifications dictate how payload metadata is interpreted.</p>
+        
+        <section>
+            
+            <h1>Protocol Modules</h1>
+
+            <dl>
+                <dt><a href="Module/Payload">Payload Module</a></dt>
+                <dd>Defines data formats for inter- and intra- system communication.</dd>
+                <dt><a href="Module/Publisher">Publisher Module</a></dt>
+                <dd>Defines inter-system communication for sharing payloads with other autonomous systems.</dd>
+                <dt><a href="Module/Receiver">Receiver Module</a></dt>
+                <dd>Defines inter-system communication for receiving payloads from other autonomous systems.</dd>
+                <dt><a href="Module/Relay">Relay Module</a></dt>
+                <dd>Defines inter-system communication for receiving payloads with autonomous systems and then sharing them with others.</dd>
+                <dt><a href="Module/Local">Local Module</a></dt>
+                <dd>Defines intra-system communication for sharing payloads with outlets.</dd>
+                <dt><a href="Module/Local-Client">Local Client Module</a></dt>
+                <dd>Defines intra-system communication for outlets to receive payloads within an autonomous system.</dd>
+                <dt><a href="Module/Manager">Manager Module</a></dt>
+                <dd>Defines intra-system communication allowing for a system to be managed by an outlet.</dd>
+                <dt><a href="Module/Manager-Client">Manager Client Module</a></dt>
+                <dd>Defines intra-system communication for outlets to manage a system.</dd>
+            </dl>
+        
+            <section>
+
+                <h1>Conformance</h1>
+
+                <p>To conform with a protocol module, three expectations must be met by an implementation:</p>
+
+                <dl>
+                    <dt>Intra-Module Requirements</dt>
+                    <dd>All modules should define requirement levels for each operation or structure ("component") it defines. An implementation must conform with all requirement levels provided as defined by RFC 2119</dd>
+                    <dt>Inter-Module Requirements</dt>
+                    <dd>A module or component of a module may impose requirements upon other modules or components. When such a constraint is imposed, all requirements imposed by the other module must be met; additionally, such a constraint may increase the strength of the requirement level for any given component of the other module.</dd>
+                    <dt>This Document</dt>
+                    <dd>All modules must conform to all requirements imposed by this document.</dd>
+                </dl>
+
+            </section>
+            
+        </section>
+        
+        <section data-status="incomplete">
+            
+            <h1>Attribute Specifications</h1>
+            
+        </section>
+        
+    </section>
         
         <section data-status="non-normative">
         
@@ -140,73 +223,6 @@
 
             </section>
 
-        </section>
-        
-    </section>
-    
-    <section>
-        
-        <h1>Organization</h1>
-        
-        <p>Large specifications present a number of problems:</p>
-        
-        <ul>
-            <li>For editors, they're hard to maintain.</li>
-            <li>For oversight, they're hard to govern.</li>
-            <li>For implementers, they're hard to understand.</li>
-        </ul>
-        
-        <p>Consequently, the architecture structure is modularized under two broad classifications:</p>
-        
-        <dl>
-            <dt>Protocol Modules</dt>
-            <dd>Implementation guidelines for a core function of the architecture.</dd>
-            <dt>Attribute Specifications</dt>
-            <dd>Structural definitions for particular attributes that may be marked for use or as required by a payload.</dd>
-        </dl>
-        
-        <section>
-            
-            <h1>Protocol Modules</h1>
-
-            <dl>
-                <dt><a href="Module/Payload">Payload Module</a></dt>
-                <dl>Defines data formats for inter- and intra- system communication.</dl>
-                <dt><a href="Module/Publisher">Publisher Module</a></dt>
-                <dl>Defines how inter-system peers may access payloads.</dl>
-                <dt><a href="Module/Receiver">Receiver Module</a></dt>
-                <dl>Defines how to make inter-system queries to retrieve payloads.</dl>
-                <dt><a href="Module/Relay">Relay Module</a></dt>
-                <dl>Defines how to make inter-system queries to retrieve payloads and then publish those payloads inter-system.</dl>
-                <dt><a href="Module/Local">Local Module</a></dt>
-                <dl>Defines how intra-system outlets may access payloads.</dl>
-                <dt><a href="Module/Manager">Manager Module</a></dt>
-                <dl>Defines how intra-system outlets may manage payloads.</dl>
-            </dl>
-        
-            <section>
-
-                <h1>Conformance</h1>
-
-                <p>To conform with a protocol module, three expectations are imposed upon an implementation:</p>
-
-                <dl>
-                    <dt>Intra-Module Requirements</dt>
-                    <dd>All modules should define requirement levels for each operation or structure ("component") it defines.</dd>
-                    <dt>Inter-Module Requirements</dt>
-                    <dd>A module or component of a module may impose requirements upon other modules or components. When such a constraint is imposed, all requirements imposed by the other module must be met; additionally, such a constraint may increase the strength of the requirement level for any given component of the other module.</dd>
-                    <dt>This Document</dt>
-                    <dd>All module must conform to all requirements imposed by this document.</dd>
-                </dl>
-
-            </section>
-            
-        </section>
-        
-        <section data-status="incomplete">
-            
-            <h1>Attribute Specifications</h1>
-            
         </section>
         
     </section>

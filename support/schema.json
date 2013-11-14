@@ -374,21 +374,21 @@
                   "id":{
                      "type":"string"
                   },
-                  "originator":{
+                  "originator_id":{
                      "type":"string",
                      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                   }
                },
                "required":[
                   "id",
-                  "originator"
+                  "originator_id"
                ]
             },
             "attributes":{
                "title":"PayloadLocalAttributes",
                "type":"object",
                "properties":{
-                  "originator":{
+                  "originator_id":{
                      "type":"string",
                      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                   },
@@ -422,7 +422,7 @@
                   }
                },
                "required":[
-                  "originator",
+                  "originator_id",
                   "timestamp",
                   "uri",
                   "share",
@@ -545,21 +545,21 @@
                   "id":{
                      "type":"string"
                   },
-                  "originator":{
+                  "originator_id":{
                      "type":"string",
                      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                   }
                },
                "required":[
                   "id",
-                  "originator"
+                  "originator_id"
                ]
             },
             "original":{
                "title":"PayloadLocalAttributes",
                "type":"object",
                "properties":{
-                  "originator":{
+                  "originator_id":{
                      "type":"string",
                      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                   },
@@ -593,7 +593,7 @@
                   }
                },
                "required":[
-                  "originator",
+                  "originator_id",
                   "timestamp",
                   "uri",
                   "share",
@@ -606,7 +606,7 @@
                   "title":"PayloadLocalJournalEntry",
                   "type":"object",
                   "properties":{
-                     "originator":{
+                     "originator_id":{
                         "type":"string",
                         "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                      },
@@ -628,7 +628,7 @@
                      }
                   },
                   "required":[
-                     "originator",
+                     "originator_id",
                      "timestamp"
                   ]
                }
@@ -637,7 +637,7 @@
                "title":"PayloadLocalAttributes",
                "type":"object",
                "properties":{
-                  "originator":{
+                  "originator_id":{
                      "type":"string",
                      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                   },
@@ -671,7 +671,7 @@
                   }
                },
                "required":[
-                  "originator",
+                  "originator_id",
                   "timestamp",
                   "uri",
                   "share",
@@ -689,7 +689,7 @@
          "title":"PayloadAbstractAttributes",
          "type":"object",
          "properties":{
-            "originator":{
+            "originator_id":{
                "type":"string",
                "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             },
@@ -711,7 +711,7 @@
             }
          },
          "required":[
-            "originator",
+            "originator_id",
             "timestamp",
             "uri",
             "share",
@@ -722,7 +722,7 @@
          "title":"PayloadAbstractJournalEntry",
          "type":"object",
          "properties":{
-            "originator":{
+            "originator_id":{
                "type":"string",
                "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             },
@@ -732,7 +732,7 @@
             }
          },
          "required":[
-            "originator",
+            "originator_id",
             "timestamp"
          ]
       },
@@ -743,21 +743,21 @@
             "id":{
                "type":"string"
             },
-            "originator":{
+            "originator_id":{
                "type":"string",
                "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             }
          },
          "required":[
             "id",
-            "originator"
+            "originator_id"
          ]
       },
       "PayloadLocalAttributes":{
          "title":"PayloadLocalAttributes",
          "type":"object",
          "properties":{
-            "originator":{
+            "originator_id":{
                "type":"string",
                "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             },
@@ -791,7 +791,7 @@
             }
          },
          "required":[
-            "originator",
+            "originator_id",
             "timestamp",
             "uri",
             "share",
@@ -802,7 +802,7 @@
          "title":"PayloadLocalJournalEntry",
          "type":"object",
          "properties":{
-            "originator":{
+            "originator_id":{
                "type":"string",
                "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             },
@@ -824,7 +824,7 @@
             }
          },
          "required":[
-            "originator",
+            "originator_id",
             "timestamp"
          ]
       },
@@ -832,7 +832,7 @@
          "title":"PayloadTransitAttributes",
          "type":"object",
          "properties":{
-            "originator":{
+            "originator_id":{
                "type":"string",
                "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             },
@@ -894,7 +894,7 @@
             }
          },
          "required":[
-            "originator",
+            "originator_id",
             "timestamp",
             "uri",
             "share",
@@ -905,7 +905,7 @@
          "title":"PayloadTransitJournalEntry",
          "type":"object",
          "properties":{
-            "originator":{
+            "originator_id":{
                "type":"string",
                "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             },
@@ -955,7 +955,7 @@
             }
          },
          "required":[
-            "originator",
+            "originator_id",
             "timestamp"
          ]
       },
@@ -970,21 +970,21 @@
                   "id":{
                      "type":"string"
                   },
-                  "originator":{
+                  "originator_id":{
                      "type":"string",
                      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                   }
                },
                "required":[
                   "id",
-                  "originator"
+                  "originator_id"
                ]
             },
             "original":{
                "title":"PayloadTransitAttributes",
                "type":"object",
                "properties":{
-                  "originator":{
+                  "originator_id":{
                      "type":"string",
                      "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                   },
@@ -1046,7 +1046,7 @@
                   }
                },
                "required":[
-                  "originator",
+                  "originator_id",
                   "timestamp",
                   "uri",
                   "share",
@@ -1059,7 +1059,7 @@
                   "title":"PayloadTransitJournalEntry",
                   "type":"object",
                   "properties":{
-                     "originator":{
+                     "originator_id":{
                         "type":"string",
                         "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                      },
@@ -1109,7 +1109,7 @@
                      }
                   },
                   "required":[
-                     "originator",
+                     "originator_id",
                      "timestamp"
                   ]
                }
