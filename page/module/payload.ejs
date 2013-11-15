@@ -51,17 +51,17 @@
         
         <p>A <dfn>payload</dfn> is a data structure conveying identity and metadata for a logical entity known by the system. It is the fundamental constituent accepted from other systems, presented within a system and shared out from the system.</p>
         
-        <p>A <dfn>logical entity</dfn> is an application, data or other addressable content that a system recognizes. One or more payloads may be introduced intra- and inter- system for a logical entity, and the only thing that must remain constant for continued representation of the entity is the identity section of the payload.</p>
+        <p>A <dfn>logical entity</dfn> is an application, data or other addressable content that a system recognizes. An autonomous system should never maintain more than one payload representing a logical entity, but, over the lifetime of a logical entity, more than one payload may travel through the network representing the entity. Some payloads may be identical, while others may carry changes to the attributes of the entity.</p>
         
-        <section data-status="non-normative">
+        <section data-status="non-normative" data-message='This section is provided for context only; all requirements described by this section are defined normatively later in this document.'>
         
-            <p>All payloads must contain an <var>identity</var> property. This property is an object that remains constant throughout a payload's lifetime in the network.</p>
+            <p>All payloads must contain an <var>identity</var> property. This property is an object that remains constant throughout a logical entity's lifetime. If a payload includes a different <var>identity</var> property, then it must be regarded as representing a different logical entity.</p>
 
-            <p>While within the boundaries of the system, all payloads must contain an <var>attributes</var> property. This property is an object with required and optional metadata. This attribute should not be shared beyond the boundaries of the system.</p>
+            <p>While within the boundaries of the system, all payloads must contain an <var>attributes</var> property. This property is an object with required and optional metadata as understood within the boundaries of the autonomous system. This attribute should not be shared beyond the boundaries of the system.</p>
 
-            <p>When shared outside the boundaries of a system, all payloads must contain an <var>original</var> property. This property is an object with required and optional metadata. If this payload was received from another system, then it must be identical to the value when received; if this payload was introduced from within the system, then it should be identical to the attributes property.</p>
+            <p>When shared beyond the boundaries of a system, all payloads must contain an <var>original</var> property. This property is an object with required and optional metadata in a format understood by all systems implementing the <a href="Module/Receiver">Receiver Module</a>. If the conveyed payload was originally received from another system, then this section must be identical to the value when received.</p>
 
-            <p>All payloads may contain a <var>journal</var> property. This property is an array of objects. Each object in the array denotes sequential changes made to attributes. Starting with the original property and then walking sequentially through the journal, a system is able to construct an attributes section. If a payload received inter-system includes a journal property, all entries in that array must be the same when sharing the payload beyond the boundaries of the system; if the system chooses to introduce further changes, and wishes to convey those properties inter-system, then another object should be pushed onto the end of the journal array.</p>
+            <p>All payloads may contain a <var>journal</var> property. This property is an array of objects. Each object in the array denotes sequential changes made to attributes. Starting with the original property and then walking sequentially through the journal, a system is able to construct an attributes section. If a payload received inter-system includes a journal property, all entries in that array besides those inserted by the system itself must be the same when sharing the payload beyond the boundaries of the system; if the system inserts its own changes, and wishes to convey those changes inter-system, then another object should be pushed onto the end of the journal array.</p>
         
         </section>
         
@@ -75,9 +75,9 @@
 
             <h1>PayloadIdentity</h1>
             
-            <p>The <dfn>PayloadIdentity</dfn> structure is a compound key containing a <var>originator_id</var> UUID property, corresponding to the UUID of the system that created the payload (the "originator"), and an <var>id</var> UID property, corresponding to the logical entity represented by the payload.</p>
+            <p>The <dfn>PayloadIdentity</dfn> structure is a compound key containing an <var>originator_id</var> UUID property, corresponding to the UUID of the system that created the payload (the "originator"), and an <var>id</var> UID property, corresponding to the logical entity represented by the payload.</p>
             
-            <p data-status="non-normative">The non-changing nature of the <var>PayloadIdentity</var> allows future payloads to be introduced into the network that modify any attribute of a payload, including its URI.</p>
+            <p data-status="non-normative">The unchanging nature of the <var>PayloadIdentity</var> allows payloads to be introduced into the network that modify any attribute of a payload, including its URI. This ability to modify the attributes of a logical entity is important in the case that the properties of local entity change over its lifetime.</p>
             
             <section>
 
@@ -105,7 +105,7 @@
             
             <p><dfn>PayloadAttributes</dfn> describe the state of a payload at a point in time under a particular context.</p>
             
-            <section data-status="non-normative">
+            <section data-status="non-normative" data-message='This section is provided for context only; all requirements described by this section are defined normatively later in this document.'>
             
                 <p>Attributes are used in a number of contexts: the <var>original</var> section of a payload contains metadata about a payload at the time the payload was created; the <var>journal</var> section of a payload contains an array of entries that specify modifications made to attributes during the payload's lifetime; and the <var>attributes</var> section of a payload contains metadata about a payload once the <var>original</var> and <var>journal</var> sections have been parsed.</p>
 
@@ -123,13 +123,13 @@
             
                     <h1>Properties</h1>
             
-                    <p data-status="editor-challenged" data-message="The editor does not see the usefullness of this property. While required under the JSON Schema file, it's purpose is not clear and has not been previously documented. Identity of the payload originator is available from the payload's identity section, and each journal entry carries an identity.">The <dfn id="PayloadAbstractAttributes-originator"><var>originator</var></dfn> property must be the UUID of the system that...</p>
+                    <p data-status="editor-challenged" data-message="The editor does not see the usefullness of this property. While required under the JSON Schema file, it's purpose is not clear and has not been previously documented. Identity of the payload originator is available from the payload's identity section, and each journal entry carries an identity.">The <dfn id="PayloadAbstractAttributes-originator"><var>originator</var></dfn> property must be the UUID of the system that... [no definition defined]</p>
 
                     <p>The <dfn id="PayloadAbstractAttributes.timestamp">timestamp</dfn> property must be set as a timestamp conforming to RFC 3339.</p>
 
-                    <p data-status="non-normative">The <var>timestamp</var> attribute denotes when the attributes section was created. When contained within the payload <var>original</var> section, it denotes when the payload was introduced into the network; when contained within the <var>attributes</var> section, it denotes the timestamp of the last entry in the journal that affected a change of the attributes.</p>
+                    <p data-status="non-normative">The <var>timestamp</var> attribute denotes when the attributes section was created. When contained within the payload <var>original</var> section, it denotes when the payload was introduced into the network; when contained within the <var>attributes</var> section, it denotes the timestamp of the last entry in the journal that affected changes to the computed attributes section.</p>
 
-                    <p>The <dfn id="PayloadAbstractAttributes.uri">uri</dfn> property must be set and must define the current URI of the payload.</p>
+                    <p>The <dfn id="PayloadAbstractAttributes.uri">uri</dfn> property must be set and must define the URI of the logical entity represented by the payload.</p>
 
                     <p>The <dfn id="PayloadAbstractAttributes.share">share</dfn> property may be set and denotes whether a payload should be shared.</p>
 
