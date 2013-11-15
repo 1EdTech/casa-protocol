@@ -151,7 +151,8 @@
                   },
                   "path":{
                      "type":"string",
-                     "default":"/"
+                     "default":"",
+                     "pattern":"^$|^[^\/]$|^[^\/]+.*[^\/]$"
                   },
                   "port":{
                      "type":"integer",
@@ -231,7 +232,8 @@
                   },
                   "path":{
                      "type":"string",
-                     "default":"/"
+                     "default":"",
+                     "pattern":"^$|^[^\/]$|^[^\/]+.*[^\/]$"
                   },
                   "port":{
                      "type":"integer",
@@ -270,7 +272,8 @@
             },
             "path":{
                "type":"string",
-               "default":"/"
+                "default":"",
+                "pattern":"^$|^[^\/]$|^[^\/]+.*[^\/]$"
             },
             "port":{
                "type":"integer",

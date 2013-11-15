@@ -9,7 +9,7 @@
     
     <section>
         <h1>Status of this Memo</h1>
-        <p>This memorandum specifies the CASA Protocol Receiver Module, which defines how to make inter-system queries to retrieve payloads. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+        <p>This memorandum specifies the CASA Protocol Receiver Module, which defines inter-system queries are made to retrieve payloads from other autonomous systems. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
     </section>
     
     <section>
@@ -58,10 +58,10 @@
         <p>To receive a payload from a peering system:</p>
         
         <ol>
-            <li>Issue an <var>HTTP GET /payloads</var> request; may include a secret.
+            <li>Must issue an <var>HTTP GET /payloads</var> request to another autonomous system; may include a secret.
             </li>
             <li>
-                Must validate response.
+                Must validate response:
                 <ol>
                     <li>If invalid <var>Content-Type</var>, abort.</li>
                     <li>If response body is not valid JSON array, abort.</li>
@@ -87,15 +87,15 @@
         
         <h1>ReceiveIn</h1>
         
-        <p>The <dfn>ReceiveIn</dfn> operation performed by a system ("client") queries payloads from a peering system ("host") by way of an HTTP request and response. The queried system must implement the <a href="module/publisher">Publisher Module</a> for this operation to succeed.</p>
+        <p>The <dfn>ReceiveIn</dfn> operation performed by a system ("client") queries payloads from another autonomous system ("host") by way of an HTTP request and response. The host must implement the <a href="module/publisher">Publisher Module</a> for this operation to succeed.</p>
         
         <section>
             
             <h1>Request</h1>
             
-            <p>The client must issue an HTTP GET request to the <var>/payloads</var> route of the peering system.</p>
+            <p>The client must issue an HTTP GET request to the <var>/payloads</var> route on the host.</p>
             
-            <p>The client may include a request body. If it includes a request body, it must be JSON-formatted.</p>
+            <p>The client may include a request body. If the request includes a request body, it must be JSON-formatted.</p>
             
             <p data-status="non-normative">A request body is used to specify a secret in the event that the host implements access controls. This secret may also be specified in the query string of the GET request.</p>
             
@@ -103,13 +103,13 @@
             
             <dl>
                 <dt><var>Accept: application/json</var></dt>
-                <dd>The client should send this header, although it may be implied by omission. The client must not send any other <var>Accept</var> header.</dd>
+                <dd>The client may send this header, although it may be implied by omission. The client must not send any other <var>Accept</var> header.</dd>
                 <dt><var>Accept-Charset: utf-8</var></dt>
                 <dd>The client may send this header, although it may be implied by omission. The client must not send any other <var>Accept-Charset</var> header.</dd>
                 <dt><var>Accept-Encoding</var></dt>
-                <dd>The client may send this header with acceptable encodings. The host may implement an encoding, but the client must be prepared to accept a non-encoded response.</dd>
+                <dd>The client may send this header with acceptable encodings. The host may implement an encoding, but the client must be able to accept a non-encoded response.</dd>
                 <dt><var>Content-Type: application/json</var></dt>
-                <dd>The client must send this header if the request includes a body section, although it may be implied by omission. The client must not send any other <var>Content-Type</var> header.</dd>
+                <dd>The client should send this header if the request includes a body section, although it may be implied by omission. The client must not send any other <var>Content-Type</var> header.</dd>
             </dl>
             
         </section>
@@ -123,10 +123,10 @@
             <p>When a client receives a 200 OK response, it must validate the message body. Validation passes if:</p>
 
             <ol>
-                <li>The response should have a <var>Content-Type</var> header of <var>application/json</var>, although it may be implied by omission. If the response is of other <var>Content-Type</var>, the entire response must be discarded.</li>
-                <li>Message body must be valid JSON. If this condition fails, the entire response must be discarded.</li>
-                <li>Message body must be an array. If this condition fails, the entire response must be discarded.</li>
-                <li>Each element of the array must conform to the TransitPayload JSON Schema. If this condition fails, the non-conforming element must be discarded, but the client may still process conforming elements.</li>
+                <li>The response should have a <var>Content-Type</var> header of <var>application/json</var>, although it may be implied by omission. If the response bears any other <var>Content-Type</var> header, the entire response must be discarded.</li>
+                <li>The response body must be valid JSON. If this condition fails, the entire response must be discarded.</li>
+                <li>The response body must be an array. If this condition fails, the entire response must be discarded.</li>
+                <li>Each element of the JSON-encoded array in the response body must conform to <a href="Module/Payload#TransitPayload">TransitPayload (Payload Module)</a>. If this condition fails, the non-conforming element must be discarded, although the client may still validate and process other elements in the array.</li>
             </ol>
             
             <p data-status="non-normative">Consult <a href="#data-path">Data Path</a> for the operations that must be performed against <var>TransitPayload</var> objects received via this operation.</p>
@@ -139,7 +139,7 @@
             
             <p>An error response is denoted by 4xx Error or 5xx Error.</p>
             
-            <p>Except for the 404 Error status code, the client must not send an identical request after receiving a 4xx Error; however, it may attempt to resolve the issue by modifying the request headers and body:</p>
+            <p>Except for a <var>404 Error</var>, the client must not send an identical request after receiving a 4xx Error; however, it may attempt to resolve the issue by modifying the request headers and body to rectify the issue as implied by the error code:</p>
             
             <dl>
                 <dt><var>400 Bad Request</var></dt>
@@ -152,9 +152,9 @@
                 <dd>The client may correct the <var>Accept</var> and <var>Accept-Charset</var> headers and try again.</dd>
             </dl>
             
-            <p>The client may send an identical request after receiving a 5xx Error; additionally, the client may send an identical request after receiving a 404 Error if the client administrator confirms the host is willing to serve the route. If the client sends an identical request, it should use exponential backoff.</p>
+            <p>The client may send an identical request after receiving a 5xx Error; additionally, the client may send an identical request after receiving a 404 Error after the client confirms via another mechanism that the host is willing to serve the route. If the client sends an identical request after a 5xx Error or a 4xx error is encountered, the frequency of subsequent requests should use exponential backoff.</p>
             
-            <p data-status="non-normative">5xx Error responses (and 404 Error responses when a host is known to fulfill a route) are commonly sent because the host is overcapacity, unavailable or encountering internal errors. Exponential backoff lessens the load on a host and allows host administrator to resolve availability and internal logic errors.</p>
+            <p data-status="non-normative">5xx Error responses (and 404 Error responses when a host is known to fulfill a route) are commonly sent because the host is overcapacity, unavailable or encountering internal errors. Exponential backoff lessens the load on a host, allowing for availability and/or internal logic errors to be resolved.</p>
             
         </section>
         
@@ -164,15 +164,17 @@
 
         <h1 data-ref="receivein-access-controls">ReceiveIn with Access Controls</h1>
 
-        <p>A host may refuse to serve <var>GET /payloads</var> requests unless certain access criteria are met. If the client does not meet the host's access criteria, the HTTP response should be a 403 Error, and it must be within the 4xx Error and 5xx Error ranges.</p>
+        <p>A host may refuse to serve a <var>GET /payloads</var> request unless certain access criteria are met. If the request from a client does not meet the host's access criteria, the HTTP response shall be a 4xx Error or 5xx Error and should be a 403 Error.</p>
         
         <section data-status='non-normative'>
             
-            <p><a href='module/publisher#sendout-access-controls'>SendOut with Access Controls (Publisher Module)</a> specifies two kinds of access control: <var>address-based</var> and <var>secret-based</var>. The former requires that a host must not respond to any request unless it matches a certain IP address or range, while the latter requires that the client provide a pre-negotiated <var>secret</var> property either via the query string or a JSON-encoded request body.</p>
+            <p><a href='module/publisher#sendout-access-controls'>SendOut with Access Controls (Publisher Module)</a> specifies two kinds of access control: <var>address-based</var> and <var>secret-based</var>. The former requires that the client match a certain IP address or range, while the latter requires that the client provide a pre-negotiated <var>secret</var> property via either the query string or a JSON-encoded request body.</p>
             
         </section>
         
-        <p>If the client has negotiated a <var>secret</var> parameter with the host, it must send this property either by the name <var>secret</var> within the query string or as a property <var>secret</var> within a JSON-encoded object in the request body.</p>
+        <p>If the client has negotiated a <var>secret</var> parameter with the host, it must send this property either by the name <var>secret</var> within the query string or as the property <var>secret</var> within a JSON-encoded object in the request body.</p>
+        
+        <p data-status="non-normative">The client should send a <var>Content-Type: application/json</var> header with the request if it includes a <var>secret</var> property within the request body.</p>
 
         <section data-requirement="should">
 
@@ -182,7 +184,7 @@
             
             <p data-status="non-normative">This structure is useful when managing a number of in-bound peers that the host queries. This structure is implemented for access controls in the <a href="module/manager#OutletReceiveNode"><var>OutletReceiveNode (Manager Module)</var></a> operation.</p>
 
-            <section data-status="conflict" data-message="The path default should be empty string, and path should not be allowed to end with a slash as all routes already include a leading slash.">
+            <section>
                 
                 <h1>Schema</h1>
             
@@ -236,9 +238,9 @@ adjInPeers.each { |peer|
         
         <p>The <var>AdjInTranslate</var> operation accepts a <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> object and converts recognized keys in the <var>use</var> and <var>require</var> properties of the <var>original</var> section and the array elements of the <var>journal</var> section, if defined, into human-readable keys.</p>
         
-        <p data-status="non-normative">While all <var>use</var> and <var>require</var> keys in <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects must be encoded as machine-readable UUIDs corresponding to <a href="core#attribute-specifications">Attribute Specifications (Core)</a>, working directly with UUIDs is considered cumbersome for system maintenance. This operation thus allows for intra-system treatment of attributes under a common name. This is especially useful for <a href="module/local#outlet"><var>Outlets</var> (Local Module)</a>, which are administered by human users who prefer human-readable names.</p>
+        <p data-status="non-normative">While all <var>use</var> and <var>require</var> keys in <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects must be encoded as machine-readable UUIDs corresponding to <a href="core#attribute-specifications">Attribute Specifications (Core)</a>, working directly with UUIDs is considered cumbersome for end users. This operation allows for intra-system treatment of attributes under a common name. This is especially useful for <a href="module/local#outlet"><var>Outlets</var> (Local Module)</a>, which are administered by human users who prefer human-readable names.</p>
                 
-        <p>For payload <var>original</var> property and, if set, for each element in the <var>journal</var> property, this operation must follow this algorithm:</p>
+        <p>For the payload <var>original</var> property and, if set, for each element in the <var>journal</var> property, this operation must follow this algorithm:</p>
         
         <ol>
             <li>
@@ -295,7 +297,7 @@ adjInPeers.each { |peer|
         
         <h1>AdjInSquash</h1>
         
-        <p>The <var>AdjInTranslate</var> operation accepts a <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> object that must have already been passed through <a href='#adjintranslate'><var>AdjInTranslate</var></a>, and it produces an <a href='#module/payload#localpayload'><var>LocalPayload</var> (Payload Module)</a> by constructing an <var>attributes</var> section from the <var>original</var> property and optionally the <var>journal</var> section if defined.</p>
+        <p>The <var>AdjInTranslate</var> operation accepts a <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> object that must have already been passed through <a href='#adjintranslate'><var>AdjInTranslate</var></a>, and it produces an <a href='#module/payload#localpayload'><var>LocalPayload</var> (Payload Module)</a> by constructing an <var>attributes</var> section from the <var>original</var> property and optionally the <var>journal</var> section, if defined.</p>
         
         <p>This operation must following this algorithm:</p>
         
