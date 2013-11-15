@@ -9,7 +9,7 @@
     
     <section>
         <h1>Status of this Memo</h1>
-        <p>This memorandum specifies the CASA Protocol Publisher Module, which defines payloads must be presented for access by inter-system outlets. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+        <p>This memorandum specifies the CASA Protocol Publisher Module, which defines payloads must be presented for inter-system communication. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
     </section>
     
     <section>
@@ -37,6 +37,7 @@
         <h1>Terminology</h1>
         <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
         <p>The key words <strong>HTTP request</strong>, <strong>HTTP response</strong>, <strong>HTTP header</strong>, <strong>HTTP GET Request</strong>, <strong>HTTP Response Status Code</strong> (alternatively: <strong>response status</strong>), <strong>Client Error 4xx</strong> (alternatively: <strong>4xx Error</strong>) and <strong>Server Error 5xx</strong> (alternatively: <strong>5xx Error</strong>) in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2616.txt" rel="external">RFC 2616</a></strong> ["Hypertext Transfer Protocol -- HTTP/1.1"].</p>
+        <p>The key word <strong>IP Address</strong> in this document is to be interpreted as described by <strong><a href='http://tools.ietf.org/rfc/rfc791.txt' rel='external'>RFC 791</a></strong> ["Internet Protocol"].</p>
         <p>The key word <strong>utf-8</strong> in this document is to be interpreted as described by <strong><a href='http://tools.ietf.org/rfc/rfc3629.txt' rel='external'>RFC 3629</a></strong> ["UTF-8, a transformation format of ISO 10646"].</p>
         <p>The key word <strong>property</strong> (alternatively: <strong>attribute</strong> or <strong>section</strong>) in this document is to be interpreted as described by <strong><a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf" rel="external">ECMA-262 Edition 5.1</a></strong>.</p>
         <p>The key words <strong>string</strong>, <strong>array</strong>, <strong>object</strong>, <strong>name/value pair</strong> (alternatively: <strong>key-value pair</strong>) and <strong>JavaScript Object Notation</strong> (alternatively: <strong>JSON</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4627.txt" rel="external">RFC 4627</a></strong> ["The application/json Media Type for JavaScript Object Notation (JSON)"].</p>
@@ -52,7 +53,7 @@
         
         <h1>SendOut</h1>
         
-        <p>The <dfn>SendOut</dfn> operation publish payloads externally. It responds to an HTTP GET request on the <var>/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a 4xx or 5xx Error Response.</p>
+        <p>The <dfn>SendOut</dfn> operation publishs payloads to other autonomous systems. It responds to an HTTP GET request on the <var>/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a Client Error 4xx or Server Error 5xx.</p>
         
         <section data-status="non-normative">
             
@@ -89,7 +90,7 @@
             
             <p>If a host will fulfill the request, it must respond with a <var>200 OK</var> response status.</p>
             
-            <p>A response body of a <var>200 OK</var> response must be an array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects. This response must be JSON-formatted and use the utf-8 charset. Consequently, this response should include <var>Content-Type: application/json; charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
+            <p>A response body of a <var>200 OK</var> response must be an array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects. This response must be JSON-formatted and use the <var>utf-8</var> charset. Consequently, this response should include <var>Content-Type: application/json; charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
             
             <p data-status="non-normative">Consult <a href="module/receiver#receivein-success-response"><var>ReceiveIn</var> (Receiver Module)</a> for client-side validation rules. The host must conform to this rules for the response to be accepted.</p>
                 
@@ -123,7 +124,7 @@
 
         <h1 data-ref="sendout-access-controls">SendOut with Access Controls</h1>
 
-        <p>A host may impose access controls on the <var>SendOut</var> operation.</p>
+        <p>A host may implement access controls for the <var>SendOut</var> operation.</p>
         
         <p>Two forms of access control are recommended:</p>
         
@@ -134,7 +135,7 @@
             <dd>Requests are only accepted when a valid secret is specified.</dd>
         </dl>
         
-        <p>If secret-based access control is imposed, the host must accept the secret when specified by the name <var>secret</var> in either an HTTP GET request query string or a JSON-encoded request body.</p>
+        <p>If secret-based access control is implemented, the host must accept a secret passed by the name <var>secret</var> in either the HTTP GET request query string or a JSON-encoded request body. It shall not accept a secret through either of these mechanisms unless it accepts the secret through both.</p>
             
         <p>If a host will not fulfill a <var>SendOut</var> request because of access controls, it must respond with the status code:</p>
         
@@ -149,7 +150,7 @@
 
             <p>The <dfn>AdjOutPeer</dfn> structure may be implemented to define access controls.</p>
             
-            <p data-status="non-normative">This structure is useful under complex access controls situations where a host defines a number of systems it may support. For example, this structure is implemented for access controls in the <a href="module/manager#OutletReceiveNode"><var>OutletReceiveNode (Manager Module)</var></a> operation.</p>
+            <p data-status="non-normative">This structure is useful under complex access controls situations where a host defines a number of systems it may support. For example, this structure is implemented for access controls managed by the <a href="module/manager#OutletReceiveNode"><var>OutletReceiveNode (Manager Module)</var></a> operation.</p>
             
             <section>
                 
@@ -169,9 +170,9 @@
                 
                 <p>The <var>out</var> property may contain a <var>address</var> property conforming to the IP Address format.</p>
                 
-                <p data-status="non-normative">If set, the <var>out.address</var> property specifies an IP address required for a client to be considered as matching this structure.</p>
+                <p data-status="non-normative">If set, the <var>out.address</var> property specifies an IP address required for a client to be considered as a match.</p>
                 
-                <p>The <var>out</var> property may contain a <var>mask</var> property conforming to the IP Address format.</p>
+                <p>The <var>out</var> property may contain a <var>mask</var> property conforming to the IP Address format. The <var>mask</var> property should not be set if the <var>address</var> property is not set.</p>
                 
                 <p data-status="non-normative">If set, the <var>out.mask</var> property specifies a wildcard mask applied to <var>out.address</var>, where any request from a client within the specified range must be considered as matching this structure.</p>
                 
@@ -181,7 +182,7 @@
                 
                 <h1>Resolving an AdjOutPeer</h1>
                 
-                <p>For each <var>AdjOutPeer</var>, the following routine may be used to determine a match:</p>
+                <p>For each <var>AdjOutPeer</var>, the following routine should be used to determine a match:</p>
                 
                 <ol>
                     <li>If <var>AdjOutPeer.out.secret</var> is specified but the request does not include a <var>secret</var> or the request <var>secret</var> does not match, <strong>not a match</strong>.
