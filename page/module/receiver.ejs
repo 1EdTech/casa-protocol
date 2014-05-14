@@ -266,7 +266,7 @@ adjInPeers.each { |peer|
   
   if payload['original'].include? type
 
-    payload['original'][type] = Hash[payload['journal'][type].map { |k,v|
+    payload['original'][type] = Hash[payload['original'][type].map { |k,v|
         [ recognizes?(k) ? translate(k) : k, v ]
     }]
 
