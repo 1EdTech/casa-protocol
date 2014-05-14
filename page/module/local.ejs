@@ -72,9 +72,9 @@
                 <dt><var>Accept-Encoding Header</var></dt>
                 <dd>Any value for this header is valid. The host should attempt to implement this encoding for a response but it may ignore this header.</dd>
                 <dt><var>Content-Type Header</var></dt>
-                <dd><var>application/json</var> and <var>charset=utf-8</var> should be specified for this header. The omission of this header may be assumed by a local outlet as <var>application/json</var> if a request body is sent. If the client sends any <var>Content-Type</var> header without <var>application/json</var> and <var>charset=utf-8</var>, a 4xx Error must be thrown.</dd>
+                <dd><var>application/json</var> and <var>charset=utf-8</var> should be specified for this header. The omission of this header may be assumed by a local outlet as <var>application/json</var> if a request body is sent. If the client sends any <var>Content-Type</var> header without <var>application/json</var> and <var>charset=utf-8</var>, a 4xx Error must be thrown unless the server understands and processes the body data based on the non-standard <var>Content-Type</var> header sent by the client.</dd>
                 <dt><var>Body Content</var></dt>
-                <dd>If the client includes a request body, it must be a JSON-formatted object of key-value pairs. If the client sends any other body content, a 4xx Error must be thrown.</dd>
+                <dd>If the client includes a request body, it must be a JSON-formatted object of key-value pairs. If the client sends any other body content, a 4xx Error must be thrown unless the server understands and processes the body data based on non-standard <var>Content-Type</var> header sent by the client.</dd>
             </dl>
             
         </section>
