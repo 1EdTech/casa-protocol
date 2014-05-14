@@ -66,13 +66,13 @@
             
             <dl>
                 <dt><var>Accept Header</var></dt>
-                <dd>Only <var>application/json</var> is valid for this header. The omission of this header must be assumed as <var>application/json</var>. If the client sends any other <var>Accept</var> header, a 4xx Error must be thrown.</dd>
+                <dd><var>application/json</var> should be specified for this header. The omission of this header may be assumed by a local outlet as <var>application/json</var>. If the client sends an <var>Accept</var> header without <var>application/json</var>, a 4xx Error must be thrown.</dd>
                 <dt><var>Accept-Charset Header</var></dt>
                 <dd>Only <var>utf-8</var> is valid for this header. The omission of this header must be assumed as <var>utf-8</var>. If the client sends any other <var>Accept-Charset</var> header, a 4xx Error must be thrown.</dd>
                 <dt><var>Accept-Encoding Header</var></dt>
                 <dd>Any value for this header is valid. The host should attempt to implement this encoding for a response but it may ignore this header.</dd>
                 <dt><var>Content-Type Header</var></dt>
-                <dd>Only <var>application/json</var> is valid for this header. The omission of this header must be assumed as <var>application/json</var> if a request body is sent. If the client sends any other <var>Content-Type</var> header, a 4xx Error must be thrown.</dd>
+                <dd><var>application/json</var> and <var>charset=utf-8</var> should be specified for this header. The omission of this header may be assumed by a local outlet as <var>application/json</var> if a request body is sent. If the client sends any <var>Content-Type</var> header without <var>application/json</var> and <var>charset=utf-8</var>, a 4xx Error must be thrown.</dd>
                 <dt><var>Body Content</var></dt>
                 <dd>If the client includes a request body, it must be a JSON-formatted object of key-value pairs. If the client sends any other body content, a 4xx Error must be thrown.</dd>
             </dl>
@@ -85,7 +85,7 @@
             
             <p>If a host will fulfill the request, it must respond with a <var>200 OK</var> response status.</p>
             
-            <p>A response body of a <var>200 OK</var> response must be an array of <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects. This response must be JSON-formatted and use the utf-8 charset. Consequently, this response should include <var>Content-Type: application/json; charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
+            <p>A response body of a <var>200 OK</var> response must be an array of <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects. This response must be JSON-formatted and use the utf-8 charset. Consequently, this response should include <var>Content-Type: application/json;charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
             
             <p data-status="non-normative">Consult <a href="module/local-client#receivelocal"><var>ReceiveLocal</var> (Local Client Module)</a> for client-side validation rules. The host must conform to this rules for the response to be accepted.</p>
                 

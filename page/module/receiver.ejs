@@ -103,12 +103,12 @@
             
             <dl>
                 <dt><var>Accept: application/json</var></dt>
-                <dd>The client may send this header, although it may be implied by omission. The client must not send any other <var>Accept</var> header.</dd>
+                <dd>The client should send this header, although it may be implied by omission. The client must not send an <var>Accept</var> header without <var>application/json</var>.</dd>
                 <dt><var>Accept-Charset: utf-8</var></dt>
-                <dd>The client may send this header, although it may be implied by omission. The client must not send any other <var>Accept-Charset</var> header.</dd>
+                <dd>The client should send this header, although it may be implied by omission. The client must not send any other <var>Accept-Charset</var> header.</dd>
                 <dt><var>Accept-Encoding</var></dt>
-                <dd>The client may send this header with acceptable encodings. The host may implement an encoding, but the client must be able to accept a non-encoded response.</dd>
-                <dt><var>Content-Type: application/json</var></dt>
+                <dd>The client should send this header with acceptable encodings. The host may implement an encoding, but the client must be able to accept a non-encoded response.</dd>
+                <dt><var>Content-Type: application/json;charset=utf-8</var></dt>
                 <dd>The client should send this header if the request includes a body section, although it may be implied by omission. The client must not send any other <var>Content-Type</var> header.</dd>
             </dl>
             
@@ -123,7 +123,7 @@
             <p>When a client receives a 200 OK response, it must validate the message body. Validation passes if:</p>
 
             <ol>
-                <li>The response should have a <var>Content-Type</var> header of <var>application/json</var>, although it may be implied by omission. If the response bears any other <var>Content-Type</var> header, the entire response must be discarded.</li>
+                <li>The response should have a <var>Content-Type</var> header of <var>application/json;charset=utf-8</var>, although it may be implied by omission. If the response bears any other <var>Content-Type</var> header, the entire response must be discarded.</li>
                 <li>The response body must be valid JSON. If this condition fails, the entire response must be discarded.</li>
                 <li>The response body must be an array. If this condition fails, the entire response must be discarded.</li>
                 <li>Each element of the JSON-encoded array in the response body must conform to <a href="Module/Payload#TransitPayload">TransitPayload (Payload Module)</a>. If this condition fails, the non-conforming element must be discarded, although the client may still validate and process other elements in the array.</li>
