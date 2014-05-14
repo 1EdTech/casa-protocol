@@ -47,23 +47,23 @@
 </footer>
 
 <main>
-    
+
     <section data-requirement="must">
-        
+
         <h1>SendLocal</h1>
-        
-        <p>The <dfn>SendLocal</dfn> operation publish payloads internally. It responds to an HTTP GET request on the <var>/local/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a 4xx or 5xx Error Response.</p>
-        
+
+        <p>The <dfn>SendLocal</dfn> operation publish payloads to local outlets. It responds to an HTTP GET request on the <var>/local/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a 4xx or 5xx Error Response.</p>
+
         <p data-status="non-normative">This operation must be used intra-system only. Inter-system sharing of payloads occurs via the <a href="module/publisher#sendout"><var>SendOut</var> (Publisher Module)</a> operation.</p>
-        
-        <section>
-            
-            <h1 data-ref="sendlocal-request">Processing Request</h1>
-            
-            <p data-status="non-normative">The request <var>GET /local/payloads</var> initiated by the client should include <var>Accept</var>, <var>Accept-Charset</var>, <var>Accept-Encoding</var> and <var>Content-Type</var> headers.</p>
-            
-            <p>The following rules should be applied when handling a request:</p>
-            
+
+        <section data-requirement="must">
+
+            <h1 data-ref="sendlocal-request">Request</h1>
+
+            <p data-status="non-normative">The engine exposes between two and four interfaces to which a local outlet may issue a request. All requests should include include <var>Accept</var>, <var>Accept-Charset</var>, <var>Accept-Encoding</var> and <var>Content-Type</var> headers.</p>
+
+            <p>The following rules should be applied for all requests:</p>
+
             <dl>
                 <dt><var>Accept Header</var></dt>
                 <dd><var>application/json</var> should be specified for this header. The omission of this header may be assumed by a local outlet as <var>application/json</var>. If the client sends an <var>Accept</var> header without <var>application/json</var>, a 4xx Error must be thrown.</dd>
@@ -72,70 +72,98 @@
                 <dt><var>Accept-Encoding Header</var></dt>
                 <dd>Any value for this header is valid. The host should attempt to implement this encoding for a response but it may ignore this header.</dd>
                 <dt><var>Content-Type Header</var></dt>
-                <dd><var>application/json</var> and <var>charset=utf-8</var> should be specified for this header. The omission of this header may be assumed by a local outlet as <var>application/json</var> if a request body is sent. If the client sends any <var>Content-Type</var> header without <var>application/json</var> and <var>charset=utf-8</var>, a 4xx Error must be thrown unless the server understands and processes the body data based on the non-standard <var>Content-Type</var> header sent by the client.</dd>
+                <dd>If the client includes a request body, <var>application/json</var> and <var>charset=utf-8</var> should be specified for this header. The omission of this header may be assumed as <var>application/json</var> if a request body is sent. If the client sends any <var>Content-Type</var> header without <var>application/json</var> and <var>charset=utf-8</var>, a 4xx Error must be thrown unless the server understands and processes the body data based on the non-standard <var>Content-Type</var> header sent by the client.</dd>
                 <dt><var>Body Content</var></dt>
                 <dd>If the client includes a request body, it must be a JSON-formatted object of key-value pairs. If the client sends any other body content, a 4xx Error must be thrown unless the server understands and processes the body data based on non-standard <var>Content-Type</var> header sent by the client.</dd>
             </dl>
-            
+
+            <section data-requirement="may" data-status="stub">
+
+                <h1 data-ref="sendlocal-access-controls">Request with Access Controls</h1>
+
+            </section>
+
         </section>
-        
-        <section>
-            
-            <h1 data-ref="sendlocal-success">Success Response</h1>
-            
-            <p>If a host will fulfill the request, it must respond with a <var>200 OK</var> response status.</p>
-            
-            <p>A response body of a <var>200 OK</var> response must be an array of <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects. This response must be JSON-formatted and use the utf-8 charset. Consequently, this response should include <var>Content-Type: application/json;charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
-            
-            <p data-status="non-normative">Consult <a href="module/local-client#receivelocal"><var>ReceiveLocal</var> (Local Client Module)</a> for client-side validation rules. The host must conform to this rules for the response to be accepted.</p>
-                
+
+        <section data-requirement="must">
+
+            <h1 data-ref="sendlocal-response">Response</h1>
+
+            <section>
+
+                <h1>Success Response</h1>
+
+                <p>If a host will fulfill the request, it must respond with a <var>200 OK</var> response status.</p>
+
+                <p>A response body of a <var>200 OK</var> response must be of a format stipulated by one of the request methods: <var><a href="#sendlocal-one">SendLocal-One</a></var>, <var><a href="#sendlocal-all">SendLocal-All</a></var>, <var><a href="#sendlocal-query">SendLocal-Query</a></var> and <var><a href="#sendlocal-query-simple">SendLocal-Query-Simple</a></var>. In all cases, the response must be JSON-formatted and use the utf-8 charset. Consequently, this response should include <var>Content-Type: application/json;charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
+
+            </section>
+
+            <section>
+
+                <h1>Error Response</h1><p>If a host will not fulfill the request, it must respond with a 4xx Error or 5xx Error.</p>
+
+                <p>The following status codes are recommended:</p>
+
+                <dl>
+                    <dt>400 Bad Request</dt>
+                    <dd>The request body contained malformed JSON.</dd>
+                    <dt>406 Not Acceptable</dt>
+                    <dd>The request specified a non-conforming <var>Accept</var> or <var>Accept-Charset</var> header.</dd>
+                    <dt>415 Unsupported Media Type</dt>
+                    <dd>The request specified a non-conforming <var>Content-Type</var> header.</dd>
+                    <dt>501 Not Implemented</dt>
+                    <dd>The engine does not support the requested operation.</dd>
+                    <dd></dd>
+                </dl>
+
+                <p>An error response may include a message body. If it includes the message body, it must be a plaintext body describing the error.</p>
+
+            </section>
+
+            <section data-requirement="may" data-status="stub">
+
+                <h1 data-ref="sendlocal-access-controls">Response with Access Controls</h1>
+
+            </section>
+
         </section>
-        
-        <section>
-            
-            <h1 data-ref="sendlocal-error">Error Response</h1>
-            
-            <p>If a host will not fulfill the request, it must respond with a 4xx Error or 5xx Error.</p>
-            
-            <p>The following status codes are recommended:</p>
-            
-            <dl>
-                <dt>400 Bad Request</dt>
-                <dd>The request body contained malformed JSON.</dd>
-                <dt>406 Not Acceptable</dt>
-                <dd>The request specified a non-conforming <var>Accept</var> or <var>Accept-Charset</var> header.</dd>
-                <dt>415 Unsupported Media Type</dt>
-                <dd>The request specified a non-conforming <var>Content-Type</var> header.</dd>
-                <dd></dd>
-            </dl>
-            
-            <p>An error response may include a message body. If it includes the message body, it must be a plaintext body describing the error.</p>
-        
+
+        <section data-requirement="must">
+
+            <h1 data-ref="sendlocal-one">SendLocal-One</h1>
+
         </section>
-        
+
+        <section data-requirement="must">
+
+            <h1 data-ref="sendlocal-all">SendLocal-All</h1>
+
+        </section>
+
+        <section data-requirement="may">
+
+            <h1 data-ref="sendlocal-query">SendLocal-Query</h1>
+
+        </section>
+
+        <section data-requirement="may">
+
+            <h1 data-ref="sendlocal-query-simple">SendLocal-Query-Simple</h1>
+
+        </section>
+
     </section>
-        
+
     <section data-requirement="may">
 
-        <h1 data-ref="sendlocal-access-controls">SendLocal with Access Controls</h1>
-
-        <section data-requirement="should">
-
-            <h1 data-ref="outlet">Outlet</h1>
-
-        </section>
+        <h1 data-ref="localstore">LocalStore</h1>
 
     </section>
     
-    <section data-requirement="may" data-status="incomplete">
-        
-        <h1>LocalStore</h1>
-        
-    </section>
-    
     <section data-requirement="may">
         
-        <h1 data-ref="localreceiver-submodule">Submodule: LocalReceiver</h1>
+        <h1 data-ref="localin">LocalIn</h1>
         
         <footer>
             
@@ -172,13 +200,7 @@
         
         <section data-requirement="may" data-status="incomplete">
             
-            <h1>LocalTransform</h1>
-            
-            <section data-requirement="should" data-status="stub">
-                
-                <h1>LocalTransformRules</h1>
-                
-            </section>
+            <h1>AdjInTransform</h1>
             
         </section>
         
@@ -186,7 +208,7 @@
     
     <section data-requirement="may">
         
-        <h1 data-ref="localpublisher-submodule">Submodule: LocalPublisher</h1>
+        <h1 data-ref="localout">LocalOut</h1>
         
         <footer>
             
@@ -220,5 +242,5 @@
         </section>
         
     </section>
-    
+
 </main>
