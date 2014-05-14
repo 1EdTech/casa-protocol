@@ -391,10 +391,6 @@
                "title":"PayloadLocalAttributes",
                "type":"object",
                "properties":{
-                  "originator_id":{
-                     "type":"string",
-                     "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-                  },
                   "timestamp":{
                      "type":"string",
                      "format":"date-time"
@@ -425,7 +421,6 @@
                   }
                },
                "required":[
-                  "originator_id",
                   "timestamp",
                   "uri",
                   "share",
@@ -562,10 +557,6 @@
                "title":"PayloadLocalAttributes",
                "type":"object",
                "properties":{
-                  "originator_id":{
-                     "type":"string",
-                     "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-                  },
                   "timestamp":{
                      "type":"string",
                      "format":"date-time"
@@ -596,7 +587,6 @@
                   }
                },
                "required":[
-                  "originator_id",
                   "timestamp",
                   "uri",
                   "share",
@@ -640,10 +630,6 @@
                "title":"PayloadLocalAttributes",
                "type":"object",
                "properties":{
-                  "originator_id":{
-                     "type":"string",
-                     "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-                  },
                   "timestamp":{
                      "type":"string",
                      "format":"date-time"
@@ -674,7 +660,6 @@
                   }
                },
                "required":[
-                  "originator_id",
                   "timestamp",
                   "uri",
                   "share",
@@ -692,10 +677,6 @@
          "title":"PayloadAbstractAttributes",
          "type":"object",
          "properties":{
-            "originator_id":{
-               "type":"string",
-               "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-            },
             "timestamp":{
                "type":"string",
                "format":"date-time"
@@ -714,7 +695,6 @@
             }
          },
          "required":[
-            "originator_id",
             "timestamp",
             "uri",
             "share",
@@ -726,8 +706,8 @@
          "type":"object",
          "properties":{
             "originator_id":{
-               "type":"string",
-               "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+              "type":"string",
+              "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             },
             "timestamp":{
                "type":"string",
@@ -760,10 +740,6 @@
          "title":"PayloadLocalAttributes",
          "type":"object",
          "properties":{
-            "originator_id":{
-               "type":"string",
-               "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-            },
             "timestamp":{
                "type":"string",
                "format":"date-time"
@@ -794,7 +770,6 @@
             }
          },
          "required":[
-            "originator_id",
             "timestamp",
             "uri",
             "share",
@@ -806,8 +781,8 @@
          "type":"object",
          "properties":{
             "originator_id":{
-               "type":"string",
-               "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+              "type":"string",
+              "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             },
             "timestamp":{
                "type":"string",
@@ -835,10 +810,6 @@
          "title":"PayloadTransitAttributes",
          "type":"object",
          "properties":{
-            "originator_id":{
-               "type":"string",
-               "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-            },
             "timestamp":{
                "type":"string",
                "format":"date-time"
@@ -897,7 +868,6 @@
             }
          },
          "required":[
-            "originator_id",
             "timestamp",
             "uri",
             "share",
@@ -908,10 +878,6 @@
          "title":"PayloadTransitJournalEntry",
          "type":"object",
          "properties":{
-            "originator_id":{
-               "type":"string",
-               "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-            },
             "timestamp":{
                "type":"string",
                "format":"date-time"
@@ -958,7 +924,6 @@
             }
          },
          "required":[
-            "originator_id",
             "timestamp"
          ]
       },
@@ -987,10 +952,6 @@
                "title":"PayloadTransitAttributes",
                "type":"object",
                "properties":{
-                  "originator_id":{
-                     "type":"string",
-                     "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-                  },
                   "timestamp":{
                      "type":"string",
                      "format":"date-time"
@@ -1049,7 +1010,6 @@
                   }
                },
                "required":[
-                  "originator_id",
                   "timestamp",
                   "uri",
                   "share",
