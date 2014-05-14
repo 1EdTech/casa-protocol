@@ -53,7 +53,7 @@
         
         <h1>SendOut</h1>
         
-        <p>The <dfn>SendOut</dfn> operation publishs payloads to other autonomous systems. It responds to an HTTP GET request on the <var>/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a Client Error 4xx or Server Error 5xx.</p>
+        <p>The <dfn>SendOut</dfn> operation publishs payloads to other autonomous systems. It responds to an HTTP GET request on the <var>/out/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a Client Error 4xx or Server Error 5xx.</p>
         
         <section data-status="non-normative">
             
@@ -65,7 +65,7 @@
             
             <h1 data-ref="sendout-request">Processing Request</h1>
             
-            <p data-status="non-normative">The request <var>GET /payloads</var> initiated by the client should include <var>Accept</var>, <var>Accept-Charset</var>, <var>Accept-Encoding</var> and <var>Content-Type</var> headers.</p>
+            <p data-status="non-normative">The request <var>GET /out/payloads</var> initiated by the client should include <var>Accept</var>, <var>Accept-Charset</var>, <var>Accept-Encoding</var> and <var>Content-Type</var> headers.</p>
             
             <p>The following rules should be applied when handling a request:</p>
             
