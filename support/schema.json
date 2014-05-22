@@ -7,19 +7,10 @@
          "type":"object",
          "oneOf":[
             {
-               "$ref":"#/definitions/AdjInOutPeer"
-            },
-            {
                "$ref":"#/definitions/AdjInPeer"
             },
             {
-               "$ref":"#/definitions/AdjInPeerIdentity"
-            },
-            {
                "$ref":"#/definitions/AdjOutPeer"
-            },
-            {
-               "$ref":"#/definitions/AdjOutPeerIdentity"
             },
             {
                "$ref":"#/definitions/LocalPayload"
@@ -67,19 +58,10 @@
          "items":{
             "anyOf":[
                {
-                  "$ref":"#/definitions/AdjInOutPeer"
-               },
-               {
                   "$ref":"#/definitions/AdjInPeer"
                },
                {
-                  "$ref":"#/definitions/AdjInPeerIdentity"
-               },
-               {
                   "$ref":"#/definitions/AdjOutPeer"
-               },
-               {
-                  "$ref":"#/definitions/AdjOutPeerIdentity"
                },
                {
                   "$ref":"#/definitions/LocalPayload"
@@ -125,87 +107,6 @@
       }
    },
    "definitions":{
-      "AdjInOutPeer":{
-         "title":"AdjInOutPeer",
-         "type":"object",
-         "properties":{
-            "name":{
-               "type":"string"
-            },
-            "in":{
-               "title":"AdjInPeerIdentity",
-               "type":"object",
-               "properties":{
-                  "name":{
-                     "type":"string"
-                  },
-                  "secret":{
-                     "type":"string"
-                  },
-                  "hostname":{
-                     "type":"string"
-                  },
-                  "scheme":{
-                     "type":"string",
-                     "default":"https"
-                  },
-                  "path":{
-                     "type":"string",
-                     "default":"",
-                     "pattern":"^$|^[^\/]$|^[^\/]+.*[^\/]$"
-                  },
-                  "port":{
-                     "type":"integer",
-                     "default":443,
-                     "minimum":1,
-                     "maximum":65535
-                  }
-               },
-               "required":[
-                  "name",
-                  "hostname"
-               ]
-            },
-            "out":{
-               "title":"AdjOutPeerIdentity",
-               "type":"object",
-               "properties":{
-                  "name":{
-                     "type":"string"
-                  },
-                  "secret":{
-                     "type":"string"
-                  },
-                  "address":{
-                     "type":"string"
-                  },
-                  "mask":{
-                     "type":"string"
-                  },
-                  "local":{
-                     "type":"boolean",
-                     "anyOf":[
-                        {
-                           "enum":[
-                              false
-                           ]
-                        }
-                     ],
-                     "default":false
-                  }
-               },
-               "required":[
-                  "name",
-                  "local"
-               ]
-            }
-         },
-         "required":[
-            "name",
-            "in",
-            "out"
-         ]
-      },
       "AdjInPeer":{
          "title":"AdjInPeer",
          "type":"object",
@@ -213,78 +114,16 @@
             "name":{
                "type":"string"
             },
-            "in":{
-               "title":"AdjInPeerIdentity",
-               "type":"object",
-               "properties":{
-                  "name":{
-                     "type":"string"
-                  },
-                  "secret":{
-                     "type":"string"
-                  },
-                  "hostname":{
-                     "type":"string"
-                  },
-                  "scheme":{
-                     "type":"string",
-                     "default":"https"
-                  },
-                  "path":{
-                     "type":"string",
-                     "default":"",
-                     "pattern":"^$|^[^\/]$|^[^\/]+.*[^\/]$"
-                  },
-                  "port":{
-                     "type":"integer",
-                     "default":443,
-                     "minimum":1,
-                     "maximum":65535
-                  }
-               },
-               "required":[
-                  "name",
-                  "hostname"
-               ]
-            }
-         },
-         "required":[
-            "name",
-            "in"
-         ]
-      },
-      "AdjInPeerIdentity":{
-         "title":"AdjInPeerIdentity",
-         "type":"object",
-         "properties":{
-            "name":{
-               "type":"string"
-            },
             "secret":{
-               "type":"string"
+              "type":"string"
             },
-            "hostname":{
-               "type":"string"
-            },
-            "scheme":{
-               "type":"string",
-               "default":"https"
-            },
-            "path":{
-               "type":"string",
-                "default":"",
-                "pattern":"^$|^[^\/]$|^[^\/]+.*[^\/]$"
-            },
-            "port":{
-               "type":"integer",
-               "default":443,
-               "minimum":1,
-               "maximum":65535
+            "uri":{
+              "type":"string"
             }
          },
          "required":[
             "name",
-            "hostname"
+            "uri"
          ]
       },
       "AdjOutPeer":{
@@ -294,60 +133,16 @@
             "name":{
                "type":"string"
             },
-            "out":{
-               "title":"AdjOutPeerIdentity",
-               "type":"object",
-               "properties":{
-                  "name":{
-                     "type":"string"
-                  },
-                  "secret":{
-                     "type":"string"
-                  },
-                  "address":{
-                     "type":"string"
-                  },
-                  "mask":{
-                     "type":"string"
-                  },
-                  "local":{
-                     "type":"boolean",
-                     "anyOf":[
-                        {
-                           "enum":[
-                              false
-                           ]
-                        }
-                     ],
-                     "default":false
-                  }
-               },
-               "required":[
-                  "name",
-                  "local"
-               ]
-            }
-         },
-         "required":[
-            "name",
-            "out"
-         ]
-      },
-      "AdjOutPeerIdentity":{
-         "title":"AdjOutPeerIdentity",
-         "type":"object",
-         "properties":{
-            "name":{
-               "type":"string"
-            },
             "secret":{
                "type":"string"
             },
             "address":{
-               "type":"string"
+               "type":"string",
+               "pattern": "^(([01]?[0-9]?[0-9]|2([0-4][0-9]|5[0-5]))\\.){3}([01]?[0-9]?[0-9]|2([0-4][0-9]|5[0-5]))$"
             },
             "mask":{
-               "type":"string"
+               "type":"string",
+               "pattern": "^(([01]?[0-9]?[0-9]|2([0-4][0-9]|5[0-5]))\\.){3}([01]?[0-9]?[0-9]|2([0-4][0-9]|5[0-5]))$"
             },
             "local":{
                "type":"boolean",

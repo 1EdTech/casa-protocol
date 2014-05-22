@@ -156,25 +156,15 @@
                 
                 <h1>Attributes</h1>
                 
-                <p>The <dfn id="AdjOutPeer-name">name</dfn> property must be set and must be unique among all <var>AdjOutPeer</var> objects defined within the system.</p>
+                <p>The <dfn id="AdjOutPeer-name">name</dfn> property must be set and must be unique among all <var>AdjOutPeer</var> objects defined within the system. The <var>name</var> property is used to identify a <var>AdjOutPeer</var>. For example, this property is used when creating/updating/deleting <var>AdjOutPeer</var> entities via the <a href="module/manager#OutletReceiveNode"><var>OutletReceiveNode (Manager Module)</var></a> operation.</p>
                 
-                <p data-status="non-normative">The <var>name</var> property is used to identify a <var>AdjOutPeer</var>. For example, this property is used when creating/updating/deleting <var>AdjOutPeer</var> entities via the <a href="module/manager#OutletReceiveNode"><var>OutletReceiveNode (Manager Module)</var></a> operation.</p>
+                <p>The <var>local</var> property must be set and denotes whether the entity is inter- or intra- system. If this property is <var>true</var>, then the structure is not an <var>AdjOutPeer</var> but rather an <a href="#module/local#outlet"><var>Outlet (Local Module)</var></a>.</p>
                 
-                <p>The <dfn id="AdjOutPeer-out">out</dfn> property must be set and must contain an object with, at minimum, a <var>local</var> property with a value of <var>false</var>.</p>
+                <p>The <var>secret</var> property may be set. If set, the <var>secret</var> property specifies a string that a client must provide when issuing a request.</p>
                 
-                <p data-status="non-normative">The <var>out.local</var> property denotes whether the entity is inter- or intra- system. If this property is <var>true</var>, then the structure is not an <var>AdjOutPeer</var> but rather an <a href="#module/local#outlet"><var>Outlet (Local Module)</var></a>.</p>
+                <p>The <var>address</var> property may be set. If set, the <var>address</var> property must conform to the IP Address format. This property specifies an IP address required for a client to be considered as a match.</p>
                 
-                <p>The <var>out</var> property may contain a <var>secret</var> property with a string value.</p>
-                
-                <p data-status="non-normative">If set, the <var>out.secret</var> property specifies a string that a client must provide when issuing a request.</p>
-                
-                <p>The <var>out</var> property may contain a <var>address</var> property conforming to the IP Address format.</p>
-                
-                <p data-status="non-normative">If set, the <var>out.address</var> property specifies an IP address required for a client to be considered as a match.</p>
-                
-                <p>The <var>out</var> property may contain a <var>mask</var> property conforming to the IP Address format. The <var>mask</var> property should not be set if the <var>address</var> property is not set.</p>
-                
-                <p data-status="non-normative">If set, the <var>out.mask</var> property specifies a wildcard mask applied to <var>out.address</var>, where any request from a client within the specified range must be considered as matching this structure.</p>
+                <p>The <var>mask</var> property may be set. If set, <var>mask</var> property must conform to the IP Address format. This property specifies a wildcard mask applied to <var>address</var>, where any request from a client within the specified range must be considered as matching this structure. This property should not be set if the <var>address</var> property is not set.</p>
                 
             </section>
             
@@ -185,15 +175,15 @@
                 <p>For each <var>AdjOutPeer</var>, the following routine should be used to determine a match:</p>
                 
                 <ol>
-                    <li>If <var>AdjOutPeer.out.secret</var> is specified but the request does not include a <var>secret</var> or the request <var>secret</var> does not match, <strong>not a match</strong>.
-                    <li>If <var>AdjOutPeer.out.address</var> is not specified, <strong>match</strong>.</li>
-                    <li>Unless <var>AdjOutPeer.out.mask</var> is specified:
+                    <li>If <var>AdjOutPeer.secret</var> is specified but the request does not include a <var>secret</var> or the request <var>secret</var> does not match, <strong>not a match</strong>.
+                    <li>If <var>AdjOutPeer.address</var> is not specified, <strong>match</strong>.</li>
+                    <li>Unless <var>AdjOutPeer.mask</var> is specified:
                         <ol>
-                            <li>If <var>AdjOutPeer.out.address</var> equals the the requesting client IP address, <strong>match</strong>.</li>
+                            <li>If <var>AdjOutPeer.address</var> equals the the requesting client IP address, <strong>match</strong>.</li>
                             <li>Otherwise, <strong>not a match.</strong></li>
                         </ol>
                     </li>
-                    <li>Apply <var>AdjOutPeer.out.mask</var> as a subnet mask over <var>AdjOutPeer.out.address</var> and the requesting client IP address:
+                    <li>Apply <var>AdjOutPeer.mask</var> as a subnet mask over <var>AdjOutPeer.out.address</var> and the requesting client IP address:
                         <ol>
                             <li>If the addresses are equal once the mask is applied, <strong>match</strong>.</li>
                             <li>Otherwise, <strong>not a match.</strong></li>

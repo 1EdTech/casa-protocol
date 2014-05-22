@@ -197,7 +197,7 @@
                 <h1>Usage Example</h1>
 
                 <pre data-lang="ruby"># Assume: adjInPeers array of AdjInPeer objects
-# Assume: Net::HTTP::Get and Net::HTTP classes
+# Assume: URI, Net::HTTP::Get and Net::HTTP classes
 # Assume: process_response(response) method that:
 #  - validates response
 #  - runs AdjInTranslate -> AdjInSquash -> AdjInFilter
@@ -205,24 +205,23 @@
 
 adjInPeers.each { |peer|
 
-  hostname  = peer['out']['hostname']
-  scheme    = peer['out'].include?('scheme') ? peer['out']['scheme'] : 'https'
-  path      = peer['out'].include?('path') ? peer['out']['path'] : ''
-  port      = peer['out'].include?('port') ? peer['out']['port'] : ( scheme == 'https' ? 443 : 80 )
+  uri = URI(peer.uri)
 
-  request = Net::HTTP::Get.new(path+"/out/payloads")
+  Net::HTTP.start(uri.host, uri.port) do |http|
 
-  request.add_field('Accept', 'application/json')
-  request.add_field('Accept-Charset', 'utf-8')
-  request.add_field('Content-Type', 'application/json')
+    request = Net::HTTP::Get.new("#{uri}/out/payloads")
 
-  if peer['out'].include? 'secret'
-    request.body = {'secret'=>secret}.to_json
+    request.add_field('Accept', 'application/json')
+    request.add_field('Accept-Charset', 'utf-8')
+    request.add_field('Content-Type', 'application/json')
+
+    if peer.secret
+      request.body = {'secret'=>peer.secret}.to_json
+    end
+
+    process_response(http.request(request))
+
   end
-
-  response = Net::HTTP.new(hostname, port).request(request)
-
-  process_response(response)
 
 }</pre>
 
