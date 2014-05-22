@@ -260,6 +260,8 @@
                 <dd>Stores a new record in persistence; must not create a record if any record already exists in persistence with the same <var>identity</var> as the new record. Payloads passed to <var>create</var> must either be originated locally or be passed through <var>AdjInTransform.</var></dd>
                 <dt data-ref='localstore-get'>LocalStore::get(PayloadIdentity)</dt>
                 <dd>Gets a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method, or if no identity is passed, returns all payloads; must return false if identity was specified and no payload exists matching identity.</dd>
+                <dt data-ref='localstore-get_all'>LocalStore::get_all()</dt>
+                <dd>Gets all records from persistence as an array of objects; must return an empty array if no payloads exist in persistence.</dd>
             </dl>
 
             <p data-status='non-normative'>This structure will not store two payloads with identical <var>identity</var> sections.</p>
@@ -279,6 +281,10 @@
                 <dd>Updates an existing payload record in persistence; must identify the payload to update by finding an existing record in persistence with the same <var>identity</var> attribute.</dd>
                 <dt data-ref='localstore-get'>LocalStore::delete(PayloadIdentity)</dt>
                 <dd>Deletes a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method.</dd>
+                <dt data-ref='localstore-get_query'>LocalStore::get_query(string)</dt>
+                <dd>Filtering by a string passed as an argument, gets a subset of records from persistence as an array of objects; must return an empty array if no payloads exist in persistence.</dd>
+                <dt data-ref='localstore-get_search'>LocalStore::get_search(mixed)</dt>
+                <dd>Filtering by query object as defined by the particular storage method, gets a subset of records from persistence as an array of objects; must return an empty array if no payloads exist in persistence.</dd>
             </dl>
 
             <p>To change the values of a payload not originated from the engine itself, use <a href='#adjintransform'><var>AdjInTransform</var></a>. A payload not originated from the engine itself must never be updated directly within this structure.</p>

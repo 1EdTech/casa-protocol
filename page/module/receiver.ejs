@@ -403,6 +403,8 @@ end</pre>
                 <dd>Stores a new record in persistence; must not create a record if any record already exists in persistence with the same <var>identity</var> as the new record.</dd>
                 <dt data-ref='adjinstore-get'>AdjInStore::get(PayloadIdentity)</dt>
                 <dd>Gets a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method, or if no identity is passed, returns all payloads; must return false if identity was specified and no payload exists matching identity.</dd>
+                <dt data-ref='adjinstore-get_all'>AdjInStore::get_all()</dt>
+                <dd>Gets all records from persistence as an array of objects; must return an empty array if no payloads exist in persistence.</dd>
             </dl>
         
             <p data-status='non-normative'>This structure will not store two payloads with identical <var>identity</var> sections.</p>
