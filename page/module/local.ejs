@@ -41,6 +41,7 @@
         <p>The key word <strong>property</strong> (alternatively: <strong>attribute</strong> or <strong>section</strong>) in this document is to be interpreted as described by <strong><a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf" rel="external">ECMA-262 Edition 5.1</a></strong>.</p>
         <p>The key words <strong>string</strong>, <strong>array</strong>, <strong>object</strong>, <strong>name/value pair</strong> (alternatively: <strong>key-value pair</strong>) and <strong>JavaScript Object Notation</strong> (alternatively: <strong>JSON</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4627.txt" rel="external">RFC 4627</a></strong> ["The application/json Media Type for JavaScript Object Notation (JSON)"].</p>
         <p>The key word <strong>JSON Schema</strong> in this document is to be interpreted as a JSON format defined by the <strong><a href="http://json-schema.org/latest/json-schema-core.html" rel="external">json-schema-core</a></strong> ["JSON Schema: core definitions and terminology"] and <strong><a href="http://json-schema.org/latest/json-schema-validation.html" rel="external">json-schema-validation</a></strong> ["JSON Schema: interactive and non interactive validation"] specifications.</p>
+        <p data-status="incomplete">The key word <strong>search string</strong> in this document is to be interpreted as</p>
         
     </section>
     
@@ -77,6 +78,12 @@
                 <dd>If the client includes a request body, it must be a JSON-formatted object of key-value pairs. If the client sends any other body content, a 4xx Error must be thrown unless the server understands and processes the body data based on non-standard <var>Content-Type</var> header sent by the client.</dd>
             </dl>
 
+            <section data-requirement="should" data-status="stub">
+
+                <h1 data-ref="sendlocal-cors">Cross-Origin Resource Sharing</h1>
+
+            </section>
+
             <section data-requirement="may" data-status="stub">
 
                 <h1 data-ref="sendlocal-access-controls">Request with Access Controls</h1>
@@ -95,13 +102,15 @@
 
                 <p>If a host will fulfill the request, it must respond with a <var>200 OK</var> response status.</p>
 
-                <p>A response body of a <var>200 OK</var> response must be of a format stipulated by one of the request methods: <var><a href="#sendlocal-one">SendLocal-One</a></var>, <var><a href="#sendlocal-all">SendLocal-All</a></var>, <var><a href="#sendlocal-query">SendLocal-Query</a></var> and <var><a href="#sendlocal-query-simple">SendLocal-Query-Simple</a></var>. In all cases, the response must be JSON-formatted and use the utf-8 charset. Consequently, this response should include <var>Content-Type: application/json;charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
+                <p>A response body of a <var>200 OK</var> response must be of a format stipulated by one of the request methods: <var><a href="#sendlocal-one">SendLocal-One</a></var>, <var><a href="#sendlocal-all">SendLocal-All</a></var> and <var><a href="#sendlocal-query">SendLocal-Query</a></var>. In all cases, the response must be JSON-formatted and use the utf-8 charset. Consequently, this response should include <var>Content-Type: application/json;charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
 
             </section>
 
             <section>
 
-                <h1>Error Response</h1><p>If a host will not fulfill the request, it must respond with a 4xx Error or 5xx Error.</p>
+                <h1 data-ref="sendlocal-response-error">Error Response</h1>
+
+                <p>If a host will not fulfill the request, it must respond with a 4xx Error or 5xx Error.</p>
 
                 <p>The following status codes are recommended:</p>
 
@@ -112,9 +121,6 @@
                     <dd>The request specified a non-conforming <var>Accept</var> or <var>Accept-Charset</var> header.</dd>
                     <dt>415 Unsupported Media Type</dt>
                     <dd>The request specified a non-conforming <var>Content-Type</var> header.</dd>
-                    <dt>501 Not Implemented</dt>
-                    <dd>The engine does not support the requested operation.</dd>
-                    <dd></dd>
                 </dl>
 
                 <p>An error response may include a message body. If it includes the message body, it must be a plaintext body describing the error.</p>
@@ -133,11 +139,85 @@
 
             <h1 data-ref="sendlocal-one">SendLocal-One</h1>
 
+            <p>The <dfn>SendLocal-One</dfn> operation publishes a payload identified by an <var>(APP_UID, ORIGINATOR_UUID)</var> tuple to local outlets within the autonomous system.</p>
+
+            <section>
+
+                <h1>Request</h1>
+
+                <p>This operation responds to an HTTP GET request on the <var>/local/payloads/ORIGINATOR_UUID/APP_UID</var> route, where <dfn>ORIGINATOR_UUID</dfn> is the UUID of the engine that introduced the payload to the network and <dfn>APP_UID</dfn> is the UID of the app in the context of the originating engine.</p>
+
+            </section>
+
+            <section>
+
+                <h1>Success Response</h1>
+
+                <p>If the engine will fulfill the request, it must reply with a <var>200 Success</var> response with a JSON-formatted message body containing a <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> object.</p>
+
+            </section>
+
+            <section>
+
+                <h1>Error Response</h1>
+
+                <p>If the engine will not fulfill the request, it must reply with a <var>Client Error 4xx</var> or a <var>Server Error 5xx</var>. In addition to the status codes recommended in <a href="#sendlocal-response-error">SendLocal: Error Response</a>, it should throw:</p>
+
+                <dl>
+                    <dt>400 Bad Request</dt>
+                    <dd>The request path contains a malformed <var>(APP_UID, ORIGINATOR_UUID)</var> tuple.</dd>
+                    <dt>404 Not Found</dt>
+                    <dd>No payload exists identified by the <var>(APP_UID, ORIGINATOR_UUID)</var> tuple.</dd>
+                </dl>
+
+            </section>
+
         </section>
 
         <section data-requirement="must">
 
             <h1 data-ref="sendlocal-all">SendLocal-All</h1>
+
+            <p>The <dfn>SendLocal-All</dfn> operation publishes all payloads to local outlets within the autonomous system.</p>
+
+            <section>
+
+                <h1>Request</h1>
+
+                <p>This operation responds to an HTTP GET request on the <var>/local/payloads</var> route.</p>
+
+                <section data-requirement="may">
+
+                    <h1 data-ref="sendlocal-all-query">Query Parameter</h1>
+
+                    <p>A request to <var>/local/payloads</var> may include a <dfn>query</dfn> parameter passed as a GET parameter or in the JSON-formatted request body. If this parameter is passed, the engine should regard it as a search string in order to return a subset of results. If this parameter is passed but the engine does not support it, the engine must reply with a <var>5xx Server Error</var>.</p>
+
+                    <p data-status="non-normative">The CASA protocol specifies support for a <var>query</var> parameter containing a search string, but it does not specify how the engine shall perform the search.</p>
+
+                </section>
+
+            </section>
+
+            <section>
+
+                <h1>Success Response</h1>
+
+                <p>If the engine will fulfill the request, it must reply with a <var>200 Success</var> response with a JSON-formatted message body containing an array of <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects.</p>
+
+            </section>
+
+            <section>
+
+                <h1>Error Response</h1>
+
+                <p>If the engine will not fulfill the request, it must reply with a <var>Client Error 4xx</var> or a <var>Server Error 5xx</var>. In addition to the status codes recommended in <a href="#sendlocal-response-error">SendLocal: Error Response</a>, it should throw:</p>
+
+                <dl>
+                    <dt>501 Not Implemented</dt>
+                    <dd>The engine does not support the <var>query</var> parameter.</dd>
+                </dl>
+
+            </section>
 
         </section>
 
@@ -145,11 +225,17 @@
 
             <h1 data-ref="sendlocal-query">SendLocal-Query</h1>
 
-        </section>
+            <p>The <dfn>SendLocal-Query</dfn> operation publishes a subset of payloads to local outlets within the autonomous system. The subset published is defined by a search query written in a query language defined in the request URI.</p>
 
-        <section data-requirement="may">
+            <section>
 
-            <h1 data-ref="sendlocal-query-simple">SendLocal-Query-Simple</h1>
+                <h1>Request</h1>
+
+                <p>This operation responds to an HTTP GET request on the <var>/local/payloads/_{TYPE}</var> route, where the value of <var>{TYPE}</var> is a query language supported by the engine and the request body is formatted in the specified query language.</p>
+
+                <p data-status="non-normative">For example, if an engine supports Elastic Search, a <var>GET /local/payloads/_elasticsearch</var> request may be issued with a request body such as <code>{"query":{"match_phrase":{"attributes.use.tags":"mobile"}},"size":20}</code>.</p>
+
+            </section>
 
         </section>
 
@@ -158,6 +244,48 @@
     <section data-requirement="may">
 
         <h1 data-ref="localstore">LocalStore</h1>
+
+        <p>The <dfn>LocalStore</dfn> structure is a persistent data store that contains <a href='module/payloads#localpayload'><var>LocalPayload</var> (Payload Module)</a> objects. A payload stored in this structure must have been processed through <a href='#adjintransform'><var>AdjInTransform</var></a> or be created locally.</p>
+
+        <p data-status="non-normative">Except when originated locally, payloads entered into this structure come from <a href="#module/receiver#adjinstore"><var>AdjInStore</var> (Receiver Module)</a> after passing through <a href='#adjintransform'><var>AdjInTransform</var></a>.</p>
+
+        <section data-requirement='must'>
+
+            <h1>Required Operations</h1>
+
+            <p>This structure must support two operations:</p>
+
+            <dl>
+                <dt data-ref='localstore-create'>LocalStore::create(LocalPayload)</dt>
+                <dd>Stores a new record in persistence; must not create a record if any record already exists in persistence with the same <var>identity</var> as the new record. Payloads passed to <var>create</var> must either be originated locally or be passed through <var>AdjInTransform.</var></dd>
+                <dt data-ref='localstore-get'>LocalStore::get(PayloadIdentity)</dt>
+                <dd>Gets a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method, or if no identity is passed, returns all payloads; must return false if identity was specified and no payload exists matching identity.</dd>
+            </dl>
+
+            <p data-status='non-normative'>This structure will not store two payloads with identical <var>identity</var> sections.</p>
+
+            <p>The <var>create</var> operation must not be used in any way except as defined by this protocol and its modules.</p>
+
+        </section>
+
+        <section data-requirement='should'>
+
+            <h1>Additional Operations</h1>
+
+            <p>This structure should support two additional operations:</p>
+
+            <dl>
+                <dt data-ref='localstore-update'>LocalStore::update(LocalPayload)</dt>
+                <dd>Updates an existing payload record in persistence; must identify the payload to update by finding an existing record in persistence with the same <var>identity</var> attribute.</dd>
+                <dt data-ref='localstore-get'>LocalStore::delete(PayloadIdentity)</dt>
+                <dd>Deletes a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method.</dd>
+            </dl>
+
+            <p>To change the values of a payload not originated from the engine itself, use <a href='#adjintransform'><var>AdjInTransform</var></a>. A payload not originated from the engine itself must never be updated directly within this structure.</p>
+
+            <p>The <var>delete</var> operation should be used to prune out stale entries.</p>
+
+            <p>The <var>update</var> and <var>delete</var> operations must not be used in any way except as defined by this protocol and its modules.</p>
 
     </section>
     
@@ -192,15 +320,25 @@
             
         </footer>
         
-        <section data-requirement="must" data-status="incomplete">
+        <section data-requirement="must">
             
             <h1>AdjInStoreToLocalStore</h1>
-            
+
+            <p>The <dfn>AdjInStoreToLocalStore</dfn> data path delivers payloads from the <a href="module/receiver#adjinstore"><var>AdjInStore</var> (Receiver Module)</a> into <a href="#localstore"><var>LocalStore</var></a>.</p>
+
+            <p>This operation may simply copy payloads from <var>AdjInStore</var> to <var>LocalStore</var> or it may pass payloads from <var>AdjInStore</var> through <var>AdjInTransform</var> before storing them in <var>LocalStore</var>.</p>
+
         </section>
         
-        <section data-requirement="may" data-status="incomplete">
+        <section data-requirement="may">
             
             <h1>AdjInTransform</h1>
+
+            <p>The <dfn>AdjInTransform</dfn> operation makes changes to all payloads received from peers. This operation may be performed over any payload from <var>AdjInStore</var>. For transformations performed, it may update the journal.</p>
+
+            <p data-status="non-normative">Updating the journal during <var>AdjInTransform</var> only affects payloads locally and will not propagate to peers. Consequently, it is not required. To make changes to payloads that propagate beyond the node, use <a href="module/relay#adjouttransform"><var>AdjOutTransform</var> (Relay Module)</a> instead.</p>
+
+            </section>
             
         </section>
         
@@ -235,10 +373,26 @@
             
         </footer>
         
-        <section data-requirement="must" data-status="incomplete">
+        <section data-requirement="must">
             
             <h1>LocalStoreToAdjOutStore</h1>
-            
+
+            <p>The <dfn>LocalStoreToAdjOutStore</dfn> data path delivers payloads originated locally from <a href="#localstore"><var>LocalStore</var></a> into <a href="#localstore"><var>AdjOutStore</var></a>.</p>
+
+            <p>The data path for this operation:</p>
+
+            <ol>
+                <li>
+                    For each payload with <var>identity.originator_id</var> equal to the engine's ID:
+                    <ol>
+                        <li>Must transform attributes via <a href="module/relay#adjouttransform"><var>AdjOutTransform</var></a>; may transform with custom rules;</li>
+                        <li>May store within <a href="#adjoutstore">AdjOutStore</a></li>
+                    </ol>
+                </li>
+            </ol>
+
+            <p>This operation must not copy any payloads that did not originate from this engine.</p>
+
         </section>
         
     </section>
