@@ -1,41 +1,34 @@
 # CASA Protocol
 
-The Community App Sharing Architecture (CASA) provides a mechanism by which 
-organizations may share and propagate information about URIs (most commonly web 
-applications) throughout a network of peers in an automated fashion with 
-support for heterogeneous and asymmetric peering and trust models.
+The [Community App Sharing Architecture (CASA)](http://imsglobal.github.io/casa) provides a mechanism for
+discovering and sharing metadata about web resources such as websites, mobile
+apps and LTI tools. It models real-world decision-making through extensible
+attributes, filter and transform operations, flexible peering relationships,
+etc.
 
-In a set of Protocol Modules and Attribute Specifications, the CASA Protocol 
-defines the communication APIs and data formats that enable the architecture.
-
-An online version of the CASA Protocol (Working Draft):
-
-> http://appsharing.github.io/casa-protocol
-
-This repository contains the sources for the CASA Protocol.
+The CASA Protocol defines a set of conformance modules for communication APIs
+and data formats that enable the architecture.
 
 ## Status
 
-The CASA Protocol is **under development** and **not intended for use** at this 
+The CASA Protocol is **under development** and **not intended for use** at this
 time.
 
 ## License
 
-The CASA Protocol is **open-source** and licensed under the BSD 3-clause 
+The CASA Protocol is **open-source** and licensed under the Apache 2 License
 license. The full text of the license may be found in the `LICENSE` file.
 
 ## Credits
 
-The CASA Protocol is a collaboration between the University of California and 
-the IMS Global Learning Consortium.
-
 ##### Editor
 
-* Eric Bollens (University of California, Los Angeles)
+* Bollens, Eric (University of California, Los Angeles)
 
 ##### Contributors
 
-* Eric Bollens (University of California, Los Angeles)
-* Rosemary Rocchio (University of California, Los Angeles)
-* Edward Sakabu (University of California, Los Angeles)
-
+* Bollens, Eric (University of California, Los Angeles)
+* Mattson, Lisa (IMS Global Learning Consortium, Inc.)
+* Rocchio, Rosemary (University of California, Los Angeles)
+* Sakabu, Edward (University of California, Los Angeles)
+* Vickers, Stephen (IMS Global Learning Consortium, Inc.)
