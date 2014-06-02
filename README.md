@@ -6,7 +6,7 @@ apps and LTI tools. It models real-world decision-making through extensible
 attributes, filter and transform operations, flexible peering relationships,
 etc.
 
-The CASA Protocol defines a set of conformance modules for communication APIs
+The [CASA Protocol](http://imsglobal.github.io/casa-protocol) defines a set of conformance modules for communication APIs
 and data formats that enable the architecture.
 
 ## Status
