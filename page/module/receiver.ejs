@@ -111,6 +111,23 @@
                 <dt><var>Content-Type: application/json;charset=utf-8</var></dt>
                 <dd>The client should send this header if the request includes a body section, although it may be implied by omission. The client must not send any other <var>Content-Type</var> header.</dd>
             </dl>
+            <section data-requirement="may">
+
+                <h1 data-ref="receivein-access-controls">Access Control</h1>
+
+                <p>A host may refuse to serve a <var>GET /out/payloads</var> request unless certain access criteria are met. If the request from a client does not meet the host's access criteria, the HTTP response shall be a 4xx Error or 5xx Error and should be a 403 Error.</p>
+
+                <section data-status='non-normative'>
+
+                    <p><a href='module/publisher#sendout-access-controls'>SendOut - Access Controls (Publisher Module)</a> specifies two kinds of access control: <var>address-based</var> and <var>secret-based</var>. The former requires that the client match a certain IP address or range, while the latter requires that the client provide a pre-negotiated <var>secret</var> property via either the query string or a JSON-encoded request body.</p>
+
+                </section>
+
+                <p>If the client has negotiated a <var>secret</var> parameter with the host, it must send this property either by the name <var>secret</var> within the query string or as the property <var>secret</var> within a JSON-encoded object in the request body.</p>
+
+                <p data-status="non-normative">The client should send a <var>Content-Type: application/json</var> header with the request if it includes a <var>secret</var> property within the request body.</p>
+
+            </section>
             
         </section>
         
@@ -158,77 +175,6 @@
             
         </section>
         
-    </section>
-        
-    <section data-requirement="may">
-
-        <h1 data-ref="receivein-access-controls">ReceiveIn with Access Controls</h1>
-
-        <p>A host may refuse to serve a <var>GET /out/payloads</var> request unless certain access criteria are met. If the request from a client does not meet the host's access criteria, the HTTP response shall be a 4xx Error or 5xx Error and should be a 403 Error.</p>
-        
-        <section data-status='non-normative'>
-            
-            <p><a href='module/publisher#sendout-access-controls'>SendOut with Access Controls (Publisher Module)</a> specifies two kinds of access control: <var>address-based</var> and <var>secret-based</var>. The former requires that the client match a certain IP address or range, while the latter requires that the client provide a pre-negotiated <var>secret</var> property via either the query string or a JSON-encoded request body.</p>
-            
-        </section>
-        
-        <p>If the client has negotiated a <var>secret</var> parameter with the host, it must send this property either by the name <var>secret</var> within the query string or as the property <var>secret</var> within a JSON-encoded object in the request body.</p>
-        
-        <p data-status="non-normative">The client should send a <var>Content-Type: application/json</var> header with the request if it includes a <var>secret</var> property within the request body.</p>
-
-        <section data-requirement="should">
-
-            <h1 data-ref="adjoutpeer">AdjInPeer</h1>
-
-            <p>The <dfn>AdjInpeer</dfn> structure may be implemented to define access requirements.</p>
-            
-            <p data-status="non-normative">This structure is useful when managing a number of in-bound peers that the host queries. This structure is implemented for access controls in the <a href="module/manager#OutletReceiveNode"><var>OutletReceiveNode (Manager Module)</var></a> operation.</p>
-
-            <section>
-                
-                <h1>Schema</h1>
-            
-                <pre data-schema="AdjInPeer"></pre>
-            
-            </section>
-            
-            <section data-status='non-normative'>
-                    
-                <h1>Usage Example</h1>
-
-                <pre data-lang="ruby"># Assume: adjInPeers array of AdjInPeer objects
-# Assume: URI, Net::HTTP::Get and Net::HTTP classes
-# Assume: process_response(response) method that:
-#  - validates response
-#  - runs AdjInTranslate -> AdjInSquash -> AdjInFilter
-#  - optionally stores in AdjInStore
-
-adjInPeers.each { |peer|
-
-  uri = URI(peer.uri)
-
-  Net::HTTP.start(uri.host, uri.port) do |http|
-
-    request = Net::HTTP::Get.new("#{uri}/out/payloads")
-
-    request.add_field('Accept', 'application/json')
-    request.add_field('Accept-Charset', 'utf-8')
-    request.add_field('Content-Type', 'application/json')
-
-    if peer.secret
-      request.body = {'secret'=>peer.secret}.to_json
-    end
-
-    process_response(http.request(request))
-
-  end
-
-}</pre>
-
-            </section>
-
-        </section>
-
     </section>
     
     <section data-requirement="must">
