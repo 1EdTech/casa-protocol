@@ -7,7 +7,8 @@ attributes, filter and transform operations, flexible peering relationships,
 etc.
 
 The CASA Protocol defines a set of conformance modules for communication APIs
-and data formats that enable the architecture.
+and data formats that enable the architecture. [Click here](http://imsglobal.github.io/casa-protocol) to view an
+online version of the protocol.
 
 ## Status
 
