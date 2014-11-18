@@ -67,17 +67,143 @@
         
     </section>
     
+    <section data-requirement="must">
+        
+        <h1>TransitPayload</h1>
+        
+        <section>
+            
+            <h1 data-ref="transitpayload-components">Components</h1>
+        
+            <section data-requirement="must">
+
+                <h1>TransitPayload.identity</h1>
+                
+                <p>The <var>identity</var> property must be set and must conform to the <a href="module/payload#payloadidentity"><var>PayloadIdentity</var></a> definition.</p>
+
+            </section>
+
+            <section data-requirement="must">
+
+                <h1>TransitPayload.original</h1>
+                
+                <p>The <var>original</var> property must be set and must conform to the <a href="module/payload#payloadtransitattributes"><var>PayloadTransitAttributes</var></a> definition.</p>
+                
+                <section data-status="non-normative">
+                    
+                    <p>When converting from <var>LocalPayload</var> to <var>TransitPayload</var>, if the payload originated within the system, it may not include an <var>original</var> property. If this is the case, then the <var>LocalPayload.attributes</var> property should be renamed to the <var>original</var> property as part of the conversion.</p>
+                    
+                </section>
+
+            </section>
+
+            <section data-requirement="may">
+
+                <h1>TransitPayload.journal</h1>
+                
+                <p>The <var>journal</var> property may be set. If it is set, it must be an array of zero or more objects conforming to the <a href="module/payload#payloadtransitjournalentry"><var>PayloadTransitJournalEntry</var></a> definition.</p>
+
+            </section>
+
+            <section data-requirement="may">
+
+                <h1>TransitPayload.attributes</h1>
+                
+                <p>The <var>attributes</var> property may be set. If it is set, it must conform to the <a href="module/payload#payloadtransitattributes"><var>PayloadTransitAttributes</var></a> definition.</p>
+                
+                <section data-status="non-normative">
+                    
+                    <p>The <var>attributes</var> property may be regarded by the <a href="module/receiver">Receiver Module</a>, or the <a href="module/receiver">Receiver Module</a> may compute the attributes structure via the <a href="module/receiver#adjinsquash">AdjInSquash</a> operation.</p>
+                    
+                </section>
+
+            </section>
+            
+        </section>
+        
+        <section>
+            
+            <h1 data-ref="transitpayload-schema">Schema</h1>
+
+            <pre data-schema="TransitPayload"></pre>
+            
+        </section>
+        
+    </section>
+    
+    <section data-requirement="must">
+        
+        <h1>LocalPayload</h1>
+                
+        <p>This structure should be used within the boundaries of a system, but this structure must not be conveyed between systems.</p>
+        
+        <section>
+            
+            <h1 data-ref="localpayload-components">Components</h1>
+        
+            <section data-requirement="must">
+
+                <h1>LocalPayload.identity</h1>
+                
+                <p>The <var>identity</var> property must be set and must conform to the <a href="module/payload#payloadidentity"><var>PayloadIdentity</var></a> definition.</p>
+
+            </section>
+
+            <section data-requirement="should">
+
+                <h1>LocalPayload.original</h1>
+                
+                <p>The <var>original</var> property should be set. If it is set, it must conform to the <a href="module/payload#payloadlocalattributes"><var>PayloadLocalAttributes</var></a> definition.</p>
+
+            </section>
+
+            <section data-requirement="may">
+
+                <h1>LocalPayload.journal</h1>
+                
+                <p>The <var>original</var> property may be set. If it is set, it must be an array of zero or more objects conforming to the <a href="module/payload#payloadlocaljournalentry"><var>PayloadLocalJournalEntry</var></a> definition.</p>
+
+            </section>
+
+            <section data-requirement="must">
+
+                <h1>LocalPayload.attributes</h1>
+                
+                <p>The <var>attributes</var> property must be set and must conform to the <a href="module/payload#payloadlocalattributes"><var>PayloadLocalAttributes</var></a> definition.</p>
+
+            </section>
+                
+            <section data-status="non-normative">
+                
+                <h1>Reduced Structure</h1>
+
+                <p>The <var>original</var> and <var>journal</var> properties, even if known, may not be sent via the <a href="module/local#sendlocal">SendLocal (Local Module)</a> operation to an outlet. This is because, unless the implementation decides otherwise, the <var>original</var> and <var>journal</var> properties are not necessarily relevant within the context of the system after the <a href="module/receiver#adjinsquash">AdjInSquash (Receiver Module)</a> operation computes the <var>attributes</var> property.</p>
+
+            </section>
+            
+        </section>
+        
+        <section>
+            
+            <h1 data-ref="localpayload-schema">Schema</h1>
+
+            <pre data-schema="LocalPayload"></pre>
+            
+        </section>
+        
+    </section>
+    
     <section>
         
         <h1>Payload Sub-structures</h1>
     
-        <section data-requirement="must">
+        <section>
 
             <h1>PayloadIdentity</h1>
             
             <p>The <dfn>PayloadIdentity</dfn> structure is a compound key containing an <var>originator_id</var> UUID property, corresponding to the UUID of the system that created the payload (the "originator"), and an <var>id</var> UID property, corresponding to the logical entity represented by the payload.</p>
             
-            <p data-status="non-normative">The unchanging nature of the <var>PayloadIdentity</var> allows payloads to be introduced into the network that modify any attribute of a payload, including its URI. This ability to modify the attributes of a logical entity is important in the case that the properties of local entity change over its lifetime.</p>
+            <p data-status="non-normative">The unchanging nature of the <var>PayloadIdentity</var> allows the originator to introduce new payloads into the network that modify any attribute of the logical entity, including its URI. This ability to modify the attributes of a logical entity is important in the case that the properties of a logical entity change over its lifetime.</p>
             
             <section>
 
@@ -85,7 +211,7 @@
 
                 <p>The <dfn id="PayloadIdentity-originator_id"><var>originator_id</var></dfn> property must be the UUID of the system that created the payload. The UUID must conform to RFC 4122, and it is recommended that a system sign all payloads it creates with the same <var>originator_id</var> value.</p>
 
-                <p>The <dfn id="PayloadIdentity-id"><var>id</var></dfn> property must be a string that uniquely identifies the local entity represented by the payload among all logical entities created by the system.</p>
+                <p>The <dfn id="PayloadIdentity-id"><var>id</var></dfn> property must be a string that uniquely identifies the logical entity represented by the payload among all logical entities created by the same originator.</p>
 
             </section>
         
@@ -99,7 +225,7 @@
 
         </section>
 
-        <section data-requirement="should">
+        <section>
 
             <h1>PayloadAttributes</h1>
             
@@ -109,11 +235,11 @@
             
                 <p>Attributes are used in a number of contexts: the <var>original</var> section of a payload contains metadata about a payload at the time the payload was created; the <var>journal</var> section of a payload contains an array of entries that specify modifications made to attributes during the payload's lifetime; and the <var>attributes</var> section of a payload contains metadata about a payload once the <var>original</var> and <var>journal</var> sections have been parsed.</p>
 
-                <p>An attributes section has a number of properties. All properties besides <var>use</var> and <var>require</var> must be specified on any attributes object. The <var>use</var> property is an optional object that, if set, contains key-value pairs that may be regarded by a system. The <var>require</var> property is an optional object that, if set, contains key-value pairs that must be regarded by a system. During inter-system communication, the keys of the <var>use</var> and <var>require</var> objects must be UUIDs to ensure for long-term extensibility, but within the boundaries of a system, they may be mapped to human-readable equivalents.</p>
+                <p>An attributes section has a number of properties. The <var>use</var> property is an optional object that, if set, contains key-value pairs that may be regarded by a system. The <var>require</var> property is an optional object that, if set, contains key-value pairs that must be regarded by a system. During inter-system communication, the keys of the <var>use</var> and <var>require</var> objects must be UUIDs to ensure for long-term extensibility, but within the boundaries of a system, they may be mapped to human-readable equivalents.</p>
                 
             </section>
 
-            <section data-requirement="must">
+            <section>
 
                 <h1 data-ref="PayloadAbstractAttributes">Abstract</h1>
             
@@ -125,9 +251,9 @@
 
                     <p>The <dfn id="PayloadAbstractAttributes.timestamp">timestamp</dfn> property must be set as a timestamp conforming to RFC 3339.</p>
 
-                    <p data-status="non-normative">The <var>timestamp</var> attribute denotes when the attributes section was created. When contained within the payload <var>original</var> section, it denotes when the payload was introduced into the network; when contained within the <var>attributes</var> section, it denotes the timestamp of the last entry in the journal that affected changes to the computed attributes section.</p>
+                    <p data-status="non-normative">The <var>timestamp</var> attribute denotes when the attributes section was created. When contained within the payload <var>original</var> section, it denotes when the payload was introduced into the network; when contained within the <var>attributes</var> section, it denotes the timestamp of the last entry in the journal that affected changes to the computed attributes section, or else the same timestamp as the <var>original</var> section if there was no journal or no entries in the journal affected changes to the attributes.</p>
 
-                    <p>The <dfn id="PayloadAbstractAttributes.uri">uri</dfn> property must be set and must define the URI of the logical entity represented by the payload.</p>
+                    <p>The <dfn id="PayloadAbstractAttributes.uri">uri</dfn> property must be set and defines the URI of the logical entity represented by the payload.</p>
 
                     <p>The <dfn id="PayloadAbstractAttributes.share">share</dfn> property may be set and denotes whether a payload should be shared.</p>
 
@@ -149,7 +275,7 @@
                 
             </section>
 
-            <section data-requirement="should">
+            <section>
 
                 <h1 data-ref="PayloadLocalAttributes">Local</h1>
             
@@ -183,7 +309,7 @@
 
             </section>
 
-            <section data-requirement="should">
+            <section>
 
                 <h1 data-ref="PayloadTransitAttributes">Transit</h1>
             
@@ -219,7 +345,7 @@
 
         </section>
 
-        <section data-requirement="should">
+        <section>
 
             <h1>PayloadJournal</h1>
             
@@ -231,7 +357,7 @@
 
             </section>
 
-            <section data-requirement="must">
+            <section>
 
                 <h1 data-ref="PayloadAbstractJournalEntry">Abstract</h1>
             
@@ -259,7 +385,7 @@
 
             </section>
  
-           <section data-requirement="should">
+           <section>
 
                 <h1 data-ref="PayloadLocalJournalEntry">Local</h1>
                 
@@ -293,7 +419,7 @@
 
             </section>
 
-            <section data-requirement="should">
+            <section>
 
                 <h1 data-ref="PayloadTransitJournalEntry">Transit</h1>
             
@@ -325,132 +451,6 @@
 
             </section>
 
-        </section>
-        
-    </section>
-    
-    <section data-requirement="must">
-        
-        <h1>TransitPayload</h1>
-        
-        <section>
-            
-            <h1 data-ref="transitpayload-components">Components</h1>
-        
-            <section data-requirement="must">
-
-                <h1>TransitPayload.identity</h1>
-                
-                <p>The <var>identity</var> property must be set and must conform to the <var>PayloadIdentity</var> definition.</p>
-
-            </section>
-
-            <section data-requirement="must">
-
-                <h1>TransitPayload.original</h1>
-                
-                <p>The <var>original</var> property must be set and must conform to the <var>PayloadTransitAttributes</var> definition.</p>
-                
-                <section data-status="non-normative">
-                    
-                    <p>When converting from <var>LocalPayload</var> to <var>TransitPayload</var>, if the payload originated within the system, it may not include an <var>original</var> property. If this is the case, then the <var>LocalPayload.attributes</var> property should be renamed to the <var>original</var> property as part of the conversion.</p>
-                    
-                </section>
-
-            </section>
-
-            <section data-requirement="may">
-
-                <h1>TransitPayload.journal</h1>
-                
-                <p>The <var>journal</var> property may be set. If it is set, it must be an array of zero or more objects conforming to the <var>PayloadTransitJournalEntry</var> definition.</p>
-
-            </section>
-
-            <section data-requirement="should-not" data-status="editor-challenged" data-message="This section might better qualify as a <u>may</u> than a <u>should not</u>. There's nothing wrong with sharing the local perception of attributes. This would allow a peer to skip, if it so chose, actually doing AdjInSquash.">
-
-                <h1>TransitPayload.attributes</h1>
-                
-                <p>The <var>attributes</var> property should not be set. If it is set, it must conform to the <var>PayloadTransitAttributes</var> definition.</p>
-                
-                <section data-status="non-normative">
-                    
-                    <p>The <var>attributes</var> property is ignored by the <a href="module/receiver">Receiver Module</a>; instead of using this property, it computes an attributes structure via the <a href="module/receiver#adjinsquash">AdjInSquash</a> operation.</p>
-                    
-                </section>
-
-            </section>
-            
-        </section>
-        
-        <section>
-            
-            <h1 data-ref="transitpayload-schema">Schema</h1>
-
-            <pre data-schema="TransitPayload"></pre>
-            
-        </section>
-        
-    </section>
-    
-    <section data-requirement="must">
-        
-        <h1>LocalPayload</h1>
-                
-        <p>This structure should be used within the boundaries of a system, but this structure must not be conveyed between systems.</p>
-        
-        <section>
-            
-            <h1 data-ref="localpayload-components">Components</h1>
-        
-            <section data-requirement="must">
-
-                <h1>LocalPayload.identity</h1>
-                
-                <p>The <var>identity</var> property must be set and must conform to the <var>PayloadIdentity</var> definition.</p>
-
-            </section>
-
-            <section data-requirement="should">
-
-                <h1>LocalPayload.original</h1>
-                
-                <p>The <var>original</var> property should be set. If it is set, it must conform to the <var>PayloadLocalAttributes</var> definition.</p>
-
-            </section>
-
-            <section data-requirement="may">
-
-                <h1>LocalPayload.journal</h1>
-                
-                <p>The <var>original</var> property may be set. If it is set, it must be an array of zero or more objects conforming to the <var>PayloadLocalJournalEntry</var> definition.</p>
-
-            </section>
-
-            <section data-requirement="must">
-
-                <h1>LocalPayload.attributes</h1>
-                
-                <p>The <var>attributes</var> property must be set and must conform to the <var>PayloadLocalAttributes</var> definition.</p>
-
-            </section>
-                
-            <section data-status="non-normative">
-                
-                <h1>Reduced Structure</h1>
-
-                <p>The <var>original</var> and <var>journal</var> properties, even if known, may not be sent via the <a href="module/local#sendlocal">SendLocal (Local Module)</a> operation to an outlet, unless the <a href="module/manager">Manager Module</a> is implemented and the outlet is identified as a manager. This is because the <var>original</var> and <var>journal</var> properties are not relevant within the context of the system after the <a href="module/receiver#adjinsquash">AdjInSquash (Receiver Module)</a> operation computes the <var>attributes</var> property.</p>
-
-            </section>
-            
-        </section>
-        
-        <section>
-            
-            <h1 data-ref="localpayload-schema">Schema</h1>
-
-            <pre data-schema="LocalPayload"></pre>
-            
         </section>
         
     </section>
