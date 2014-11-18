@@ -92,7 +92,7 @@
             <li>If <var>attributes.propagate</var> is <var>false</var>, the value of <var>attributes.share</var> must be set <var>false</var>.</li>
         </ol>
 
-        <p>An implementation may define additional criteria for this operation.</p>
+        <p>An implementation may define additional criteria for this operation. If an implementation intends to change an attribute, it must add an entry in the <var>journal</var> section. This entry must contain the information to perform the transformation, following the attribute specification if defined, or else simply the new value to be copied in. If the implementation sends the <var>attributes</var> section, the value must be changed in that section as well.</p>
 
     </section>
     
