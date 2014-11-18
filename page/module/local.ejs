@@ -55,7 +55,7 @@
 
         <p>The <dfn>SendLocal</dfn> operation publish payloads to local outlets. It responds to an HTTP GET request on the <var>/local/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a 4xx or 5xx Error Response.</p>
 
-        <p data-status="non-normative">This operation must be used intra-system only. Inter-system sharing of payloads occurs via the <a href="module/publisher#sendout"><var>SendOut</var> (Publisher Module)</a> operation.</p>
+        <p>This operation must be used intra-system only. Inter-system sharing of payloads occurs via the <a href="module/publisher#sendout"><var>SendOut</var> (Publisher Module)</a> operation.</p>
 
         <section data-requirement="must">
 
@@ -137,45 +137,6 @@
 
         <section data-requirement="must">
 
-            <h1 data-ref="sendlocal-one">SendLocal-One</h1>
-
-            <p>The <dfn>SendLocal-One</dfn> operation publishes a payload identified by an <var>(APP_UID, ORIGINATOR_UUID)</var> tuple to local outlets within the autonomous system.</p>
-
-            <section>
-
-                <h1>Request</h1>
-
-                <p>This operation responds to an HTTP GET request on the <var>/local/payloads/ORIGINATOR_UUID/APP_UID</var> route, where <dfn>ORIGINATOR_UUID</dfn> is the UUID of the engine that introduced the payload to the network and <dfn>APP_UID</dfn> is the UID of the app in the context of the originating engine.</p>
-
-            </section>
-
-            <section>
-
-                <h1>Success Response</h1>
-
-                <p>If the engine will fulfill the request, it must reply with a <var>200 Success</var> response with a JSON-formatted message body containing a <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> object.</p>
-
-            </section>
-
-            <section>
-
-                <h1>Error Response</h1>
-
-                <p>If the engine will not fulfill the request, it must reply with a <var>Client Error 4xx</var> or a <var>Server Error 5xx</var>. In addition to the status codes recommended in <a href="#sendlocal-response-error">SendLocal: Error Response</a>, it should throw:</p>
-
-                <dl>
-                    <dt>400 Bad Request</dt>
-                    <dd>The request path contains a malformed <var>(APP_UID, ORIGINATOR_UUID)</var> tuple.</dd>
-                    <dt>404 Not Found</dt>
-                    <dd>No payload exists identified by the <var>(APP_UID, ORIGINATOR_UUID)</var> tuple.</dd>
-                </dl>
-
-            </section>
-
-        </section>
-
-        <section data-requirement="must">
-
             <h1 data-ref="sendlocal-all">SendLocal-All</h1>
 
             <p>The <dfn>SendLocal-All</dfn> operation publishes all payloads to local outlets within the autonomous system.</p>
@@ -221,6 +182,45 @@
 
         </section>
 
+        <section data-requirement="must">
+
+            <h1 data-ref="sendlocal-one">SendLocal-One</h1>
+
+            <p>The <dfn>SendLocal-One</dfn> operation publishes a payload identified by an <var>(APP_UID, ORIGINATOR_UUID)</var> tuple to local outlets within the autonomous system.</p>
+
+            <section>
+
+                <h1>Request</h1>
+
+                <p>This operation responds to an HTTP GET request on the <var>/local/payloads/ORIGINATOR_UUID/APP_UID</var> route, where <dfn>ORIGINATOR_UUID</dfn> is the UUID of the engine that introduced the payload to the network and <dfn>APP_UID</dfn> is the UID of the app in the context of the originating engine.</p>
+
+            </section>
+
+            <section>
+
+                <h1>Success Response</h1>
+
+                <p>If the engine will fulfill the request, it must reply with a <var>200 Success</var> response with a JSON-formatted message body containing a <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> object.</p>
+
+            </section>
+
+            <section>
+
+                <h1>Error Response</h1>
+
+                <p>If the engine will not fulfill the request, it must reply with a <var>Client Error 4xx</var> or a <var>Server Error 5xx</var>. In addition to the status codes recommended in <a href="#sendlocal-response-error">SendLocal: Error Response</a>, it should throw:</p>
+
+                <dl>
+                    <dt>400 Bad Request</dt>
+                    <dd>The request path contains a malformed <var>(APP_UID, ORIGINATOR_UUID)</var> tuple.</dd>
+                    <dt>404 Not Found</dt>
+                    <dd>No payload exists identified by the <var>(APP_UID, ORIGINATOR_UUID)</var> tuple.</dd>
+                </dl>
+
+            </section>
+
+        </section>
+
         <section data-requirement="may">
 
             <h1 data-ref="sendlocal-query">SendLocal-Query</h1>
@@ -237,170 +237,21 @@
 
             </section>
 
-        </section>
+            <section>
 
-    </section>
+                <h1>Error Response</h1>
 
-    <section data-requirement="may">
-
-        <h1 data-ref="localstore">LocalStore</h1>
-
-        <p>The <dfn>LocalStore</dfn> structure is a persistent data store that contains <a href='module/payloads#localpayload'><var>LocalPayload</var> (Payload Module)</a> objects. A payload stored in this structure must have been processed through <a href='#adjintransform'><var>AdjInTransform</var></a> or be created locally.</p>
-
-        <p data-status="non-normative">Except when originated locally, payloads entered into this structure come from <a href="#module/receiver#adjinstore"><var>AdjInStore</var> (Receiver Module)</a> after passing through <a href='#adjintransform'><var>AdjInTransform</var></a>.</p>
-
-        <section data-requirement='must'>
-
-            <h1>Required Operations</h1>
-
-            <p>This structure must support two operations:</p>
-
-            <dl>
-                <dt data-ref='localstore-create'>LocalStore::create(LocalPayload)</dt>
-                <dd>Stores a new record in persistence; must not create a record if any record already exists in persistence with the same <var>identity</var> as the new record. Payloads passed to <var>create</var> must either be originated locally or be passed through <var>AdjInTransform.</var></dd>
-                <dt data-ref='localstore-get'>LocalStore::get(PayloadIdentity)</dt>
-                <dd>Gets a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method, or if no identity is passed, returns all payloads; must return false if identity was specified and no payload exists matching identity.</dd>
-                <dt data-ref='localstore-get_all'>LocalStore::get_all()</dt>
-                <dd>Gets all records from persistence as an array of objects; must return an empty array if no payloads exist in persistence.</dd>
-            </dl>
-
-            <p data-status='non-normative'>This structure will not store two payloads with identical <var>identity</var> sections.</p>
-
-            <p>The <var>create</var> operation must not be used in any way except as defined by this protocol and its modules.</p>
-
-        </section>
-
-        <section data-requirement='should'>
-
-            <h1>Additional Operations</h1>
-
-            <p>This structure should support two additional operations:</p>
-
-            <dl>
-                <dt data-ref='localstore-update'>LocalStore::update(LocalPayload)</dt>
-                <dd>Updates an existing payload record in persistence; must identify the payload to update by finding an existing record in persistence with the same <var>identity</var> attribute.</dd>
-                <dt data-ref='localstore-get'>LocalStore::delete(PayloadIdentity)</dt>
-                <dd>Deletes a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method.</dd>
-                <dt data-ref='localstore-get_query'>LocalStore::get_query(string)</dt>
-                <dd>Filtering by a string passed as an argument, gets a subset of records from persistence as an array of objects; must return an empty array if no payloads exist in persistence.</dd>
-                <dt data-ref='localstore-get_search'>LocalStore::get_search(mixed)</dt>
-                <dd>Filtering by query object as defined by the particular storage method, gets a subset of records from persistence as an array of objects; must return an empty array if no payloads exist in persistence.</dd>
-            </dl>
-
-            <p>To change the values of a payload not originated from the engine itself, use <a href='#adjintransform'><var>AdjInTransform</var></a>. A payload not originated from the engine itself must never be updated directly within this structure.</p>
-
-            <p>The <var>delete</var> operation should be used to prune out stale entries.</p>
-
-            <p>The <var>update</var> and <var>delete</var> operations must not be used in any way except as defined by this protocol and its modules.</p>
-
-    </section>
-    
-    <section data-requirement="may">
-        
-        <h1 data-ref="localin">LocalIn</h1>
-        
-        <footer>
-            
-            <section data-requirement="must">
-                
-                <h1>Requirements</h1>
-        
-                <p>The following specifications must be implemented with this sub-module:</p>
+                <p>If the engine will not fulfill the request, it must reply with a <var>Client Error 4xx</var> or a <var>Server Error 5xx</var>. In addition to the status codes recommended in <a href="#sendlocal-response-error">SendLocal: Error Response</a>, it should throw:</p>
 
                 <dl>
-                    <dt><a href="module/receiver#receivein">CASA Protocol Receiver Module - ReceiveIn</a></dt>
-                    <dd>Must implement ReceiveIn; may implement with access control.</dd>
-                    <dt><a href="module/receiver#adjintranslate">CASA Protocol Receiver Module - AdjInTranslate</a></dt>
-                    <dd>Must implement AdjInTranslate.</dd>
-                    <dt><a href="module/receiver#adjinsquash">CASA Protocol Receiver Module - AdjInSquash</a></dt>
-                    <dd>Must implement AdjInSquash.</dd>
-                    <dt><a href="module/receiver#adjinsquash">CASA Protocol Receiver Module - AdjInFilter</a></dt>
-                    <dd>Must implement AdjInFilter; may implement with custom rules.</dd>
-                    <dt><a href="module/receiver#adjinstore">CASA Protocol Receiver Module - AdjInStore</a></dt>
-                    <dd>Must implement AdjInStore.</dd>
-                    <dt><a href="module/local#localstore">CASA Protocol Receiver Module - LocalStore</a></dt>
-                    <dd>Must implement LocalStore.</dd>
+                    <dt>501 Not Implemented</dt>
+                    <dd>The engine does not support the query language.</dd>
                 </dl>
-                
-            </section>
-            
-        </footer>
-        
-        <section data-requirement="must">
-            
-            <h1>AdjInStoreToLocalStore</h1>
-
-            <p>The <dfn>AdjInStoreToLocalStore</dfn> data path delivers payloads from the <a href="module/receiver#adjinstore"><var>AdjInStore</var> (Receiver Module)</a> into <a href="#localstore"><var>LocalStore</var></a>.</p>
-
-            <p>This operation may simply copy payloads from <var>AdjInStore</var> to <var>LocalStore</var> or it may pass payloads from <var>AdjInStore</var> through <var>AdjInTransform</var> before storing them in <var>LocalStore</var>.</p>
-
-        </section>
-        
-        <section data-requirement="may">
-            
-            <h1>AdjInTransform</h1>
-
-            <p>The <dfn>AdjInTransform</dfn> operation makes changes to all payloads received from peers. This operation may be performed over any payload from <var>AdjInStore</var>. For transformations performed, it may update the journal.</p>
-
-            <p data-status="non-normative">Updating the journal during <var>AdjInTransform</var> only affects payloads locally and will not propagate to peers. Consequently, it is not required. To make changes to payloads that propagate beyond the node, use <a href="module/relay#adjouttransform"><var>AdjOutTransform</var> (Relay Module)</a> instead.</p>
 
             </section>
-            
-        </section>
-        
-    </section>
-    
-    <section data-requirement="may">
-        
-        <h1 data-ref="localout">LocalOut</h1>
-        
-        <footer>
-            
-            <section data-requirement="must">
-                
-                <h1>Requirements</h1>
-        
-                <p>The following specifications must be implemented with this sub-module:</p>
-
-                <dl>
-                    <dt><a href="module/relay#adjouttranslate">CASA Protocol Relay Module - AdjOutTranslate</a></dt>
-                    <dd>Must implement AdjOutTranslate.</dd>
-                    <dt><a href="module/relay#adjoutfilter">CASA Protocol Relay Module - AdjOutFilter</a></dt>
-                    <dd>Must implement AdjOutFilter; may implement with custom rules.</dd>
-                    <dt><a href="module/relay#adjouttransform">CASA Protocol Relay Module - AdjOutTransform</a></dt>
-                    <dd>Must implement AdjOutTransform; may implement with custom rules.</dd>
-                    <dt><a href="module/relay#adjoutstore">CASA Protocol Receiver Module - AdjOutStore</a></dt>
-                    <dd>Must implement AdjOutStore.</dd>
-                    <dt><a href="module/local#localstore">CASA Protocol Receiver Module - LocalStore</a></dt>
-                    <dd>Must implement LocalStore.</dd>
-                </dl>
-                
-            </section>
-            
-        </footer>
-        
-        <section data-requirement="must">
-            
-            <h1>LocalStoreToAdjOutStore</h1>
-
-            <p>The <dfn>LocalStoreToAdjOutStore</dfn> data path delivers payloads originated locally from <a href="#localstore"><var>LocalStore</var></a> into <a href="#localstore"><var>AdjOutStore</var></a>.</p>
-
-            <p>The data path for this operation:</p>
-
-            <ol>
-                <li>
-                    For each payload with <var>identity.originator_id</var> equal to the engine's ID:
-                    <ol>
-                        <li>Must transform attributes via <a href="module/relay#adjouttransform"><var>AdjOutTransform</var></a>; may transform with custom rules;</li>
-                        <li>May store within <a href="#adjoutstore">AdjOutStore</a></li>
-                    </ol>
-                </li>
-            </ol>
-
-            <p>This operation must not copy any payloads that did not originate from this engine.</p>
 
         </section>
-        
+
     </section>
 
 </main>
