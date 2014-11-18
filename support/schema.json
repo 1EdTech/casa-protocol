@@ -182,6 +182,79 @@
                   "originator_id"
                ]
             },
+            "original":{
+               "title":"PayloadLocalAttributes",
+               "type":"object",
+               "properties":{
+                  "timestamp":{
+                     "type":"string",
+                     "format":"date-time"
+                  },
+                  "uri":{
+                     "type":"string",
+                     "format":"uri"
+                  },
+                  "share":{
+                     "type":"boolean",
+                     "default":true
+                  },
+                  "propagate":{
+                     "type":"boolean",
+                     "default":true
+                  },
+                  "use":{
+                     "type":"object",
+                     "default":{
+
+                     }
+                  },
+                  "require":{
+                     "type":"object",
+                     "default":{
+
+                     }
+                  }
+               },
+               "required":[
+                  "timestamp",
+                  "uri",
+                  "share",
+                  "propagate"
+               ]
+            },
+            "journal":{
+               "type":"array",
+               "items":{
+                  "title":"PayloadLocalJournalEntry",
+                  "type":"object",
+                  "properties":{
+                     "originator_id":{
+                        "type":"string",
+                        "pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                     },
+                     "timestamp":{
+                        "type":"string",
+                        "format":"date-time"
+                     },
+                     "use":{
+                        "type":"object",
+                        "default":{
+
+                        }
+                     },
+                     "require":{
+                        "type":"object",
+                        "default":{
+
+                        }
+                     }
+                  },
+                  "required":[
+                     "originator_id",
+                     "timestamp"
+                  ]
+               }
+            },
             "attributes":{
                "title":"PayloadLocalAttributes",
                "type":"object",
@@ -871,6 +944,74 @@
                      "timestamp"
                   ]
                }
+            },
+            "attributes":{
+               "title":"PayloadTransitAttributes",
+               "type":"object",
+               "properties":{
+                  "timestamp":{
+                     "type":"string",
+                     "format":"date-time"
+                  },
+                  "uri":{
+                     "type":"string",
+                     "format":"uri"
+                  },
+                  "share":{
+                     "type":"boolean",
+                     "default":true
+                  },
+                  "propagate":{
+                     "type":"boolean",
+                     "default":true
+                  },
+                  "use":{
+                     "type":"object",
+                     "patternProperties":{
+                        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
+                           "type":[
+                              "array",
+                              "boolean",
+                              "integer",
+                              "null",
+                              "number",
+                              "object",
+                              "string"
+                           ]
+                        }
+                     },
+                     "additionalProperties":false,
+                     "default":{
+
+                     }
+                  },
+                  "require":{
+                     "type":"object",
+                     "patternProperties":{
+                        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
+                           "type":[
+                              "array",
+                              "boolean",
+                              "integer",
+                              "null",
+                              "number",
+                              "object",
+                              "string"
+                           ]
+                        }
+                     },
+                     "additionalProperties":false,
+                     "default":{
+
+                     }
+                  }
+               },
+               "required":[
+                  "timestamp",
+                  "uri",
+                  "share",
+                  "propagate"
+               ]
             }
          },
          "required":[

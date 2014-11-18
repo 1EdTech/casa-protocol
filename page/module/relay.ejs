@@ -40,8 +40,6 @@
             <dd>Must implement AdjInSquash.</dd>
             <dt><a href="module/receiver#adjinsquash">CASA Protocol Receiver Module - AdjInFilter</a></dt>
             <dd>Must implement AdjInFilter; may implement with custom rules.</dd>
-            <dt><a href="module/receiver#adjinstore">CASA Protocol Receiver Module - AdjInStore</a></dt>
-            <dd>Must implement AdjInStore.</dd>
         </dl>
         
     </section>
@@ -66,10 +64,9 @@
         <ol>
             <li>Create empty array for payloads response.</li>
             <li>
-                For each payload from <a href="module/receiver#adjinstore"><var>AdjInStore::get()</var> (Receiver Module)</a> with <var>identity.originator_id</var> not equal to the engine id, and for each payload from <a href="module/local#localstore"><var>LocalStore::get()</var> (Local Module)</a> with <var>identity.originator_id</var> equal to the engine id:
+                For each known payload:
                 <ol>
                     <li>Must transform attributes via <a href="#adjouttransform"><var>AdjOutTransform</var></a>; may transform with custom rules;</li>
-                    <li>May store within <a href="#adjoutstore">AdjOutStore</a>;</li>
                     <li>Must pass filtering by <a href="#adjoutfilter"><var>AdjOutFilter</var></a>; may filter with custom rules;</li>
                     <li>Must translate via <a href="#adjouttranslate">AdjOutTranslate</a>;</li>
                     <li>Should append to payloads response array</li>
@@ -87,80 +84,16 @@
         <h1>AdjOutTransform</h1>
         
         <p>The <dfn>AdjOutTransform</dfn> operation makes changes to all payloads before they are shared outbound. This operation must be performed over any payload before it may be conveyed beyond the boundaries of the system.</p>
-        
-        <section data-status="conflict" data-message="By implication, this section is in conflict with <a href='module/payload#transitpayload-attributes'><var>TransitPayload.attributes</var> (Payload Module)</a> because it does nothing to remove the <var>attributes</var> section that is marked as 'should not' under the other module. It is likely that the 'should not' classification should be changed to 'may' rather than this section adjusted, as there's no good reason for not allowing its inclusion.">
             
-            <p>This operation must perform the following transformations:</p>
-        
-            <ol>
-                <li>If <var>original</var> section is not defined, it must be created as a copy of the <var>attributes</var> section.</li>
-                <li>If <var>attributes.propagate</var> is <var>false</var>, the value of <var>attributes.share</var> must be set <var>false</var>.</li>
-            </ol>
-            
-            <p>An implementation may define additional criteria for this operation.</p>
-            
-        </section>
-            
-        <section data-requirement="must" data-status="stub">
-            
-            <h1>AdjOutTransformJournal</h1>
-            
-        </section>
+        <p>This operation must perform the following transformations:</p>
 
-    </section>
-    
-    <section data-requirement="may">
-        
-        <h1>AdjOutStore</h1>
-        
-        <p>The <dfn>AdjOutStore</dfn> structure is a persistent data store that contains <a href='module/payloads#localpayload'><var>LocalPayload</var> (Payload Module)</a> objects. A payload stored in this structure must first have been processed through <a href='#adjouttransform'><var>AdjOutTransform</var></a>.</p>
-        
-        <p data-status='non-normative'>Payloads arrive at this structure via the <a href="#data-path">data path</a> from either <a href="module/receiver#adjinstore"><var>AdjInStore</var> (Receiver Module)</a> or <a href="module/local#localstore"><var>LocalStore</var> (Local Module)</a>.</p>
-        
-        <section data-requirement='must'>
-            
-            <h1>Required Operations</h1>
-        
-            <p>This structure must support two operations:</p>
+        <ol>
+            <li>If <var>original</var> section is not defined, it must be created as a copy of the <var>attributes</var> section.</li>
+            <li>If <var>attributes.propagate</var> is <var>false</var>, the value of <var>attributes.share</var> must be set <var>false</var>.</li>
+        </ol>
 
-            <dl>
-                <dt data-ref='adjinstore-create'>AdjOutStore::create(LocalPayload)</dt>
-                <dd>Stores a new record in persistence; must not create a record if any record already exists in persistence with the same <var>identity</var> as the new record.</dd>
-                <dt data-ref='adjinstore-get'>AdjOutStore::get(PayloadIdentity)</dt>
-                <dd>Gets a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method, or if no identity is passed, returns all payloads; must return false if identity was specified and no payload exists matching identity.</dd>
-                <dt data-ref='adjoutstore-get_all'>AdjOutStore::get_all()</dt>
-                <dd>Gets all records from persistence as an array of objects; must return an empty array if no payloads exist in persistence.</dd>
-            </dl>
-        
-            <p data-status='non-normative'>This structure will not store two payloads with identical <var>identity</var> sections.</p>
-            
-            <p>The <var>create</var> operation must not be used in any way except as defined by this protocol and its modules.</p>
-            
-            <p data-status='non-normative'>To add a payload for propagation via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, it must originate from <var>AdjInStore</var> or <var>LocalStore</var>. It must not be added directly to <var>AdjOutStore</var>, as this would imply that the payload neither originated locally nor was propagated from another system.</p>
-        
-        </section>
-        
-        <section data-requirement='should'>
-            
-            <h1>Additional Operations</h1>
-        
-            <p>This structure should support two additional operations:</p>
-        
-            <dl>
-                <dt data-ref='adjinstore-update'>AdjOutStore::update(LocalPayload)</dt>
-                <dd>Updates an existing payload record in persistence; must identify the payload to update by finding an existing record in persistence with the same <var>identity</var> attribute.</dd>
-                <dt data-ref='adjinstore-get'>AdjOutStore::delete(PayloadIdentity)</dt>
-                <dd>Deletes a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method.</dd>
-            </dl>
-            
-            <p>The <var>update</var> and <var>delete</var> operations must not be used in any way except as defined by this protocol and its modules.</p>
-            
-            <p data-status='non-normative'>To change the way a payload is presented via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, use <a href='#adjouttransform'><var>AdjOutTransform</var></a>. A payload must never be updated directly within this structure.</p>
-        
-            <p>The <var>delete</var> operation should be used to prune out stale entries.</p>
-            
-            <p data-status='non-normative'>To prevent a payload from being presented via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, use <a href='#adjoutfilter'><var>AdjOutFilter</var></a>. A payload must not be prevented from being presented by <var>AdjOutStore::delete()</var>.</p>
-        
+        <p>An implementation may define additional criteria for this operation. If an implementation intends to change an attribute, it must add an entry in the <var>journal</var> section. This entry must contain the information to perform the transformation, following the attribute specification if defined, or else simply the new value to be copied in. If the implementation sends the <var>attributes</var> section, the value must be changed in that section as well.</p>
+
     </section>
     
     <section data-requirement="must">
@@ -176,20 +109,6 @@
         </ol>
         
         <p>An implementation may define additional criteria for this operation.</p>
-            
-        <section data-requirement="should" data-status="stub">
-
-            <h1>AdjOutFilterRules</h1>
-            
-            <p>The <var>AdjOutFilterRules</var> structure may be implemented as a methodology for specifying filter rules.</p>
-            
-            <section data-status="non-normative">
-                
-                <p>While implementations may add AdjOutFilter constraints internally, this structure is useful for allowing outlet- or user- defined rules, such as via the <a href="module/manager#OutletReceiveAdjOutFilterRules"><var>OutletReceiveAdjOutFilterRules</var> (Manager Module)</a> operation.</p>
-                
-            </section>
-
-        </section>
         
     </section>
     

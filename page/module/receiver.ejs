@@ -63,9 +63,9 @@
             <li>
                 Must validate response:
                 <ol>
-                    <li>If invalid <var>Content-Type</var>, abort.</li>
-                    <li>If response body is not valid JSON array, abort.</li>
-                    <li>If an element of JSON array is not valid <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a>, discard element</li>
+                    <li>If invalid <var>Content-Type</var>, abort;</li>
+                    <li>If response body is not a valid JSON array, abort;</li>
+                    <li>If an element of JSON array is not valid <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a>, discard the element.</li>
                 </ol>
             </li>
             <li>
@@ -73,8 +73,7 @@
                 <ol>
                     <li>Must translate via <a href="#adjintranslate"><var>AdjInTranslate</var></a>;</li>
                     <li>Must squash via <a href="#adjinsquash"><var>AdjInSquash</var></a>;</li>
-                    <li>Must pass filtering by <a href="#adjintfilter"><var>AdjInFilter</var></a>; may filter with custom rules;</li>
-                    <li>May store within <a href="#adjinstore"><var>AdjInStore</var></a>.</li>
+                    <li>Must pass filtering by <a href="#adjintfilter"><var>AdjInFilter</var></a>; may filter with custom rules.</li>
                 </ol>
             </li>
         </ol>
@@ -93,7 +92,7 @@
             
             <h1>Request</h1>
             
-            <p>The client must issue an HTTP GET request to the <var>/out/payloads</var> route on the host.</p>
+            <p>The client issues an HTTP GET request to the <var>/out/payloads</var> route on the host.</p>
             
             <p>The client may include a request body. If the request includes a request body, it must be JSON-formatted.</p>
             
@@ -111,6 +110,23 @@
                 <dt><var>Content-Type: application/json;charset=utf-8</var></dt>
                 <dd>The client should send this header if the request includes a body section, although it may be implied by omission. The client must not send any other <var>Content-Type</var> header.</dd>
             </dl>
+            <section data-requirement="may">
+
+                <h1 data-ref="receivein-access-controls">Access Control</h1>
+
+                <p>A host may refuse to serve a <var>GET /out/payloads</var> request unless certain access criteria are met. If the request from a client does not meet the host's access criteria, the HTTP response shall be a 4xx Error or 5xx Error and should be a 403 Error.</p>
+
+                <section data-status='non-normative'>
+
+                    <p><a href='module/publisher#sendout-access-controls'>SendOut - Access Controls (Publisher Module)</a> specifies two kinds of access control: <var>address-based</var> and <var>secret-based</var>. The former requires that the client match a certain IP address or range, while the latter requires that the client provide a pre-negotiated <var>secret</var> property via either the query string or a JSON-encoded request body.</p>
+
+                </section>
+
+                <p>If the client has negotiated a <var>secret</var> parameter with the host, it must send this property either by the name <var>secret</var> within the query string or as the property <var>secret</var> within a JSON-encoded object in the request body.</p>
+
+                <p data-status="non-normative">The client should send a <var>Content-Type: application/json</var> header with the request if it includes a <var>secret</var> property within the request body.</p>
+
+            </section>
             
         </section>
         
@@ -158,77 +174,6 @@
             
         </section>
         
-    </section>
-        
-    <section data-requirement="may">
-
-        <h1 data-ref="receivein-access-controls">ReceiveIn with Access Controls</h1>
-
-        <p>A host may refuse to serve a <var>GET /out/payloads</var> request unless certain access criteria are met. If the request from a client does not meet the host's access criteria, the HTTP response shall be a 4xx Error or 5xx Error and should be a 403 Error.</p>
-        
-        <section data-status='non-normative'>
-            
-            <p><a href='module/publisher#sendout-access-controls'>SendOut with Access Controls (Publisher Module)</a> specifies two kinds of access control: <var>address-based</var> and <var>secret-based</var>. The former requires that the client match a certain IP address or range, while the latter requires that the client provide a pre-negotiated <var>secret</var> property via either the query string or a JSON-encoded request body.</p>
-            
-        </section>
-        
-        <p>If the client has negotiated a <var>secret</var> parameter with the host, it must send this property either by the name <var>secret</var> within the query string or as the property <var>secret</var> within a JSON-encoded object in the request body.</p>
-        
-        <p data-status="non-normative">The client should send a <var>Content-Type: application/json</var> header with the request if it includes a <var>secret</var> property within the request body.</p>
-
-        <section data-requirement="should">
-
-            <h1 data-ref="adjoutpeer">AdjInPeer</h1>
-
-            <p>The <dfn>AdjInpeer</dfn> structure may be implemented to define access requirements.</p>
-            
-            <p data-status="non-normative">This structure is useful when managing a number of in-bound peers that the host queries. This structure is implemented for access controls in the <a href="module/manager#OutletReceiveNode"><var>OutletReceiveNode (Manager Module)</var></a> operation.</p>
-
-            <section>
-                
-                <h1>Schema</h1>
-            
-                <pre data-schema="AdjInPeer"></pre>
-            
-            </section>
-            
-            <section data-status='non-normative'>
-                    
-                <h1>Usage Example</h1>
-
-                <pre data-lang="ruby"># Assume: adjInPeers array of AdjInPeer objects
-# Assume: URI, Net::HTTP::Get and Net::HTTP classes
-# Assume: process_response(response) method that:
-#  - validates response
-#  - runs AdjInTranslate -> AdjInSquash -> AdjInFilter
-#  - optionally stores in AdjInStore
-
-adjInPeers.each { |peer|
-
-  uri = URI(peer.uri)
-
-  Net::HTTP.start(uri.host, uri.port) do |http|
-
-    request = Net::HTTP::Get.new("#{uri}/out/payloads")
-
-    request.add_field('Accept', 'application/json')
-    request.add_field('Accept-Charset', 'utf-8')
-    request.add_field('Content-Type', 'application/json')
-
-    if peer.secret
-      request.body = {'secret'=>peer.secret}.to_json
-    end
-
-    process_response(http.request(request))
-
-  end
-
-}</pre>
-
-            </section>
-
-        </section>
-
     </section>
     
     <section data-requirement="must">
@@ -296,7 +241,7 @@ adjInPeers.each { |peer|
         
         <h1>AdjInSquash</h1>
         
-        <p>The <var>AdjInTranslate</var> operation accepts a <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> object that must have already been passed through <a href='#adjintranslate'><var>AdjInTranslate</var></a>, and it produces an <a href='#module/payload#localpayload'><var>LocalPayload</var> (Payload Module)</a> by constructing an <var>attributes</var> section from the <var>original</var> property and optionally the <var>journal</var> section, if defined.</p>
+        <p>The <var>AdjInSquash</var> operation accepts an object that must have been a valid <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> object and must have been passed through <a href='#adjintranslate'><var>AdjInTranslate</var></a>. This operation produces an <a href='#module/payload#localpayload'><var>LocalPayload</var> (Payload Module)</a> by constructing an <var>attributes</var> section from the <var>original</var> property and optionally the <var>journal</var> section, if defined.</p>
         
         <p>This operation must following this algorithm:</p>
         
@@ -366,76 +311,10 @@ end</pre>
         <ol>
             <li>All keys under <var>attributes.require</var> must be recognized.</li>
             <li>All key-value pairs under <var>attributes.require</var> must validate per the <a href='core#attribute-specification'>attribute specification</a> referred to by key.</li>
-            <li>If <a href='#adjinstore'><var>AdjInStore</var></a> is implemented and a payload matching <var>identity</var> already exists in persistence, <var>attributes.timestamp</var> must be more recent than the value in persistence.</li>
+            <li>If the logical entity represented by the payload is tracked in a persistence layer, <var>attributes.timestamp</var> should be more recent than the value in persistence.</li>
         </ol>
         
         <p>An implementation may define additional criteria for this operation.</p>
-
-        <section data-requirement="should" data-status="stub">
-
-            <h1>AdjInFilterRules</h1>
-
-            <p>The <dfn>AdjInFilterRules</dfn> structure may be implemented as a methodology for specifying filter rules.</p>
-            
-            <p data-status="non-normative">While implementations may add <var>AdjInFilter</var> constraints internally, this structure is useful for allowing outlet- or user- defined rules, such as via the <a href="module/manager#OutletReceiveAdjInFilterRules"><var>OutletReceiveAdjInFilterRules (Manager Module)</var></a> operation.</p>
-
-        </section>
-        
-    </section>
-    
-    <section data-requirement="may">
-        
-        <h1>AdjInStore</h1>
-        
-        <p>The <dfn>AdjInStore</dfn> structure is a persistent data store that contains <a href='module/payloads#localpayload'><var>LocalPayload</var> (Payload Module)</a> objects. A payload stored in this structure must be received via <a href='#receivein'><var>ReceiveIn</var></a>, translated by <a href='#adjintranslate'><var>AdjInTranslate</var></a>, squashed by <a href='#adjinsquash'><var>AdjInSquash</var></a> and filtered by <a href='#adjintranslate'><var>AdjInFilter</var></a>.</p>
-        
-        <p data-status='non-normative'>This structure is used by the <a href='module/relay'>Relay Module</a> to generate payloads for inter-system propagation to peers; additionally, this structure is used by the <a href='module/local'>Local Module</a> to present inter-system payloads to intra-system outlets. Both modules use this structure with additional constraints before presenting payloads, so the payloads in this structure are never accessed directly by inter-system peers or intra-system outlets.</p>
-        
-        <section data-requirement='must'>
-            
-            <h1>Required Operations</h1>
-        
-            <p>This structure must support two operations:</p>
-
-            <dl>
-                <dt data-ref='adjinstore-create'>AdjInStore::create(LocalPayload)</dt>
-                <dd>Stores a new record in persistence; must not create a record if any record already exists in persistence with the same <var>identity</var> as the new record.</dd>
-                <dt data-ref='adjinstore-get'>AdjInStore::get(PayloadIdentity)</dt>
-                <dd>Gets a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method, or if no identity is passed, returns all payloads; must return false if identity was specified and no payload exists matching identity.</dd>
-                <dt data-ref='adjinstore-get_all'>AdjInStore::get_all()</dt>
-                <dd>Gets all records from persistence as an array of objects; must return an empty array if no payloads exist in persistence.</dd>
-            </dl>
-        
-            <p data-status='non-normative'>This structure will not store two payloads with identical <var>identity</var> sections.</p>
-            
-            <p>The <var>create</var> operation must not be used in any way except as defined by this protocol and its modules.</p>
-            
-            <p data-status='non-normative'>To add a payload for propagation via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, it must either arrive via <var>ReceiveIn</var> or be added to <a href='module/local#localstore'><var>LocalStore</var> (Local Module)</a>. It must not be added directly to <var>AdjInStore</var>, as this implies that the payload arrived from an external source.</p>
-        
-        </section>
-        
-        <section data-requirement='should'>
-            
-            <h1>Additional Operations</h1>
-        
-            <p>This structure should support two additional operations:</p>
-        
-            <dl>
-                <dt data-ref='adjinstore-update'>AdjInStore::update(LocalPayload)</dt>
-                <dd>Updates an existing payload record in persistence; must identify the payload to update by finding an existing record in persistence with the same <var>identity</var> attribute.</dd>
-                <dt data-ref='adjinstore-get'>AdjInStore::delete(PayloadIdentity)</dt>
-                <dd>Deletes a record from persistence that matches the <a href='module/payload#payloadidentity'><var>PayloadIdentity</var> (Payload Module)</a> passed to this method.</dd>
-            </dl>
-            
-            <p>The <var>update</var> and <var>delete</var> operations must not be used in any way except as defined by this protocol and its modules.</p>
-            
-            <p data-status='non-normative'>To change the way a payload is presented via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, use <a href='module/relay#adjouttransform'><var>AdjOutTransform</var> (Relay Module)</a>. To change the way a payload is presented via <a href='module/local#sendlocal'><var>SendLocal</var> (Local Module)</a>, use <a href='module/local#adjintransform'><var>AdjInTransform</var> (Local Module)</a>.</p>
-        
-            <p>The <var>delete</var> operation should be used to prune out stale entries.</p>
-            
-            <p data-status='non-normative'>To prevent a payload from being presented via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>, use <a href='module/relay#adjoutfilter'><var>AdjOutFilter</var> (Relay Module)</a>. A payload must not be prevented from being presented via <a href='module/local#sendlocal'><var>SendLocal</var> (Local Module)</a> unless it is dropped by <a href='#adjinfilter'><var>AdjInFilter</var></a> prior to this step. This means that a payload must not be relayed via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a> unless it is also made available via <a href='module/local#sendlocal'><var>SendLocal</var> (Local Module)</a>.</p>
-            
-        </section>
         
     </section>
     
