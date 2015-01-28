@@ -249,9 +249,9 @@
 
                     <h1>Properties</h1>
 
-                    <p>The <dfn id="PayloadAbstractAttributes.timestamp">timestamp</dfn> property must be set as a timestamp conforming to RFC 3339.</p>
+                    <p>The <dfn id="PayloadAbstractAttributes.timestamp">timestamp</dfn> property must be set as a timestamp conforming to RFC 3339 and should denote when the attributes of the <var>PayloadAbstractAttributes</var> were last modified.</p>
 
-                    <p data-status="non-normative">The <var>timestamp</var> attribute denotes when the attributes section was created. When contained within the payload <var>original</var> section, it denotes when the payload was introduced into the network; when contained within the <var>attributes</var> section, it denotes the timestamp of the last entry in the journal that affected changes to the computed attributes section, or else the same timestamp as the <var>original</var> section if there was no journal or no entries in the journal affected changes to the attributes.</p>
+                    <p data-status="non-normative">When contained within the payload <var>original</var> section, it denotes when the payload was introduced into the network; when contained within the <var>attributes</var> section, it denotes the timestamp of the last entry in the journal that affected changes to the computed attributes section, or else the same timestamp as the <var>original</var> section if there was no journal or no entries in the journal affected changes to the attributes.</p>
 
                     <p>The <dfn id="PayloadAbstractAttributes.uri">uri</dfn> property must be set and defines the URI of the logical entity represented by the payload.</p>
 
