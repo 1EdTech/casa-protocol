@@ -6,23 +6,23 @@
 </header>
 
 <footer>
-    
+
     <section>
         <h1>Status of this Memo</h1>
         <p>This memorandum specifies the CASA Protocol Receiver Module, which defines inter-system queries are made to retrieve payloads from other autonomous systems. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
     </section>
-    
+
     <section>
         <h1>Copyright Notice</h1>
         <p>Copyright (c) 2014 IMS Global Learning Consortium, Inc. All rights reserved.</p>
     </section>
-    
+
     <section>
-        
+
         <h1>Requirements</h1>
-        
+
         <p>The following specifications must be implemented with this module:</p>
-        
+
         <dl>
             <dt><a href="core">CASA Protocol Core</a></dt>
             <dd>Must implement basic protocol definition.</dd>
@@ -31,11 +31,11 @@
             <dt><a href="module/payload#localpayload">CASA Protocol Payload Module - LocalPayload</a></dt>
             <dd>Must implement LocalPayload; should implement with original attribute; may implement with journal attribute.</dd>
         </dl>
-        
+
     </section>
-    
+
     <section>
-        
+
         <h1>Terminology</h1>
         <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
         <p>The key words <strong>HTTP request</strong>, <strong>HTTP response</strong>, <strong>HTTP GET Request</strong>, <strong>HTTP Response Status Code</strong> (alternatively: <strong>response status</strong>), <strong>Client Error 4xx</strong> (alternatively: <strong>4xx Error</strong>) and <strong>Server Error 5xx</strong> (alternatively: <strong>5xx Error</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2616.txt" rel="external">RFC 2616</a></strong> ["Hypertext Transfer Protocol -- HTTP/1.1"].</p>
@@ -44,19 +44,19 @@
         <p>The key words <strong>string</strong>, <strong>array</strong>, <strong>object</strong>, <strong>name/value pair</strong> (alternatively: <strong>key-value pair</strong>) and <strong>JavaScript Object Notation</strong> (alternatively: <strong>JSON</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4627.txt" rel="external">RFC 4627</a></strong> ["The application/json Media Type for JavaScript Object Notation (JSON)"].</p>
         <p>The key word <strong>JSON Schema</strong> in this document is to be interpreted as a JSON format defined by the <strong><a href="http://json-schema.org/latest/json-schema-core.html" rel="external">json-schema-core</a></strong> ["JSON Schema: core definitions and terminology"] and <strong><a href="http://json-schema.org/latest/json-schema-validation.html" rel="external">json-schema-validation</a></strong> ["JSON Schema: interactive and non interactive validation"] specifications.</p>
         <p>The key word <strong>exponential backoff</strong> in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2988.txt" rel="external">RFC 2988</a></strong> ["Computing TCP's Retransmission Timer"].</p>
-        
+
     </section>
-    
+
 </footer>
 
 <main>
-    
+
     <section>
-        
+
         <h1 data-ref="datapath">Data Path</h1>
-        
+
         <p>To receive a payload from a peering system:</p>
-        
+
         <ol>
             <li>Must issue an <var>HTTP GET /out/payloads</var> request to another autonomous system; may include a secret.
             </li>
@@ -77,29 +77,29 @@
                 </ol>
             </li>
         </ol>
-        
+
         <p>Upon successful completion of this data path, a system shall have produced a set of valid <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects from a peering system.</p>
-        
+
     </section>
-    
+
     <section data-requirement="must">
-        
+
         <h1>ReceiveIn</h1>
-        
+
         <p>The <dfn>ReceiveIn</dfn> operation performed by a system ("client") queries payloads from another autonomous system ("host") by way of an HTTP request and response. The host must implement the <a href="module/publisher">Publisher Module</a> for this operation to succeed.</p>
-        
+
         <section>
-            
+
             <h1>Request</h1>
-            
+
             <p>The client issues an HTTP GET request to the <var>/out/payloads</var> route on the host.</p>
-            
+
             <p>The client may include a request body. If the request includes a request body, it must be JSON-formatted.</p>
-            
+
             <p data-status="non-normative">A request body is used to specify a secret in the event that the host implements access controls. This secret may also be specified in the query string of the GET request.</p>
-            
+
             <p>The following headers are relevant to this request:</p>
-            
+
             <dl>
                 <dt><var>Accept: application/json</var></dt>
                 <dd>The client should send this header, although it may be implied by omission. The client must not send an <var>Accept</var> header without <var>application/json</var>.</dd>
@@ -127,15 +127,15 @@
                 <p data-status="non-normative">The client should send a <var>Content-Type: application/json</var> header with the request if it includes a <var>secret</var> property within the request body.</p>
 
             </section>
-            
+
         </section>
-        
+
         <section>
-        
+
             <h1 data-ref="receivein-success-response">Success Response</h1>
-            
+
             <p>A successful response is denoted by a 200 OK.</p>
-            
+
             <p>When a client receives a 200 OK response, it must validate the message body. Validation passes if:</p>
 
             <ol>
@@ -144,19 +144,19 @@
                 <li>The response body must be an array. If this condition fails, the entire response must be discarded.</li>
                 <li>Each element of the JSON-encoded array in the response body must conform to <a href="Module/Payload#TransitPayload">TransitPayload (Payload Module)</a>. If this condition fails, the non-conforming element must be discarded, although the client may still validate and process other elements in the array.</li>
             </ol>
-            
+
             <p data-status="non-normative">Consult <a href="#data-path">Data Path</a> for the operations that must be performed against <var>TransitPayload</var> objects received via this operation.</p>
-        
+
         </section>
-        
+
         <section>
-            
+
             <h1>Error Response</h1>
-            
+
             <p>An error response is denoted by 4xx Error or 5xx Error.</p>
-            
+
             <p>Except for a <var>404 Error</var>, the client must not send an identical request after receiving a 4xx Error; however, it may attempt to resolve the issue by modifying the request headers and body to rectify the issue as implied by the error code:</p>
-            
+
             <dl>
                 <dt><var>400 Bad Request</var></dt>
                 <dd>The client may correct the JSON format of the request body and try again.</dd>
@@ -167,25 +167,25 @@
                 <dt><var>415 Unsupported Media Type</var></dt>
                 <dd>The client may correct the <var>Accept</var> and <var>Accept-Charset</var> headers and try again.</dd>
             </dl>
-            
+
             <p>The client may send an identical request after receiving a 5xx Error; additionally, the client may send an identical request after receiving a 404 Error after the client confirms via another mechanism that the host is willing to serve the route. If the client sends an identical request after a 5xx Error or a 4xx error is encountered, the frequency of subsequent requests should use exponential backoff.</p>
-            
+
             <p data-status="non-normative">5xx Error responses (and 404 Error responses when a host is known to fulfill a route) are commonly sent because the host is overcapacity, unavailable or encountering internal errors. Exponential backoff lessens the load on a host, allowing for availability and/or internal logic errors to be resolved.</p>
-            
+
         </section>
-        
+
     </section>
-    
+
     <section data-requirement="must">
-        
+
         <h1>AdjInTranslate</h1>
-        
+
         <p>The <var>AdjInTranslate</var> operation accepts a <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> object and converts recognized keys in the <var>use</var> and <var>require</var> properties of the <var>original</var> section and the array elements of the <var>journal</var> section, if defined, into human-readable keys.</p>
-        
+
         <p data-status="non-normative">While all <var>use</var> and <var>require</var> keys in <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects must be encoded as machine-readable UUIDs corresponding to <a href="core#attribute-specifications">Attribute Specifications (Core)</a>, working directly with UUIDs is considered cumbersome for end users. This operation allows for intra-system treatment of attributes under a common name. This is especially useful for <a href="module/local#outlet"><var>Outlets</var> (Local Module)</a>, which are administered by human users who prefer human-readable names.</p>
-                
+
         <p>For the payload <var>original</var> property and, if set, for each element in the <var>journal</var> property, this operation must follow this algorithm:</p>
-        
+
         <ol>
             <li>
                 For each property in <var>use</var> property, if defined, and for each index in <var>require</var> property, if defined:
@@ -195,9 +195,9 @@
                 </ol>
             </li>
         </ol>
-        
+
         <section data-status='non-normative'>
-                    
+
             <h1>Implementation Example</h1>
 
             <pre data-lang="ruby"># Assume: payload object with:
@@ -207,7 +207,7 @@
 # Assume: translate(k) method returns human-readable mapping for UUID
 
 ['use', 'require'].each { |type|
-  
+
   if payload['original'].include? type
 
     payload['original'][type] = Hash[payload['original'][type].map { |k,v|
@@ -234,17 +234,17 @@
 }</pre>
 
         </section>
-        
+
     </section>
-    
+
     <section data-requirement="must">
-        
+
         <h1>AdjInSquash</h1>
-        
+
         <p>The <var>AdjInSquash</var> operation accepts an object that must have been a valid <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> object and must have been passed through <a href='#adjintranslate'><var>AdjInTranslate</var></a>. This operation produces an <a href='#module/payload#localpayload'><var>LocalPayload</var> (Payload Module)</a> by constructing an <var>attributes</var> section from the <var>original</var> property and optionally the <var>journal</var> section, if defined.</p>
-        
+
         <p>This operation must following this algorithm:</p>
-        
+
         <ol>
             <li>If <var>attributes</var> property already exists, discard it.</li>
             <li>Copy <var>original</var> property into new <var>attributes</var> property.</li>
@@ -258,19 +258,19 @@
                 </ol>
             </li>
         </ol>
-        
+
         <p>An <a href='core#attribute-specification'>Attribute Specification</a> may define custom rules for how (3)(a)(i) is performed. If an attribute specification does not define custom rules, the value must be copied directly from the entry into the attribute section by key name.</p>
-        
+
         <section data-status='non-normative'>
-                    
+
             <h1>Implementation Example</h1>
 
             <pre data-lang="ruby"># Assume: payload object with:
 #  - original: PayloadTransitAttributes object
 #  - journal: undefined or array of PayloadTransitJournalEntry objects
-# Assume: custom_apply_attributes?(key) returns true if custom operation for key
-# Assume: apply_attributes(key, payload, value) method applies the value to 
-#                  payload attribute by key with custom operation defined by key
+# Assume: custom_attribute_squash?(key) returns true if custom squash for key
+# Assume: custom_attribute_squash(key, type, payload, value) method applies the
+#            value to payload attribute by key with custom squash defined by key
 
 payload['attributes'] = payload['original']
 
@@ -280,12 +280,12 @@ if payload.include? 'journal'
 
     payload['journal'].each { |entry|
 
-      entry.each { |key, value|
+      entry[type].each { |key, value|
 
-        if custom_apply_attributes? key
-          apply_attributes(key, payload, value) 
+        if custom_attribute_squash? key
+          custom_attribute_squash(key, type, payload, value)
         else
-          payload['attributes'][key] = value
+          payload['attributes'][type][key] = value
         end
 
       }
@@ -297,25 +297,25 @@ if payload.include? 'journal'
 end</pre>
 
         </section>
-        
+
     </section>
-    
+
     <section data-requirement="must">
-        
+
         <h1>AdjInFilter</h1>
-        
+
         <p>The <var>AdjInFilter</var> operation determines whether the system may process a <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> object. A payload that fails this operation must not be delivered to any intra-system outlet or shared with any inter-system peer.</p>
-        
+
         <p>This operation must not pass unless the following conditions are all true:</p>
-        
+
         <ol>
             <li>All keys under <var>attributes.require</var> must be recognized.</li>
             <li>All key-value pairs under <var>attributes.require</var> must validate per the <a href='core#attribute-specification'>attribute specification</a> referred to by key.</li>
             <li>If the logical entity represented by the payload is tracked in a persistence layer, <var>attributes.timestamp</var> should be more recent than the value in persistence.</li>
         </ol>
-        
+
         <p>An implementation may define additional criteria for this operation.</p>
-        
+
     </section>
-    
+
 </main>
