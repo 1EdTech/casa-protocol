@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-    
+
     <head>
-        
+
         <title>CASA</title>
-        
+
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        
-        
+
+
         <script type="text/javascript" src="asset/vendor/jquery.js"></script>
         <script type="text/javascript" src="asset/vendor/jquery.ba-hashchange.js"></script>
         <script type="text/javascript" src="asset/vendor/jquery.ariaMapper.js"></script>
@@ -17,17 +17,17 @@
         <script type="text/javascript" src="asset/vendor/ejs_views.js"></script>
         <script type="text/javascript" src="asset/vendor/prettify/prettify.js"></script>
         <script type="text/javascript" src="asset/viewer.js"></script>
-        
+
         <link rel="stylesheet" href="asset/vendor/prettify/prettify.css">
         <link rel="stylesheet" href="asset/outline.css">
-        
+
         <link rel="stylesheet" href="asset/style.css">
         <script type="text/javascript" src="asset/style.js"></script>
-        
+
     </head>
-    
+
     <body>
-        
+
         <div id="nav-suite-container">
             <nav id="nav-suite" role="navigation">
                 <header>
@@ -46,16 +46,19 @@
                         </ul>
                     </li>
                     <li>
-                        <h1 style="color: #777;">Attributes</h1>
+                        <h1>Attributes</h1>
+                        <ul>
+                            <li><a href="#Attributes/Foundation">Foundational</a></li>
+                        </ul>
                     </li>
                 </ul>
             </nav>
         </div>
-        
+
         <div id="content">
-            
+
         </div>
-        
+
         <div id="controls-container">
             <form id="controls">
                 <h1>View Options</h1>
@@ -65,38 +68,38 @@
                 <label><input type="checkbox" id="hide_code"> Hide Code Blocks</label>
             </form>
         </div>
-        
+
         <script type="text/javascript">
             $(window).hashchange( function(){
-                
+
                 var hash = location.hash,
                     page = hash.substring(1)
-                
+
                 if(hash == '')
                     page = 'Core'
-                
+
                 VIEWER.go(page, VIEWER.page ? 200 : 0)
-                
+
                 $('#menu a').each(function(){
                     var that = $(this);
                     that[ that.attr( 'href' ) === hash.split('/')[0] ? 'addClass' : 'removeClass' ]('active');
                 })
             })
             $(window).hashchange();
-            
+
             $('#hide_non-normative').change(function(){
                 var fn = $(this).prop('checked') ? 'addClass' : 'removeClass';
                 $('#content')[fn]('hide_non-normative');
             })
-            
+
             $('#hide_status-notices').change(function(){
                 var fn = $(this).prop('checked') ? 'addClass' : 'removeClass';
                 $('#content')[fn]('hide_status-notices');
             })
-            
+
             $('#show_issues-only').change(function(){
                 //var fn = $(this).prop('checked') ? 'hide' : 'show';
-                var ele = $('#content *').filter(function(){ 
+                var ele = $('#content *').filter(function(){
                     if($(this).hasClass('issue') || $(this).closest('.issue').length || $(this).find('.issue').length)
                         return false;
                     if($(this).is('header') || $(this).closest('header').length)
@@ -111,7 +114,7 @@
                     ele.css('display','')
                 }
             })
-            
+
             $('#hide_code').change(function(){
                 var checked = $(this).prop('checked');
                 $('pre.prettyprint').each(function(){
@@ -129,9 +132,9 @@
                     }
                 })
             })
-            
+
         </script>
-        
+
     </body>
-    
+
 </html>

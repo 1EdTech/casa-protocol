@@ -1,0 +1,39 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "id": "d59e3a1f-c034-4309-a282-60228089194e",
+  "title": "authors",
+  "oneOf": [
+    {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref":"#/definitions/author"
+      }
+    },
+    {
+      "type": "object",
+      "$ref":"#/definitions/author"
+    }
+  ],
+  "definitions": {
+    "author": {
+      "type":"object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the author"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Author's email address"
+        },
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the author's website"
+        }
+      }
+    }
+  }
+}

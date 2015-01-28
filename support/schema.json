@@ -1,6 +1,6 @@
 {
    "$schema":"http://json-schema.org/draft-04/schema#",
-   "uri":"http://localhost:8080/engine/schema",
+   "id": "http://imsglobal.github.io/casa-protocol/support/schema.json#",
    "type":"object",
    "properties":{
       "object":{

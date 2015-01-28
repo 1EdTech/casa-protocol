@@ -1,0 +1,39 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "id": "http://imsglobal.github.io/casa-protocol/support/attributes/schema.json#",
+  "type": "object",
+  "properties": {
+    "1f2625c2-615f-11e3-bf13-d231feb1dc81": {
+      "$ref": "http://imsglobal.github.io/casa-protocol/support/attributes/1f2625c2-615f-11e3-bf13-d231feb1dc81/schema.json#"
+    },
+    "b7856963-4078-4698-8e95-8feceafe78da": {
+      "$ref": "http://imsglobal.github.io/casa-protocol/support/attributes/b7856963-4078-4698-8e95-8feceafe78da/schema.json#"
+    },
+    "c80df319-d5da-4f59-8ca3-c89b234c5055": {
+      "$ref": "http://imsglobal.github.io/casa-protocol/support/attributes/c80df319-d5da-4f59-8ca3-c89b234c5055/schema.json#"
+    },
+    "c6e33506-b170-475b-83e9-4ecd6b6dd42a": {
+      "$ref": "http://imsglobal.github.io/casa-protocol/support/attributes/c6e33506-b170-475b-83e9-4ecd6b6dd42a/schema.json#"
+    },
+    "d59e3a1f-c034-4309-a282-60228089194e": {
+      "$ref": "http://imsglobal.github.io/casa-protocol/support/attributes/d59e3a1f-c034-4309-a282-60228089194e/schema.json#"
+    },
+    "273c148d-de83-499e-b554-4cac9b262ab6": {
+      "$ref": "http://imsglobal.github.io/casa-protocol/support/attributes/273c148d-de83-499e-b554-4cac9b262ab6/schema.json#"
+    }
+  },
+  "patternProperties":{
+    "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$":{
+      "type":[
+        "array",
+        "boolean",
+        "integer",
+        "null",
+        "number",
+        "object",
+        "string"
+      ]
+    }
+  },
+  "additionalProperties":false
+}

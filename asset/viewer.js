@@ -105,34 +105,72 @@ var VIEWER = new function(){
                 $('#hide_status-notices').change();
                 $('#hide_code').change();
 
-                var finish = function(){
-                    prettyPrint();
-                    $('body').scrollTop(0)
-                    $('#content, #colophon').fadeIn(fadeTime, function(){
-                        if(anchor && $('#s-'+anchor).length > 0){
-                            $("html,body").animate({ scrollTop: $('#s-'+anchor).position().top - 30 }, "slow")
-                        }
-                    });
-                }
-                
                 $('[data-lang]').each(function(){
                     $(this).addClass('prettyprint');
                     if($(this).attr('data-lang'))
                            $(this).addClass('lang-'+$(this).attr('data-lang'))
                 })
-                
-                if($('[data-schema]').length == 0)
-                    finish();
-                else{
-                    $.get('support/schema.json', function(data){
-                        $('[data-schema]').each(function(){
-                            $(this).addClass('prettyprint')
-                                   .addClass('lang-json')
-                                   .html(JSON.stringify(data.definitions[$(this).attr('data-schema')], null, 2));
-                        })
-                        finish();
-                    })
-                }
+
+                // This is an array of functions that chain through themselves
+                var loadChain = [
+
+                    // Load JSON schema from sub-component of the protocol schema
+                    function(idx){
+                        if($('[data-schema]').length == 0)
+                            loadChain[idx+1](idx+1);
+                        else{
+                            $.get('support/schema.json', function(data){
+                                $('[data-schema]').each(function(){
+                                    $(this).addClass('prettyprint')
+                                        .addClass('lang-json')
+                                        .html(JSON.stringify(data.definitions[$(this).attr('data-schema')], null, 2));
+                                })
+                                loadChain[idx+1](idx+1);
+                            })
+                        }
+                    },
+
+                    // Load JSON schema from a schema file for an attribute
+                    function(idx){
+                        if($('[data-attribute-schema]').length == 0)
+                            loadChain[idx+1](idx+1);
+                        else{
+                            var ajaxRequests = [],
+                                requested = [];
+                            $('[data-attribute-schema]').each(function(){
+                                var $ele = $(this),
+                                    attribute = $ele.attr('data-attribute-schema');
+                                if(requested.indexOf(attribute) === -1){
+                                    requested.push(attribute);
+                                    ajaxRequests.push($.get('support/attributes/'+attribute+'/schema.json', function(data){
+                                        $ele.addClass('prettyprint')
+                                            .addClass('lang-json')
+                                            .html(JSON.stringify(data, null, 2));
+                                    }));
+                                }
+                            })
+                            $.when.apply( $, ajaxRequests ).then(function() {
+                                loadChain[idx+1](idx+1);
+                            }, function() {
+                                loadChain[idx+1](idx+1);
+                            });
+                        }
+                    },
+
+                    // Finish rendering the page
+                    function(idx){
+                        prettyPrint();
+                        $('body').scrollTop(0)
+                        $('#content, #colophon').fadeIn(fadeTime, function(){
+                            if(anchor && $('#s-'+anchor).length > 0){
+                                $("html,body").animate({ scrollTop: $('#s-'+anchor).position().top - 30 }, "slow")
+                            }
+                        });
+                    }
+                ];
+
+                // Start the loadChain that concludes with render completion
+                loadChain[0](0);
             
             });
         

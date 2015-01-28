@@ -1,0 +1,10 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "id": "c6e33506-b170-475b-83e9-4ecd6b6dd42a",
+  "title": "tags",
+  "type":"array",
+  "items":{
+    "type": "string",
+    "uniqueItems": true
+  }
+}

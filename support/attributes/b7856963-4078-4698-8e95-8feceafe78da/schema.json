@@ -1,0 +1,6 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "id": "b7856963-4078-4698-8e95-8feceafe78da",
+  "title": "description",
+  "type":"string"
+}

@@ -1,0 +1,157 @@
+<header>
+    <hgroup>
+        <h2>Community App Sharing Architecture</h2>
+        <h1>Foundational Attributes</h1>
+    </hgroup>
+</header>
+
+<footer>
+
+    <section>
+        <h1>Status of this Memo</h1>
+        <p>This memorandum specifies a set of attributes commonly used by CASA implementations to define basic details about an application. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+    </section>
+
+    <section>
+        <h1>Copyright Notice</h1>
+        <p>Copyright (c) 2014 - 2015 IMS Global Learning Consortium, Inc. All rights reserved.</p>
+    </section>
+
+    <section>
+
+        <h1>Terminology</h1>
+        <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
+        <p>The key word <strong>property</strong> (alternatively: <strong>attribute</strong> or <strong>section</strong>) in this document is to be interpreted as described by <strong><a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf" rel="external">ECMA-262 Edition 5.1</a></strong>.</p>
+        <p>The key words <strong>string</strong>, <strong>array</strong>, <strong>object</strong>, <strong>name/value pair</strong> (alternatively: <strong>key-value pair</strong>) and <strong>JavaScript Object Notation</strong> (alternatively: <strong>JSON</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4627.txt" rel="external">RFC 4627</a></strong> ["The application/json Media Type for JavaScript Object Notation (JSON)"].</p>
+        <p>The key word <strong>JSON Schema</strong> in this document is to be interpreted as a JSON format defined by the <strong><a href="http://json-schema.org/latest/json-schema-core.html" rel="external">json-schema-core</a></strong> ["JSON Schema: core definitions and terminology"] and <strong><a href="http://json-schema.org/latest/json-schema-validation.html" rel="external">json-schema-validation</a></strong> ["JSON Schema: interactive and non interactive validation"] specifications.</p>
+    </section>
+
+</footer>
+
+<main>
+
+    <section data-status="non-normative">
+
+        <h1>Overview</h1>
+
+        <p>The attributes defined within this specification include:</p>
+
+        <div class="overflow-scroll">
+            <table class="full-width centered-columns no-wrap">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>UUID</th>
+                    <th>Type</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><a href="Attributes/Foundation#title">title</a></td>
+                    <td>1f2625c2-615f-11e3-bf13-d231feb1dc81</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td><a href="Attributes/Foundation#description">description</a></td>
+                    <td>b7856963-4078-4698-8e95-8feceafe78da</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td><a href="Attributes/Foundation#categories">categories</a></td>
+                    <td>c80df319-d5da-4f59-8ca3-c89b234c5055</td>
+                    <td>array[string]</td>
+                </tr>
+                <tr>
+                    <td><a href="Attributes/Foundation#tags">tags</a></td>
+                    <td>c6e33506-b170-475b-83e9-4ecd6b6dd42a</td>
+                    <td>array[string]</td>
+                </tr>
+                <tr>
+                    <td><a href="Attributes/Foundation#authors">authors</a></td>
+                    <td>d59e3a1f-c034-4309-a282-60228089194e</td>
+                    <td>array[object] or object</td>
+                </tr>
+                <tr>
+                    <td><a href="Attributes/Foundation#organization">organization</a></td>
+                    <td>273c148d-de83-499e-b554-4cac9b262ab6</td>
+                    <td>object</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="title">
+            Title<br><small><dfn>1f2625c2-615f-11e3-bf13-d231feb1dc81</dfn></small>
+        </h1>
+
+        <p>The attribute <var>1f2625c2-615f-11e3-bf13-d231feb1dc81</var> is a string that defines the title of an app.</p>
+
+        <pre data-attribute-schema="1f2625c2-615f-11e3-bf13-d231feb1dc81"></pre>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="description">
+            Description<br><small><dfn>b7856963-4078-4698-8e95-8feceafe78da</dfn></small>
+        </h1>
+
+        <p>The attribute <var>b7856963-4078-4698-8e95-8feceafe78da</var> is a string that provides a description for an app.</p>
+
+        <pre data-attribute-schema="b7856963-4078-4698-8e95-8feceafe78da"></pre>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="categories">
+            Categories<br><small><dfn>c80df319-d5da-4f59-8ca3-c89b234c5055</dfn></small>
+        </h1>
+
+        <p>The attribute <var>c80df319-d5da-4f59-8ca3-c89b234c5055</var> is an array of strings that define categories for an app.</p>
+
+        <pre data-attribute-schema="c80df319-d5da-4f59-8ca3-c89b234c5055"></pre>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="tags">
+            Tags<br><small><dfn>c6e33506-b170-475b-83e9-4ecd6b6dd42a</dfn></small>
+        </h1>
+
+        <p>The attribute <var>c6e33506-b170-475b-83e9-4ecd6b6dd42a</var> is an array of strings that define tags for an app.</p>
+
+        <pre data-attribute-schema="c6e33506-b170-475b-83e9-4ecd6b6dd42a"></pre>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="authors">
+            Authors<br><small><dfn>d59e3a1f-c034-4309-a282-60228089194e</dfn></small>
+        </h1>
+
+        <p>The attribute <var>d59e3a1f-c034-4309-a282-60228089194e</var> is an object or an array of objects that provide name and contact details for one or more authors of an app.</p>
+
+        <pre data-attribute-schema="d59e3a1f-c034-4309-a282-60228089194e"></pre>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="organization">
+            Organization<br><small><dfn>273c148d-de83-499e-b554-4cac9b262ab6</dfn></small>
+        </h1>
+
+        <p>The attribute <var>273c148d-de83-499e-b554-4cac9b262ab6</var> is an object that provides the name and basic information about the authoring organization for an app.</p>
+
+        <pre data-attribute-schema="273c148d-de83-499e-b554-4cac9b262ab6"></pre>
+
+    </section>
+
+</main>
