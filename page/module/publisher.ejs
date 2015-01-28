@@ -6,34 +6,34 @@
 </header>
 
 <footer>
-    
+
     <section>
         <h1>Status of this Memo</h1>
         <p>This memorandum specifies the CASA Protocol Publisher Module, which defines payloads must be presented for inter-system communication. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
     </section>
-    
+
     <section>
         <h1>Copyright Notice</h1>
-        <p>Copyright (c) 2014 IMS Global Learning Consortium, Inc. All rights reserved.</p>
+        <p>Copyright (c) 2014 - 2015 IMS Global Learning Consortium, Inc. All rights reserved.</p>
     </section>
-    
+
     <section>
-        
+
         <h1>Requirements</h1>
-        
+
         <p>The following specifications must be implemented with this module:</p>
-        
+
         <dl>
             <dt><a href="core">CASA Protocol Core</a></dt>
             <dd>Must implement basic protocol definition.</dd>
             <dt><a href="module/payload#transitpayload">CASA Protocol Payload Module - TransitPayload</a></dt>
             <dd>Must implement TransitPayload; may implement with journal attribute.</dd>
         </dl>
-        
+
     </section>
-    
+
     <section>
-        
+
         <h1>Terminology</h1>
         <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
         <p>The key words <strong>HTTP request</strong>, <strong>HTTP response</strong>, <strong>HTTP header</strong>, <strong>HTTP GET Request</strong>, <strong>HTTP Response Status Code</strong> (alternatively: <strong>response status</strong>), <strong>Client Error 4xx</strong> (alternatively: <strong>4xx Error</strong>) and <strong>Server Error 5xx</strong> (alternatively: <strong>5xx Error</strong>) in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2616.txt" rel="external">RFC 2616</a></strong> ["Hypertext Transfer Protocol -- HTTP/1.1"].</p>
@@ -42,33 +42,33 @@
         <p>The key word <strong>property</strong> (alternatively: <strong>attribute</strong> or <strong>section</strong>) in this document is to be interpreted as described by <strong><a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf" rel="external">ECMA-262 Edition 5.1</a></strong>.</p>
         <p>The key words <strong>string</strong>, <strong>array</strong>, <strong>object</strong>, <strong>name/value pair</strong> (alternatively: <strong>key-value pair</strong>) and <strong>JavaScript Object Notation</strong> (alternatively: <strong>JSON</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4627.txt" rel="external">RFC 4627</a></strong> ["The application/json Media Type for JavaScript Object Notation (JSON)"].</p>
         <p>The key word <strong>JSON Schema</strong> in this document is to be interpreted as a JSON format defined by the <strong><a href="http://json-schema.org/latest/json-schema-core.html" rel="external">json-schema-core</a></strong> ["JSON Schema: core definitions and terminology"] and <strong><a href="http://json-schema.org/latest/json-schema-validation.html" rel="external">json-schema-validation</a></strong> ["JSON Schema: interactive and non interactive validation"] specifications.</p>
-        
+
     </section>
-    
+
 </footer>
 
 <main>
-    
+
     <section data-requirement="must">
-        
+
         <h1>SendOut</h1>
-        
+
         <p>The <dfn>SendOut</dfn> operation publishes payloads to other autonomous systems. It responds to an HTTP GET request on the <var>/out/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a Client Error 4xx or Server Error 5xx.</p>
-        
+
         <section data-status="non-normative">
-            
+
             <p>The HTTP GET request that initiates the <var>SendOut</var> operation is the only means of inter-system communication. By definition, the Community App Sharing Architecture is pull-based from the perspective of autonomous systems, allowing each system to determine its own refresh and expiration policies.</p>
-            
+
         </section>
-        
+
         <section>
-            
+
             <h1 data-ref="sendout-request">Processing Request</h1>
-            
+
             <p data-status="non-normative">The request <var>GET /out/payloads</var> initiated by the client should include <var>Accept</var>, <var>Accept-Charset</var>, <var>Accept-Encoding</var> and <var>Content-Type</var> headers.</p>
-            
+
             <p>The following rules should be applied when handling a request:</p>
-            
+
             <dl>
                 <dt><var>Accept Header</var></dt>
                 <dd><var>application/json</var> should be specified for this header. The omission of this header may be assumed by a receiver as <var>application/json</var>. If the client sends an <var>Accept</var> header without <var>application/json</var>, a 4xx Error must be thrown.</dd>
@@ -102,29 +102,29 @@
                 <p>If a host will not fulfill a <var>SendOut</var> request because of access controls, it must respond with <var>403 Forbidden</var>.</p>
 
             </section>
-            
+
         </section>
-        
+
         <section>
-            
+
             <h1 data-ref="sendout-success">Success Response</h1>
-            
+
             <p>If a host will fulfill the request, it must respond with a <var>200 OK</var> response status.</p>
-            
+
             <p>A response body of a <var>200 OK</var> response must be an array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects. This response must be JSON-formatted and use the <var>utf-8</var> charset. Consequently, this response should include <var>Content-Type: application/json;charset=utf-8</var> header, although this may be implied by omission. The host must not send any other <var>Content-Type</var> header.</p>
-            
+
             <p data-status="non-normative">Consult <a href="module/receiver#receivein-success-response"><var>ReceiveIn</var> (Receiver Module)</a> for client-side validation rules. The host must conform to these rules for the response to be accepted.</p>
-                
+
         </section>
-        
+
         <section>
-            
+
             <h1 data-ref="sendout-error">Error Response</h1>
-            
+
             <p>If a host will not fulfill the request, it must respond with a 4xx Error or 5xx Error.</p>
-            
+
             <p>The following status codes are recommended:</p>
-            
+
             <dl>
                 <dt>400 Bad Request</dt>
                 <dd>The request body contained malformed JSON.</dd>
@@ -136,11 +136,11 @@
                 <dd>The request specified a non-conforming <var>Content-Type</var> header.</dd>
                 <dd></dd>
             </dl>
-            
+
             <p>An error response may include a message body. If it includes the message body, it must be a plaintext body describing the error.</p>
-        
+
         </section>
-        
+
     </section>
-    
+
 </main>

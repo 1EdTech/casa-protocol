@@ -12,7 +12,7 @@
     </section>
     <section>
         <h1>Copyright Notice</h1>
-        <p>Copyright (c) 2014 IMS Global Learning Consortium, Inc. All rights reserved.</p>
+        <p>Copyright (c) 2014 - 2015 IMS Global Learning Consortium, Inc. All rights reserved.</p>
     </section>
     <section>
         <h1>Terminology</h1>
@@ -21,19 +21,19 @@
 </footer>
 
 <main>
-    
-    <section> 
-        
+
+    <section>
+
         <h1>Overview</h1>
-        
+
         <p>The CASA Protocol enables the sharing of knowledge about web applications throughout a peer-to-peer topology with support for heterogeneous and asymmetric world views. Through this protocol, each peer develops a knowledge of the ecosystem as suited for its needs, taking into consideration trust relationships and policies around acceptance and sharing.<p>
 
         <p>The motivating use case for this protocol is web app stores, such as in the context of a mobile dashboard, an IMS LTI Tool Consumer or a W3C Packaged Web Apps launcher. This protocol originated as an attempt to serve these use cases; however, given its flexibility, it is generic enough to comport with other use cases whereby URIs and metadata are propagated across a peer-to-peer topology.</p>
-        
+
         <section data-status="non-normative">
-            
+
             <h1>Background</h1>
-            
+
             <p>Information propagation throughout a network is conventionally handled as either:</p>
 
             <dl>
@@ -42,36 +42,36 @@
                 <dt>Star Topology</dt>
                 <dd>Nodes in an infrastructure each contact one central node to share their knowledge and collect knowledge from others. This approach requires a homogeneous world view and centralized trust, and it places significant load and responsibility upon the central aggregator.</dd>
             </dl>
-            
+
             <p>Neither of these approaches adequately model the real world. Traditionally, web portals build their ecosystem by directly contacting trusted peers, learning about apps they offer and apps about which they know. In such a scenario, neither global knowledge nor a fully-connected mesh are viable, nor will consensus ever be achieved for a central hub. Consequently, CASA implements an alternative peer-to-peer network that, while more complex, allows for the formation of small-world topologies that more adequately model real-world relationships.</p>
-            
+
         </section>
-        
+
         <section>
-            
+
             <h1>Approach</h1>
-            
+
             <p>The CASA protocol presents a model that regards each organization in the network as an autonomous system, whereby each autonomous system:</p>
-            
+
             <ol>
                 <li>defines its own trust, acceptance and sharing policies;</li>
                 <li>queries neighboring systems and processes their responses;</li>
                 <li>responds to neighboring systems when queried;</li>
                 <li>produces front-end interfaces with which end users may interact.</li>
             </ol>
-            
+
             <p>Information is conveyed intra- and inter- system by way of payloads.</p>
-            
+
             <p>A <dfn>payload</dfn> is a logical representation of an application and its associated metadata.</p>
-            
+
             <p><dfn>Intra-system communication</dfn> is defined as communication within the autonomous system, such as with a front-end user interface.</p>
-            
+
             <p><dfn>Inter-system communication</dfn> is defined as communication between autonomous system, such as when issuing a request to another system or responding to another system.</p>
-            
+
             <section>
-                
+
                 <h1>Logical Systems</h1>
-            
+
                 <p>Each autonomous system may recognize any of three logical, and in some cases concrete, systems:</p>
 
                 <dl>
@@ -82,11 +82,11 @@
                     <dt>Outlet</dt>
                     <dd>A intra-organizational node through which information is exposed to organizational users.</dd>
                 </dl>
-            
+
             </section>
-            
+
             <section>
-                
+
                 <h1>Automated Processes</h1>
 
                 <p>For automation, each autonomous system may implement a number of operations, either logical or concrete:</p>
@@ -107,17 +107,17 @@
                     <dt>AdjOutTranslate</dt>
                     <dd>Translates payloads from human-readable to machine-readable.</dd>
                 </dl>
-                
+
             </section>
-            
+
         </section>
-    
+
     <section>
-        
+
         <h1>Organization</h1>
-        
+
         <section data-status="non-normative">
-        
+
             <p>Large specifications present a number of problems:</p>
 
             <ul>
@@ -125,22 +125,22 @@
                 <li>For oversight, they're hard to govern.</li>
                 <li>For implementers, they're hard to understand.</li>
             </ul>
-        
+
         </section>
-        
+
         <p>The CASA Protocol is implemented as a combination of:</p>
-        
+
         <dl>
             <dt>Protocol Modules</dt>
             <dd>Implementation guidelines for a core function of the architecture.</dd>
             <dt>Attribute Specifications</dt>
             <dd>Structural definitions for particular attributes that may be marked for use or as required by a payload.</dd>
         </dl>
-        
+
         <p>Each autonomous system must implement one or more Protocol Modules ("modules") and zero or more Attribute Specifications ("specifications"). Modules dictate the behaviors of a system, and specifications dictate how payload metadata is interpreted.</p>
-        
+
         <section>
-            
+
             <h1>Protocol Modules</h1>
 
             <dl>
@@ -155,7 +155,7 @@
                 <dt><a href="Module/Local">Local Module</a></dt>
                 <dd>Defines intra-system communication for sharing payloads with outlets.</dd>
             </dl>
-        
+
             <section>
 
                 <h1>Conformance</h1>
@@ -172,19 +172,19 @@
                 </dl>
 
             </section>
-            
+
         </section>
-        
+
         <section data-status="incomplete">
-            
+
             <h1>Attribute Specifications</h1>
-            
+
         </section>
-        
+
     </section>
-        
+
         <section data-status="non-normative">
-        
+
             <h1>Use Cases</h1>
 
             <section>
@@ -218,7 +218,7 @@
             </section>
 
         </section>
-        
+
     </section>
-    
+
 </main>

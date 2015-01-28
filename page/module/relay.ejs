@@ -6,23 +6,23 @@
 </header>
 
 <footer>
-    
+
     <section>
         <h1>Status of this Memo</h1>
         <p>This memorandum specifies the CASA Protocol Relay Module, which defines how to make inter-system queries to retrieve payloads and then publish those payloads inter-system. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
     </section>
-    
+
     <section>
         <h1>Copyright Notice</h1>
-        <p>Copyright (c) 2014 IMS Global Learning Consortium, Inc. All rights reserved.</p>
+        <p>Copyright (c) 2014 - 2015 IMS Global Learning Consortium, Inc. All rights reserved.</p>
     </section>
-    
+
     <section>
-        
+
         <h1>Requirements</h1>
-        
+
         <p>The following specifications must be implemented with this module:</p>
-        
+
         <dl>
             <dt><a href="core">CASA Protocol Core</a></dt>
             <dd>Must implement basic protocol definition.</dd>
@@ -41,26 +41,26 @@
             <dt><a href="module/receiver#adjinsquash">CASA Protocol Receiver Module - AdjInFilter</a></dt>
             <dd>Must implement AdjInFilter; may implement with custom rules.</dd>
         </dl>
-        
+
     </section>
-    
+
     <section>
-        
+
         <h1>Terminology</h1>
         <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
-        
+
     </section>
-    
+
 </footer>
 
 <main>
-    
+
     <section data-requirement="must">
-        
+
         <h1>Data Path</h1>
-        
+
         <p>To receive a payload received as described by the <a href="module/receiver">Receiver Module</a>:</p>
-        
+
         <ol>
             <li>Create empty array for payloads response.</li>
             <li>
@@ -74,17 +74,17 @@
             </li>
             <li>Send payloads response array via <a href="module/publisher#sendout"><var>SendOut</var> (Publisher Module)</a>.</li>
         </ol>
-        
+
         <p>Upon successful completion of this data path, a system shall have produced a set of valid <a href="module/payloads#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects for inter-system retrieval by a peering system.</p>
-        
+
     </section>
-    
+
     <section data-requirement="must">
-        
+
         <h1>AdjOutTransform</h1>
-        
+
         <p>The <dfn>AdjOutTransform</dfn> operation makes changes to all payloads before they are shared outbound. This operation must be performed over any payload before it may be conveyed beyond the boundaries of the system.</p>
-            
+
         <p>This operation must perform the following transformations:</p>
 
         <ol>
@@ -95,35 +95,35 @@
         <p>An implementation may define additional criteria for this operation. If an implementation intends to change an attribute, it must add an entry in the <var>journal</var> section. This entry must contain the information to perform the transformation, following the attribute specification if defined, or else simply the new value to be copied in. If the implementation sends the <var>attributes</var> section, the value must be changed in that section as well.</p>
 
     </section>
-    
+
     <section data-requirement="must">
-        
+
         <h1>AdjOutFilter</h1>
-        
+
         <p>The <var>AdjOutFilter</var> operation determines whether the system may share a payload beyond its boundaries. A payload that fails this operation must not be delivered to any inter-system peer.</p>
-        
+
         <p>This operation must not pass unless the following conditions are all true:</p>
-        
+
         <ol>
             <li>The value of <var>attributes.share</var> must not be <var>false</var>.</li>
         </ol>
-        
+
         <p>An implementation may define additional criteria for this operation.</p>
-        
+
     </section>
-    
+
     <section data-requirement="must">
-        
+
         <h1>AdjOutTranslate</h1>
-        
+
         <p>The <dfn>AdjOutTranslate</dfn> operation accepts a <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> object and converts keys in the <var>use</var> and <var>require</var> properties of the <var>original</var> section, <var>attributes</var> section, if defined, and the array elements of the <var>journal</var> section, if defined, into their proper UUID.</p>
-        
+
         <p data-status="non-normative">This operation is the inverse of <a href="module/receiver#adjintranslate"><var>AdjInTranslate</var> (Receiver Module)</a>.</p>
-        
+
         <p data-status="non-normative">While it may be more useful intra-system to use a define set of strings for attribute key names, this may create namespace conflicts if more than one attribute exists for similar purpose. Consequently, inter-system communication of <var>use</var> and <var>require</var> attributes must use UUIDs from the corresponding <a href="core#attribute-specifications">attribute specifications</a> for all key names.</p>
-        
+
         <p>For payload <var>original</var> property, the <var>attributes</var> property (if set), and for each element in the <var>journal</var> property (if set), this operation must follow this algorithm:</p>
-        
+
         <ol>
             <li>
                 For each property in <var>use</var> property, if defined:
@@ -142,13 +142,13 @@
                 </ol>
             </li>
         </ol>
-        
+
         <p>This operation must not share any payload with a <var>use</var> or <var>require</var> key-value pair where the key does not conform to RFC 4122. For the <var>use</var> section, it may remove the key-value pair from the object if it does not conform and then continue with the remaining attributes; for the <var>require</var> section, it must drop the entire payload and must not continue.</p>
-        
+
         <p data-status='non-normative'>Once a payload has proceeded along the <a href='#data-path'>data path</a> and through <var>AdjOutTranslate</var>, it is ready for transmission via <a href='module/publisher#sendout'><var>SendOut</var> (Publisher Module)</a>.</p>
-        
+
         <section data-status='non-normative'>
-                    
+
             <h1>Implementation Example</h1>
 
             <pre data-lang="ruby"># Assume: payload object with:
@@ -249,7 +249,7 @@ if payload.include? 'journal'
 end</pre>
 
         </section>
-        
+
     </section>
-    
+
 </main>
