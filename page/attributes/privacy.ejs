@@ -1,0 +1,262 @@
+<header>
+    <hgroup>
+        <h2>Community App Sharing Architecture</h2>
+        <h1>Privacy Attributes</h1>
+    </hgroup>
+</header>
+
+<footer>
+
+    <section>
+        <h1>Status of this Memo</h1>
+        <p>This memorandum specifies a set of attributes used by CASA implementations to describe the privacy policies of an application. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+    </section>
+
+    <section>
+        <h1>Copyright Notice</h1>
+        <p>Copyright (c) 2014 - 2015 IMS Global Learning Consortium, Inc. All rights reserved.</p>
+    </section>
+
+    <section>
+
+        <h1>Terminology</h1>
+        <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
+        <p>The key word <strong>property</strong> (alternatively: <strong>attribute</strong> or <strong>section</strong>) in this document is to be interpreted as described by <strong><a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf" rel="external">ECMA-262 Edition 5.1</a></strong>.</p>
+        <p>The key words <strong>string</strong>, <strong>array</strong>, <strong>object</strong>, <strong>name/value pair</strong> (alternatively: <strong>key-value pair</strong>) and <strong>JavaScript Object Notation</strong> (alternatively: <strong>JSON</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4627.txt" rel="external">RFC 4627</a></strong> ["The application/json Media Type for JavaScript Object Notation (JSON)"].</p>
+        <p>The key word <strong>JSON Schema</strong> in this document is to be interpreted as a JSON format defined by the <strong><a href="http://json-schema.org/latest/json-schema-core.html" rel="external">json-schema-core</a></strong> ["JSON Schema: core definitions and terminology"] and <strong><a href="http://json-schema.org/latest/json-schema-validation.html" rel="external">json-schema-validation</a></strong> ["JSON Schema: interactive and non interactive validation"] specifications.</p>
+    </section>
+
+</footer>
+
+<main>
+
+    <section data-status="non-normative">
+
+        <h1>Overview</h1>
+
+        <p>The attributes defined within this specification include:</p>
+
+        <div class="overflow-scroll">
+            <table class="full-width centered-columns no-wrap">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>UUID</th>
+                    <th>Type</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><a href="Attributes/Privacy#privacy">privacy</a></td>
+                    <td>63a39b88-2603-4bce-ac5b-8247bf262986</td>
+                    <td>object</td>
+                </tr>
+                <tr>
+                    <td><a href="Attributes/Privacy#privacy_url">privacy_url</a></td>
+                    <td>1d5b3bbe-5715-4064-adb8-65209eeda3fe</td>
+                    <td>string</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="privacy">
+            Privacy<br><small><dfn>63a39b88-2603-4bce-ac5b-8247bf262986</dfn></small>
+        </h1>
+
+        <p>The attribute <var>63a39b88-2603-4bce-ac5b-8247bf262986</var> is an object that defines the privacy properties of an app.</p>
+
+        <p>This object generally contains key-object pairs, where each object is itself a key-object pair. The outer keys represent "classificatons" of data that may be collected; the inner keys represent "types" of sharing that may occur; and the inner values represent if and how sharing is allowed.</p>
+
+        <h3>Classifications</h3>
+
+        <ul>
+            <li><var>session</var></li>
+            <li><var>context</var></li>
+            <li><var>name</var></li>
+            <li><var>contact</var></li>
+            <li><var>preferences</var></li>
+            <li><var>activity</var></li>
+            <li><var>location</var></li>
+            <li><var>demographical</var></li>
+            <li><var>financial</var></li>
+            <li><var>health</var></li>
+            <li><var>purchasing</var></li>
+            <li><var>govid</var></li>
+        </ul>
+
+        <h3>Types</h3>
+
+        <ul>
+            <li><var>system</var></li>
+            <li><var>research</var></li>
+            <li><var>profiling</var></li>
+            <li><var>marketing</var></li>
+            <li><var>context</var></li>
+            <li><var>others</var></li>
+            <li><var>public</var></li>
+        </ul>
+
+        <h3>Values</h3>
+
+        <ul>
+            <li><var>true</var></li>
+            <li><var>&quot;optOut&quot;</var></li>
+            <li><var>&quot;optIn&quot;</var></li>
+            <li><var>false</var></li>
+        </ul>
+
+        <h3>Defaults</h3>
+
+        <p>Logical defaults have been assumed to reduce the overall payload size. These defaults are meant to match expectations for a general "web app" that knows who a user is and what they're doing but that doesn't collect sensitive data such as used for purchasing or related to health or financial records.</p>
+
+        <p>The defaults of the payloads:</p>
+
+        <pre class="prettyprint lang-json">
+{
+  "session": {
+    "system": true, "research": true, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  },
+  "context": {
+    "system": true, "research": true, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  },
+  "name": {
+    "system": true, "research": true, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  },
+  "contact": {
+    "system": true, "research": true, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  },
+  "preferences": {
+    "system": true, "research": true, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  },
+  "activity": {
+    "system": true, "research": true, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  },
+  "location": {
+    "system": true, "research": true, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  },
+  "demographical": {
+    "system": true, "research": true, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  },
+  "financial": {
+    "system": false, "research": false, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  },
+  "health": {
+    "system": false, "research": false, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  },
+  "purchasing": {
+    "system": false, "research": false, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  },
+  "govid": {
+    "system": false, "research": false, "profiling": false, "marketing": false, "context": false, "others": false, "public": false
+  }
+}
+            </pre>
+
+        <h3>Schema</h3>
+
+        <p>The JSON schema for this attribute:</p>
+
+        <pre data-attribute-schema="63a39b88-2603-4bce-ac5b-8247bf262986"></pre>
+
+        <section>
+
+            <h3>Example: Showing Name Publicly</h3>
+
+            <p>This says that the user's name will be shared publicly to all:</p>
+
+            <pre class="prettyprint lang-json">
+{
+    "name": true
+}
+            </pre>
+
+            <h3>Example: Showing Name in Context</h3>
+
+            <p>Tightening the context some, a policy may say that the name will be shared to others in the context of the application (so that, for example, if it's a course forum tool, this would mean that names are shared with other members of the course:</p>
+
+            <pre class="prettyprint lang-json">
+{
+    "name": {
+        "context": true
+    }
+}
+            </pre>
+
+            <p>Implicitly, <var>public</var> is assumed <var>false</var> (as are all other unset info types except <var>system</var> and <var>research</var>).</p>
+
+            <h3>Example: User Opting Out of Showing Name in Context</h3>
+
+            <p>Giving the user a bit more freedom, one can also allow the user to opt out of sharing their name (such as listing them as "Anonymous User" in a forum tool), using the string <var>optOut</var>:</p>
+
+            <pre class="prettyprint lang-json">
+{
+    "name": {
+        "context": "optOut"
+    }
+}
+            </pre>
+
+            <h3>Example: User Opting In to Showing Name in Context</h3>
+
+            <p>Conversely, <var>optIn</var> is also an allowed value, if the user's name were shown in context only if the user said it was okay first:</p>
+
+            <pre class="prettyprint lang-json">
+{
+    "name": {
+        "context": "optIn"
+    }
+}
+            </pre>
+
+            <h3>Example: Contacting Users for Marketing with Purchasing Support and No Location Tracking</h3>
+
+            <p>This says that your application allows the user to opt out of being contacted by name and email for marketing purposes. Further, it says that a user can opt in for activity monitoring for the sake of profiling such as to deliver more targetted search results. It also explicitly states that the user's location is not tracked in any way, and that the system collects details used to allow the user to make purchases.</p>
+
+            <pre class="prettyprint lang-json">
+{
+    "name": {
+        "marketing": "optOut"
+    },
+    "contact": {
+        "marketing": "optOut"
+    },
+    "activity": {
+        "profiling": "optIn"
+    },
+    "location": false,
+    "purchasing": {
+        "system": true
+    }
+}
+            </pre>
+
+            <h3>Example: No Data Collected</h3>
+
+            <pre class="prettyprint lang-json">
+false
+            </pre>
+
+        </section>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="privacy_url">
+            Privacy URL<br><small><dfn>1d5b3bbe-5715-4064-adb8-65209eeda3fe</dfn></small>
+        </h1>
+
+        <p>The attribute <var>1d5b3bbe-5715-4064-adb8-65209eeda3fe</var> is a string that defines the title of an app.</p>
+
+        <pre data-attribute-schema="1d5b3bbe-5715-4064-adb8-65209eeda3fe"></pre>
+
+        <p>The <a href="Attributes/Privacy#privacy">privacy</a> attribute is recommended over this one, but providing the link to a privacy policy is generally regarded as better than nothing at all.</p>
+
+    </section>
+
+</main>
