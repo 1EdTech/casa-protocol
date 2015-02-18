@@ -2,61 +2,69 @@
   "$schema":"http://json-schema.org/draft-04/schema#",
   "id": "63a39b88-2603-4bce-ac5b-8247bf262986",
   "title": "privacy",
-  "type":"object",
-  "properties": {
-    "session": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "Browsing session such as tracked via cookies or local storage"
+  "oneOf": [
+    {
+      "type":"object",
+      "properties": {
+        "session": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Browsing session such as tracked via cookies or local storage"
+        },
+        "context": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Non-identifiable contextual data related to a user's session"
+        },
+        "name": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Name"
+        },
+        "contact": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Email, phone number and/or address"
+        },
+        "preferences": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Personal preferences"
+        },
+        "activity": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Tracking user's activity and behavior on the site"
+        },
+        "location": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "User's location"
+        },
+        "demographical": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Demographical information"
+        },
+        "financial": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Income, tax brackets and/or other financial information except for purchasing methods",
+          "default": false
+        },
+        "health": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Health records and information",
+          "default": false
+        },
+        "purchasing": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Credit and debit card numbers, checks and/or other forms of payment",
+          "default": false
+        },
+        "govid": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Government identification for the user such as SSN, TIN and drivers license number",
+          "default": false
+        }
+      }
     },
-    "context": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "Non-identifiable contextual data related to a user's session"
-    },
-    "name": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "Name"
-    },
-    "contact": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "Email, phone number and/or address"
-    },
-    "preferences": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "Personal preferences"
-    },
-    "activity": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "Tracking user's activity and behavior on the site"
-    },
-    "location": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "User's location"
-    },
-    "demographical": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "Demographical information"
-    },
-    "financial": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "Income, tax brackets and/or other financial information except for purchasing methods",
-      "default": false
-    },
-    "health": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "Health records and information",
-      "default": false
-    },
-    "purchasing": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "Credit and debit card numbers, checks and/or other forms of payment",
-      "default": false
-    },
-    "govid": {
-      "$ref": "#/definitions/infoTypeOrReleaseValue",
-      "description": "Government identification for the user such as SSN, TIN and drivers license number"
-      "default": false
+    {
+      "type": "boolean",
+      "enum": [ false ]
     }
-  },
+  ],
   "definitions": {
     "infoTypeOrReleaseValue": {
       "type": {
