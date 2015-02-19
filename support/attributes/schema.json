@@ -26,6 +26,9 @@
     },
     "08099f0d-a38e-422a-8a0b-214d4808d7c8": {
       "$ref": "http://imsglobal.github.io/casa-protocol/support/attributes/08099f0d-a38e-422a-8a0b-214d4808d7c8/schema.json#"
+    },
+    "e730536a-22d0-4265-8aca-f1d2c23fafe0": {
+      "$ref": "http://imsglobal.github.io/casa-protocol/support/attributes/e730536a-22d0-4265-8aca-f1d2c23fafe0/schema.json#"
     }
   },
   "patternProperties":{
