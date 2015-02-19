@@ -1,0 +1,37 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "id": "08099f0d-a38e-422a-8a0b-214d4808d7c8",
+  "title": "media_support",
+  "oneOf": [
+    { "$ref":"#/definitions/mediaQueryList" },
+    { "$ref":"#/definitions/mediaQuery" }
+  ],
+  "definitions": {
+    "mediaQueryList": {
+      "type": "array",
+      "items": {
+        "$ref":"#/definitions/mediaQuery"
+      }
+    },
+    "mediaQuery": {
+      "type": "object",
+      "properties": {
+        "color": { "type": "boolean" },
+        "max-aspect-ratio": { "type": "string" },
+        "max-color": { "type": "string" },
+        "max-device-height": { "type": "string" },
+        "max-device-width": { "type": "string" },
+        "max-height": { "type": "string" },
+        "max-resolution": { "type": "string" },
+        "max-width": { "type": "string" },
+        "min-aspect-ratio": { "type": "string" },
+        "min-color": { "type": "string" },
+        "min-device-height": { "type": "string" },
+        "min-device-width": { "type": "string" },
+        "min-height": { "type": "string" },
+        "min-resolution": { "type": "string" },
+        "min-width": { "type": "string" }
+      }
+    }
+  }
+}
