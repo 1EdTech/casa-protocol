@@ -13,6 +13,7 @@
       }
     }
   ],
+  "default": "text/html",
   "definitions": {
     "contentType": {
       "type": "string"

@@ -1,0 +1,241 @@
+<header>
+    <hgroup>
+        <h2>Community App Sharing Architecture</h2>
+        <h1>Client Feature Attributes</h1>
+    </hgroup>
+</header>
+
+<footer>
+
+    <section>
+        <h1>Status of this Memo</h1>
+        <p>This memorandum specifies a set of attributes commonly used by CASA implementations to specify client features. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+    </section>
+
+    <section>
+        <h1>Copyright Notice</h1>
+        <p>Copyright (c) 2014 - 2015 IMS Global Learning Consortium, Inc. All rights reserved.</p>
+    </section>
+
+    <section>
+
+        <h1>Terminology</h1>
+        <p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>required</strong>, <strong>shall</strong>, <strong>shall not</strong>, <strong>should</strong>, <strong>should not</strong>, <strong>recommended</strong>, <strong>may</strong>, and <strong>optional</strong> in this document are to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc2119.txt" rel="external">RFC 2119</a></strong> ["Key words for use in RFCs to Indicate Requirement Levels"].</p>
+        <p>The key word <strong>property</strong> (alternatively: <strong>attribute</strong> or <strong>section</strong>) in this document is to be interpreted as described by <strong><a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf" rel="external">ECMA-262 Edition 5.1</a></strong>.</p>
+        <p>The key words <strong>string</strong>, <strong>array</strong>, <strong>object</strong>, <strong>name/value pair</strong> (alternatively: <strong>key-value pair</strong>) and <strong>JavaScript Object Notation</strong> (alternatively: <strong>JSON</strong>) in this document is to be interpreted as described by <strong><a href="http://tools.ietf.org/rfc/rfc4627.txt" rel="external">RFC 4627</a></strong> ["The application/json Media Type for JavaScript Object Notation (JSON)"].</p>
+        <p>The key word <strong>JSON Schema</strong> in this document is to be interpreted as a JSON format defined by the <strong><a href="http://json-schema.org/latest/json-schema-core.html" rel="external">json-schema-core</a></strong> ["JSON Schema: core definitions and terminology"] and <strong><a href="http://json-schema.org/latest/json-schema-validation.html" rel="external">json-schema-validation</a></strong> ["JSON Schema: interactive and non interactive validation"] specifications.</p>
+    </section>
+
+</footer>
+
+<main>
+
+    <section data-status="non-normative">
+
+        <h1>Overview</h1>
+
+        <p>The attributes defined within this specification include:</p>
+
+        <div class="overflow-scroll">
+            <table class="full-width centered-columns no-wrap">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>UUID</th>
+                    <th>Type</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><a href="Attributes/Features#acceptable">acceptable</a></td>
+                    <td>e730536a-22d0-4265-8aca-f1d2c23fafe0</td>
+                    <td>array[string] or string</td>
+                </tr>
+                <tr>
+                    <td><a href="Attributes/Features#browser_features">browser_features</a></td>
+                    <td>ef1c6344-5e2e-4dba-8fff-1638852694f8</td>
+                    <td>object</td>
+                </tr>
+                <tr>
+                    <td><a href="Attributes/Features#android_app">android_app</a></td>
+                    <td>8d72d66c-0320-4861-8793-c5aebd195fc2</td>
+                    <td>object</td>
+                </tr>
+                <tr>
+                    <td><a href="Attributes/Features#ios_app">ios_app</a></td>
+                    <td>4439d4f9-3b62-4710-9535-ae3ebf885dac</td>
+                    <td>object</td>
+                </tr>
+                <tr>
+                    <td><a href="Attributes/Features#media_support">media_support</a></td>
+                    <td>08099f0d-a38e-422a-8a0b-214d4808d7c8</td>
+                    <td>object or array[object]</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="acceptable">
+            Acceptable<br><small><dfn>e730536a-22d0-4265-8aca-f1d2c23fafe0</dfn></small>
+        </h1>
+
+        <p>The attribute <var>e730536a-22d0-4265-8aca-f1d2c23fafe0</var> is a string or an array of strings that define valid content types for requests.</p>
+
+        <section>
+
+            <h3>Example: Default</h3>
+
+            <p>If attribute is undefined, a standard webpage should be expected:</p>
+
+            <pre class="prettyprint lang-json">"text/html"</pre>
+
+            <h3>Example: LTI Launch</h3>
+
+            <p>While an LTI attribute carries significantly more detail regarding sending an LTI Content-Item back to an LTI Consumer, the simplest way to show that an app is an LTI Tool Provider is via this attribute:</p>
+
+            <pre class="prettyprint lang-json">"application/vnd.ims.lti.v1.contentitems+json"</pre>
+
+            <h3>Example: Supporting Multiple Request Types</h3>
+
+            <p>There are many cases where an application may support multiple request types. For an example, an app may be written such that it can be launched as an LTI tool with context, or else accessed just as a straight website. As such, this attribute supports not just a content type, but also an array of valid content types.</p>
+
+            <pre class="prettyprint lang-json">[
+  "text/html",
+  "application/vnd.ims.lti.v1.contentitems+json"
+]</pre>
+
+            <h3>Example: Web Services</h3>
+
+            <p>Besides websites and LTI tools, another example where multiple content types may be supported is when using CASA as an API store, and specifically when an endpoint supports both XML and JSON responses:</p>
+
+            <pre class="prettyprint lang-json">[
+  "application/json",
+  "application/xml"
+]</pre>
+
+        </section>
+
+        <h3>JSON Schema</h3>
+
+        <pre data-attribute-schema="e730536a-22d0-4265-8aca-f1d2c23fafe0"></pre>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="browser_features">
+            Browser Features<br><small><dfn>ef1c6344-5e2e-4dba-8fff-1638852694f8</dfn></small>
+        </h1>
+
+        <p>The attribute <var>ef1c6344-5e2e-4dba-8fff-1638852694f8</var> is an object that defines requirements that the application has on browser features. It divides requirements into two levels, features &quot;required&quot; for the application to work and features &quot;optional&quot; for the best behavior of the application.</p>
+
+        <h3>Features</h3>
+
+        <p>This attribute covers the following features, which are used as keys in the attribute object to specify requirements:</p>
+
+        <ul>
+            <li><var>applicationcache</var></li>
+            <li><var>audio</var></li>
+            <li><var>canvas</var></li>
+            <li><var>cssanimations</var></li>
+            <li><var>csscolumns</var></li>
+            <li><var>csstransforms</var></li>
+            <li><var>csstransforms3d</var></li>
+            <li><var>draganddrop</var></li>
+            <li><var>flexbox</var></li>
+            <li><var>fontface</var></li>
+            <li><var>generateddocument</var></li>
+            <li><var>geolocation</var></li>
+            <li><var>hashchange</var></li>
+            <li><var>history</var></li>
+            <li><var>indexeddb</var></li>
+            <li><var>localstorage</var></li>
+            <li><var>postmessage</var></li>
+            <li><var>sessionstorage</var></li>
+            <li><var>touch</var></li>
+            <li><var>video</var></li>
+            <li><var>webgl</var></li>
+            <li><var>websockets</var></li>
+            <li><var>webworkers</var></li>
+        </ul>
+
+        <section>
+
+            <h3>Example</h3>
+
+            <pre class="prettyprint lang-json">{
+  "localstorage": "required",
+  "applicationcache": "optional"
+}</pre>
+
+        </section>
+
+        <h3>JSON Schema</h3>
+
+        <pre data-attribute-schema="ef1c6344-5e2e-4dba-8fff-1638852694f8"></pre>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="android_app">
+            Android App<br><small><dfn>8d72d66c-0320-4861-8793-c5aebd195fc2</dfn></small>
+        </h1>
+
+        <p>The attribute <var>8d72d66c-0320-4861-8793-c5aebd195fc2</var> is an object that defines properties related to installing and launching an Android app.</p>
+
+        <h3>JSON Schema</h3>
+
+        <pre data-attribute-schema="8d72d66c-0320-4861-8793-c5aebd195fc2"></pre>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="ios_app">
+            iOS App<br><small><dfn>4439d4f9-3b62-4710-9535-ae3ebf885dac</dfn></small>
+        </h1>
+
+        <p>The attribute <var>4439d4f9-3b62-4710-9535-ae3ebf885dac</var> is an object that defines properties related to installing and launching an iOS app.</p>
+
+        <h3>JSON Schema</h3>
+
+        <pre data-attribute-schema="4439d4f9-3b62-4710-9535-ae3ebf885dac"></pre>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="media_support">
+            Media Support<br><small><dfn>08099f0d-a38e-422a-8a0b-214d4808d7c8</dfn></small>
+        </h1>
+
+        <p>The attribute <var>08099f0d-a38e-422a-8a0b-214d4808d7c8</var> is an object or an array of objects that define what media properties supported by an application, such as screen sizes, resolution, aspect ratios and color.</p>
+
+        <section>
+
+            <h3>Example</h3>
+
+            <pre class="prettyprint lang-json">{
+  "min-width": "320px"
+}</pre>
+
+            <pre class="prettyprint lang-json">{
+  "max-width": "800px",
+  "max-width": "800px",
+  "color": true
+}</pre>
+
+        </section>
+
+        <h3>JSON Schema</h3>
+
+        <pre data-attribute-schema="08099f0d-a38e-422a-8a0b-214d4808d7c8"></pre>
+
+    </section>
+
+</main>
