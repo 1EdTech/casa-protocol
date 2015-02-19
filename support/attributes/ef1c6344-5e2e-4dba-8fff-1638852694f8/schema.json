@@ -1,0 +1,51 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "id": "ef1c6344-5e2e-4dba-8fff-1638852694f8",
+  "title": "browser_features",
+  "type": "object",
+  "properties": {
+    "applicationcache": { "$ref": "#/definitions/requirementLevel" },
+    "audio": { "$ref": "#/definitions/requirementLevel" },
+    "canvas": { "$ref": "#/definitions/requirementLevel" },
+    "cssanimations": { "$ref": "#/definitions/requirementLevel" },
+    "csscolumns": { "$ref": "#/definitions/requirementLevel" },
+    "csstransforms": { "$ref": "#/definitions/requirementLevel" },
+    "csstransforms3d": { "$ref": "#/definitions/requirementLevel" },
+    "draganddrop": { "$ref": "#/definitions/requirementLevel" },
+    "flexbox": { "$ref": "#/definitions/requirementLevel" },
+    "fontface": { "$ref": "#/definitions/requirementLevel" },
+    "generatedcontent": {
+      "$ref": "#/definitions/requirementLevel",
+      "description": ":before/:after"
+    },
+    "geolocation": { "$ref": "#/definitions/requirementLevel" },
+    "hashchange": { "$ref": "#/definitions/requirementLevel" },
+    "history": { "$ref": "#/definitions/requirementLevel" },
+    "indexeddb": { "$ref": "#/definitions/requirementLevel" },
+    "localstorage": { "$ref": "#/definitions/requirementLevel" },
+    "postmessage": {
+      "$ref": "#/definitions/requirementLevel",
+      "description": "Cross-window messaging"
+    },
+    "sessionstorage": { "$ref": "#/definitions/requirementLevel" },
+    "touch": { "$ref": "#/definitions/requirementLevel" },
+    "video": { "$ref": "#/definitions/requirementLevel" },
+    "webgl": { "$ref": "#/definitions/requirementLevel" },
+    "websockets": { "$ref": "#/definitions/requirementLevel" },
+    "webworkers": { "$ref": "#/definitions/requirementLevel" }
+  },
+  "definitions": {
+    "requirementsLevel": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [ "required", "optional" ]
+        },
+        {
+          "type": "boolean",
+          "enum": [ false ]
+        }
+      ]
+    }
+  }
+}
