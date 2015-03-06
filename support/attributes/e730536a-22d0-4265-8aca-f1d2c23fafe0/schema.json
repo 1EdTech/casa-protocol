@@ -1,0 +1,22 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "id": "e730536a-22d0-4265-8aca-f1d2c23fafe0",
+  "title": "acceptable",
+  "oneOf": [
+    {
+      "$ref":"#/definitions/contentType"
+    },
+    {
+      "type": "array",
+      "items": {
+        "$ref":"#/definitions/contentType"
+      }
+    }
+  ],
+  "default": "text/html",
+  "definitions": {
+    "contentType": {
+      "type": "string"
+    }
+  }
+}
