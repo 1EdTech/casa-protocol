@@ -93,24 +93,9 @@
 
             <pre class="prettyprint lang-json">"text/html"</pre>
 
-            <h3>Example: LTI Launch</h3>
-
-            <p>While an LTI attribute carries significantly more detail regarding sending an LTI Content-Item back to an LTI Consumer, the simplest way to show that an app is an LTI Tool Provider is via this attribute:</p>
-
-            <pre class="prettyprint lang-json">"application/vnd.ims.lti.v1.contentitems+json"</pre>
-
             <h3>Example: Supporting Multiple Request Types</h3>
 
-            <p>There are many cases where an application may support multiple request types. For an example, an app may be written such that it can be launched as an LTI tool with context, or else accessed just as a straight website. As such, this attribute supports not just a content type, but also an array of valid content types.</p>
-
-            <pre class="prettyprint lang-json">[
-  "text/html",
-  "application/vnd.ims.lti.v1.contentitems+json"
-]</pre>
-
-            <h3>Example: Web Services</h3>
-
-            <p>Besides websites and LTI tools, another example where multiple content types may be supported is when using CASA as an API store, and specifically when an endpoint supports both XML and JSON responses:</p>
+            <p>There are many cases where an application may support multiple request types. For an example, an API might be written such that a JSON or XML response may be requested. To encode this, instead of a string, use an array of strings:</p>
 
             <pre class="prettyprint lang-json">[
   "application/json",
@@ -145,6 +130,7 @@
             <li><var>csscolumns</var></li>
             <li><var>csstransforms</var></li>
             <li><var>csstransforms3d</var></li>
+            <li><var>css3mediaquery</var></li>
             <li><var>draganddrop</var></li>
             <li><var>flexbox</var></li>
             <li><var>fontface</var></li>
@@ -156,9 +142,11 @@
             <li><var>localstorage</var></li>
             <li><var>postmessage</var></li>
             <li><var>sessionstorage</var></li>
+            <li><var>sse</var></li>
             <li><var>touch</var></li>
             <li><var>video</var></li>
             <li><var>webgl</var></li>
+            <li><var>webrtc</var></li>
             <li><var>websockets</var></li>
             <li><var>webworkers</var></li>
         </ul>
