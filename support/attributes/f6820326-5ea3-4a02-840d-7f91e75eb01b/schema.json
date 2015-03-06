@@ -1,0 +1,34 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "id": "f6820326-5ea3-4a02-840d-7f91e75eb01b",
+  "title": "lti",
+  "type": "object",
+  "properties": {
+    "configuration_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "registration_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "versions_supported": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outcomes": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["required", "optional"]
+        },
+        {
+          "type": "boolean",
+          "enum": [false]
+        }
+      ]
+    }
+  }
+}
