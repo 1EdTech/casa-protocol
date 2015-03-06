@@ -30,6 +30,10 @@
           "$ref": "#/definitions/infoTypeOrReleaseValue",
           "description": "Tracking user's activity and behavior on the site"
         },
+        "assessment": {
+          "$ref": "#/definitions/infoTypeOrReleaseValue",
+          "description": "Assessments of user performance such as grades and scores"
+        },
         "location": {
           "$ref": "#/definitions/infoTypeOrReleaseValue",
           "description": "User's location"
