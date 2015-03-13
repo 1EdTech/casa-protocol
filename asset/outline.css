@@ -5,6 +5,10 @@ section h1 {
     margin-bottom: 0.83em;
 }
 
+section h1 dfn {
+    text-transform: none;
+}
+
 section section h1, footer section h1 {
     text-transform: none;
     font-size: 1.6em;
