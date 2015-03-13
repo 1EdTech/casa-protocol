@@ -19,10 +19,17 @@
           "format": "uri"
         },
         "versions_supported": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "outcomes": {
           "oneOf": [
