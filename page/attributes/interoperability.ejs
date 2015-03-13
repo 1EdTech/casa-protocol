@@ -63,7 +63,11 @@
             LTI<br><small><dfn>f6820326-5ea3-4a02-840d-7f91e75eb01b</dfn></small>
         </h1>
 
-        <p>The attribute <var>f6820326-5ea3-4a02-840d-7f91e75eb01b</var> is an object that, when defined, indicates that the app is an LTI tool provider, and how a consumer can launch and use it.</p>
+        <p>The attribute <var>f6820326-5ea3-4a02-840d-7f91e75eb01b</var> is either (1) a boolean that denotes whether or not the app may be launched as an LTI tool or (2) an object that indicates that the app is an LTI tool provider and how a consumer can launch and use it.</p>
+
+        <p>A boolean representation is useful for stores to indicate whether an app should be added as <var>application/vnd.ims.lti.v1.ltilink</var> or just <var>text/html</var>, such as via the LTI Content Item message.</p>
+
+        <p>For the object, if a <var>launch_url</var> is not specified, then fall back to the payload's <var>uri</var>.</p>
 
         <pre data-attribute-schema="f6820326-5ea3-4a02-840d-7f91e75eb01b"></pre>
 
