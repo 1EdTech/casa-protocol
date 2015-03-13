@@ -38,9 +38,9 @@
           "$ref": "#/definitions/infoTypeOrReleaseValue",
           "description": "User's location"
         },
-        "demographical": {
+        "demographic": {
           "$ref": "#/definitions/infoTypeOrReleaseValue",
-          "description": "Demographical information"
+          "description": "Demographic information"
         },
         "financial": {
           "$ref": "#/definitions/infoTypeOrReleaseValue",
