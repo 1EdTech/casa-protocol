@@ -107,6 +107,10 @@
 
         <p>The attribute <var>b7856963-4078-4698-8e95-8feceafe78da</var> is a string that provides a description for an app.</p>
 
+        <p>This string may include basic HTML entities, such as <var>p</var>, <var>li</var>, <var>ul</var>, <var>ol</var> and <var>h1-6</var>. User agents should respect these tags. They mayh respect additional tags. User agents should not assume that this string contains only safe tags though, and sanitization is recommended.</p>
+
+        <p>If no HTML tags are used, then user agents should assume that the text is formatted with whitespace. In such cases, user agents should replace newlines with <var>br</var> and/or <var>p</var> tags.</p>
+
         <pre data-attribute-schema="b7856963-4078-4698-8e95-8feceafe78da"></pre>
 
     </section>
