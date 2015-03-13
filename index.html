@@ -82,6 +82,8 @@
                 if(hash == '')
                     page = 'Core'
 
+                $('#nav-suite-container .active-menu').removeClass('active-menu')
+
                 VIEWER.go(page, VIEWER.page ? 200 : 0)
 
                 $('#menu a').each(function(){
@@ -137,6 +139,16 @@
                 })
             })
 
+            $('#nav-suite-container h1').click(function(){
+                var $dropdown = $(this).siblings('ul').first(),
+                    isActive = $dropdown.hasClass('active-menu');
+                $('#nav-suite-container .active-menu').removeClass('active-menu');
+                if(isActive){
+                    $dropdown.removeClass('active-menu');
+                }else{
+                    $dropdown.addClass('active-menu');
+                }
+            })
         </script>
 
     </body>

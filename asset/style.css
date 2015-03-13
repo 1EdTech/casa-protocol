@@ -14,17 +14,6 @@ html, body { margin: 0; padding: 0; font-family: Verdana, sans-serif; font-size:
 #nav-suite:after, #controls:after { clear: both; }
 #nav-suite, #controls { *zoom: 1; }
 
-#nav-suite-container { border-bottom: 1px solid #ccc; font-weight: bold; margin-bottom: 16px; position: fixed; left: 0; right: 0; background-color: #fff; z-index: 10; }
-#nav-suite ul { list-style-type: none; padding: 0; margin: 0; }
-#nav-suite li { margin-top: 0; margin-bottom: 0; }
-#nav-suite li > *:not(ul) { white-space: nowrap; padding: 8px 24px; display: block; font-size: 14px; margin: 0; color: #225; cursor: pointer; text-decoration: none; }
-#nav-suite li > a:hover { text-decoration: underline; color: #337; }
-#nav-suite > ul > li, #nav-suite > header { float: left; position: relative; }
-#nav-suite > ul > li > :not(ul) { padding-right: 20px; }
-#nav-suite > ul > li > ul { display: none; }
-#nav-suite > ul > li:hover > ul { display: block; position: absolute; top: 33px; z-index: 11; background-color: #fff; border: 1px solid #ccc; border-top-color: #fff; font-weight: bold; padding-top: 4px; padding-bottom: 8px; }
-#nav-suite > header > * { font-size:18px; padding: 6px 24px 6px 0; margin: 0; }
-
 #controls-container { position: fixed; bottom: 0; left: 0; right: 0; background-color: #fff; padding: 4px; border-top: 1px solid #ccc; }
 #controls {}
 #controls > * { float: left; margin-right: 5px; }
@@ -90,3 +79,27 @@ table.centered-columns td { text-align: center; }
 table.no-wrap td { white-space: nowrap; }
 .overflow-scroll { overflow: scroll; }
 h1 > small { font-size: 0.7em; color: #666; }
+
+#nav-suite-container { border-bottom: 1px solid #ccc; font-weight: bold; background-color: #fff; }
+#nav-suite ul { list-style-type: none; padding: 0; margin: 0; }
+#nav-suite li > *:not(ul) { white-space: nowrap; display: block; font-size: 14px; margin: 0; color: #225; cursor: pointer; text-decoration: none; padding: 8px; }
+#nav-suite > ul > li > ul { display: none; }
+#nav-suite > ul > li > ul.active-menu { display: block; background-color: #fff; }
+
+@media (max-width: 499px) {
+    #nav-suite > ul > li > ul {
+        margin-left: 12px;
+        font-weight: normal;
+    }
+}
+
+@media (min-width: 500px){
+    #nav-suite-container { position: fixed; left: 0; right: 0; z-index: 10; margin-bottom: 16px; }
+    #nav-suite li { margin-top: 0; margin-bottom: 0; }
+    #nav-suite li > *:not(ul) { padding: 8px 24px; }
+    #nav-suite li > a:hover { text-decoration: underline; color: #337; }
+    #nav-suite > ul > li, #nav-suite > header { float: left; position: relative; }
+    #nav-suite > ul > li > :not(ul) { padding-right: 20px; }
+    #nav-suite > ul > li:hover > ul, #nav-suite > ul > li > ul.active-menu { display: block; position: absolute; top: 33px; z-index: 11; background-color: #fff; border: 1px solid #ccc; border-top-color: #fff; font-weight: bold; padding-top: 4px; padding-bottom: 8px; }
+    #nav-suite > header > * { font-size:18px; padding: 6px 24px 6px 0; margin: 0; }
+}
