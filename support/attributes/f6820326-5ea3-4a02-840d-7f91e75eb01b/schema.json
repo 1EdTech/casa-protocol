@@ -10,6 +10,20 @@
           "type": "string",
           "format": "uri"
         },
+        "custom_parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties":{
+              "parameter":{
+                "type":"string"
+              },
+              "value":{
+                "type":"string"
+              }
+            }
+          }
+        },
         "configuration_url": {
           "type": "string",
           "format": "uri"
