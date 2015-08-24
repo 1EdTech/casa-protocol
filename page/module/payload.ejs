@@ -319,7 +319,7 @@
 
                     <p>It is likely that several implementations of a particular type of attribute may exist. The use of UUIDs for all inter-system communication avoids namespace conflicts so that, for example, two different ratings modules may exist in the <var>use</var> section.</p>
 
-                    <p>When <a href="module/receiver#adjintranslate">AdjInTranslate (Receiver Module)</a> converts the <var>use</var> and <var>require</var> sections of <var>PayloadTransitAttributes</var> into the respective sections of <var>PayloadLocalAttributes</var>, it leaves key names as UUIDs for any keys it does not recognize. In this way, if a key under <var>require</var> is not recognized when it reaches <a href="module/receiver#adjinfilter">AdjInFilter (Receiver Module)</a>, the paylod will be dropped.</p>
+                    <p>When <a href="module/receiver#adjintranslate">AdjInTranslate (Receiver Module)</a> converts the <var>use</var> and <var>require</var> sections of <var>PayloadTransitAttributes</var> into the respective sections of <var>PayloadLocalAttributes</var>, it leaves key names as UUIDs for any keys it does not recognize. In this way, if a key under <var>require</var> is not recognized when it reaches <a href="module/receiver#adjinfilter">AdjInFilter (Receiver Module)</a>, the payload will be dropped.</p>
 
                 </section>
 
