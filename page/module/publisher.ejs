@@ -9,7 +9,7 @@
 
     <section>
         <h1>Status of this Memo</h1>
-        <p>This memorandum specifies the CASA Protocol Publisher Module, which defines payloads must be presented for inter-system communication. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
+        <p>This memorandum specifies the CASA Protocol Publisher Module, which defines how payloads must be presented for inter-system communication. The specification outlined forthwith is a work in progress and not intended for production use at this time. Distribution of this memo is unlimited.</p>
     </section>
 
     <section>
@@ -71,13 +71,13 @@
 
             <dl>
                 <dt><var>Accept Header</var></dt>
-                <dd><var>application/json</var> should be specified for this header. The omission of this header may be assumed by a receiver as <var>application/json</var>. If the client sends an <var>Accept</var> header without <var>application/json</var>, a 4xx Error must be thrown.</dd>
+                <dd><var>application/json</var> should be specified for this header. The omission of this header may be assumed by a publisher as <var>application/json</var>. If the client sends an <var>Accept</var> header without <var>application/json</var>, a 4xx Error must be thrown.</dd>
                 <dt><var>Accept-Charset Header</var></dt>
                 <dd>Only <var>utf-8</var> is valid for this header. The omission of this header must be assumed as <var>utf-8</var>. If the client sends any other <var>Accept-Charset</var> header, a 4xx Error must be thrown.</dd>
                 <dt><var>Accept-Encoding Header</var></dt>
                 <dd>Any value for this header is valid. The host should attempt to implement this encoding for a response but it may ignore this header.</dd>
                 <dt><var>Content-Type Header</var></dt>
-                <dd><var>application/json</var> and <var>charset=utf-8</var> should be specified for this header. The omission of this header may be assumed by a receiver as <var>application/json</var> if a request body is sent. If the client sends any <var>Content-Type</var> header without <var>application/json</var> and <var>charset=utf-8</var>, a 4xx Error must be thrown unless the server understands and processes the body data based on the non-standard <var>Content-Type</var> header sent by the client.</dd>
+                <dd><var>application/json</var> and <var>charset=utf-8</var> should be specified for this header. The omission of this header may be assumed by a publisher as <var>application/json</var> if a request body is sent. If the client sends any <var>Content-Type</var> header without <var>application/json</var> and <var>charset=utf-8</var>, a 4xx Error must be thrown unless the server understands and processes the body data based on the non-standard <var>Content-Type</var> header sent by the client.</dd>
                 <dt><var>Body Content</var></dt>
                 <dd>If the client includes a request body, it must be a JSON-formatted object of key-value pairs. If the client sends any other body content, a 4xx Error must be thrown unless the server understands and processes the body data based on the non-standard <var>Content-Type</var> header sent by the client.</dd>
             </dl>
