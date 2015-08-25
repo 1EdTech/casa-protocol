@@ -52,6 +52,11 @@
                     <td>f6820326-5ea3-4a02-840d-7f91e75eb01b</td>
                     <td>object</td>
                 </tr>
+                <tr>
+                    <td><a href="Attributes/Interoperability#caliper">caliper</a></td>
+                    <td>d96e4185-c52d-4f46-9fcb-59d28087c7d1</td>
+                    <td>array[object]</td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -73,5 +78,22 @@
         <pre data-attribute-schema="f6820326-5ea3-4a02-840d-7f91e75eb01b"></pre>
 
     </section>
+
+    <section>
+
+        <h1 data-ref="caliper">
+            Caliper<br><small><dfn>d96e4185-c52d-4f46-9fcb-59d28087c7d1</dfn></small>
+        </h1>
+
+        <p>The attribute <var>d96e4185-c52d-4f46-9fcb-59d28087c7d1</var> is an array of objects that specify metadata about the Caliper Metric Profiles that an application supports.</p>
+
+        <p>Each object in the array specifies a metric profile name and an array of events where each event is paired with a corresponding array of actions. The data structure is meant to be
+        generic enough to handle new metric profiles as they are developed and detailed enough so that application curators can get a good idea of the data
+            that is collected while the application submitter is not burdened with listing their Caliper configurations down to the last implementation detail.</p>
+
+        <pre data-attribute-schema="d96e4185-c52d-4f46-9fcb-59d28087c7d1"></pre>
+
+    </section>
+
 
 </main>
