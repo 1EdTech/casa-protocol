@@ -8,7 +8,7 @@
       "type": "string",
       "description": "Name of the organization"
     },
-    "shortname": {
+    "short_name": {
       "type": "string",
       "description": "Abbreviation of the organization's name for display purposes"
     },
