@@ -51,7 +51,7 @@
 
         <h1>SendLocal</h1>
 
-        <p>The <dfn>SendLocal</dfn> operation publishes payloads to local outlets. It responds to an HTTP GET request on the <var>/local/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a 4xx or 5xx Error Response.</p>
+        <p>The <dfn>SendLocal</dfn> operation publishes payloads to local outlets.  It responds to an HTTP GET, as outlined herein, with a JSON formatted array of <a href="module/payload#localpayload"><var>LocalPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a 4xx or 5xx Error Response.</p>
 
         <p>This operation must be used intra-system only. Inter-system sharing of payloads occurs via the <a href="module/publisher#sendout"><var>SendOut</var> (Publisher Module)</a> operation.</p>
 
@@ -59,7 +59,7 @@
 
             <h1 data-ref="sendlocal-request">Request</h1>
 
-            <p data-status="non-normative">The engine exposes between two and four interfaces to which a local outlet may issue a request. All requests should include include <var>Accept</var>, <var>Accept-Charset</var>, <var>Accept-Encoding</var> and <var>Content-Type</var> headers.</p>
+            <p data-status="non-normative">The engine exposes up to three interfaces to which a local outlet may issue a request. All requests should include include <var>Accept</var>, <var>Accept-Charset</var>, <var>Accept-Encoding</var> and <var>Content-Type</var> headers.</p>
 
             <p>The following rules should be applied for all requests:</p>
 
@@ -143,7 +143,7 @@
 
                 <h1>Request</h1>
 
-                <p>This operation responds to an HTTP GET request on the <var>/local/payloads</var> route.</p>
+                <p>This operation responds to an HTTP GET request. The recommended and canonical URI Path for this operation is <var>/local/payloads</var>.</p>
 
                 <section data-requirement="may">
 
@@ -190,7 +190,7 @@
 
                 <h1>Request</h1>
 
-                <p>This operation responds to an HTTP GET request on the <var>/local/payloads/ORIGINATOR_UUID/APP_UID</var> route, where <dfn>ORIGINATOR_UUID</dfn> is the UUID of the engine that introduced the payload to the network and <dfn>APP_UID</dfn> is the UID of the app in the context of the originating engine.</p>
+                <p>This operation responds to an HTTP GET request. The recommended and canonical URI Path for this operation is <var>/local/payloads/ORIGINATOR_UUID/APP_UID</var> where <dfn>ORIGINATOR_UUID</dfn> is the UUID of the engine that introduced the payload to the network and <dfn>APP_UID</dfn> is the UID of the app in the context of the originating engine.</p>
 
             </section>
 
@@ -229,7 +229,7 @@
 
                 <h1>Request</h1>
 
-                <p>This operation responds to an HTTP GET request on the <var>/local/payloads/_{TYPE}</var> route, where the value of <var>{TYPE}</var> is a query language supported by the engine and the request body is formatted in the specified query language.</p>
+                <p>This operation responds to an HTTP GET request.  The recommended and canonical URI Path for this operation is <var>/local/payloads/_{TYPE}</var> where the value of <var>{TYPE}</var> is a query language supported by the engine and the request body is formatted in the specified query language.</p>
 
                 <p data-status="non-normative">For example, if an engine supports Elastic Search, a <var>GET /local/payloads/_elasticsearch</var> request may be issued with a request body such as <code>{"query":{"match_phrase":{"attributes.use.tags":"mobile"}},"size":20}</code>.</p>
 
