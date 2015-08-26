@@ -24,11 +24,12 @@ license. The full text of the license may be found in the `LICENSE` file.
 
 ##### Editor
 
-* Bollens, Eric (University of California, Los Angeles)
+* Selsky, Joshua (University of California, Los Angeles)
 
 ##### Contributors
 
 * Bollens, Eric (University of California, Los Angeles)
+* Selsky, Joshua (University of California, Los Angeles)
 * Gray, Paul (Learning Objects, Inc.)
 * Mattson, Lisa (IMS Global Learning Consortium, Inc.)
 * Mosbacker, Bracken (Instructure, Inc.)
