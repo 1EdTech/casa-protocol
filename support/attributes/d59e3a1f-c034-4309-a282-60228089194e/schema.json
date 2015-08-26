@@ -1,6 +1,6 @@
 {
   "$schema":"http://json-schema.org/draft-04/schema#",
-  "id": "d59e3a1f-c034-4309-a282-60228089194e",
+  "description": "Schema for CASA Attribute ID d59e3a1f-c034-4309-a282-60228089194e.",
   "title": "authors",
   "oneOf": [
     {

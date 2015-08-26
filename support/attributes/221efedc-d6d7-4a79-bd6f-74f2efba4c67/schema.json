@@ -1,6 +1,6 @@
 {
   "$schema":"http://json-schema.org/draft-04/schema#",
-  "id": "221efedc-d6d7-4a79-bd6f-74f2efba4c67",
+  "description": "Schema for CASA Attribute ID 221efedc-d6d7-4a79-bd6f-74f2efba4c67.",
   "title": "vpat_url",
   "type":"uri"
 }

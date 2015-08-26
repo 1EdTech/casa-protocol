@@ -1,6 +1,6 @@
 {
   "$schema":"http://json-schema.org/draft-04/schema#",
-  "id": "2536a700-f91c-4f16-a298-cfef43aba3d1",
+  "description": "Schema for CASA Attribute ID 2536a700-f91c-4f16-a298-cfef43aba3d1.",
   "title": "support_contact",
   "type":"object",
   "properties": {

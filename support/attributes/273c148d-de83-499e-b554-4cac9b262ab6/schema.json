@@ -1,6 +1,6 @@
 {
   "$schema":"http://json-schema.org/draft-04/schema#",
-  "id": "273c148d-de83-499e-b554-4cac9b262ab6",
+  "description": "Schema for CASA Attribute ID 273c148d-de83-499e-b554-4cac9b262ab6.",
   "title": "organization",
   "type":"object",
   "properties": {

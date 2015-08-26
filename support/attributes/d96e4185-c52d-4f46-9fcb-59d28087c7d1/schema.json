@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "d96e4185-c52d-4f46-9fcb-59d28087c7d1",
+  "id": "Schema for CASA Attribute ID d96e4185-c52d-4f46-9fcb-59d28087c7d1.",
   "title": "caliper",
   "type":"array",
   "items": {

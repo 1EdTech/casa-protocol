@@ -1,6 +1,6 @@
 {
   "$schema":"http://json-schema.org/draft-04/schema#",
-  "id": "ef1c6344-5e2e-4dba-8fff-1638852694f8",
+  "description": "Schema for CASA Attribute ID ef1c6344-5e2e-4dba-8fff-1638852694f8.",
   "title": "browser_features",
   "type": "object",
   "properties": {

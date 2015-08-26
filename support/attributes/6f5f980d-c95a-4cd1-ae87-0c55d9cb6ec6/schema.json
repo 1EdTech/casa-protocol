@@ -1,6 +1,6 @@
 {
   "$schema":"http://json-schema.org/draft-04/schema#",
-  "id": "6f5f980d-c95a-4cd1-ae87-0c55d9cb6ec6",
+  "description": "Schema for CASA ID 6f5f980d-c95a-4cd1-ae87-0c55d9cb6ec6.",
   "title": "admin_contact",
   "type":"object",
   "properties": {
