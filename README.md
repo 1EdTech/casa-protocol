@@ -12,8 +12,9 @@ online version of the protocol.
 
 ## Status
 
-The CASA Protocol is **under development** and **not intended for use** at this
-time.
+The CASA Protocol Specification is in a 1.0.0-beta release. The basic structure of the protocol is complete, but changes
+(especially the addition of attributes) are expected. Please check the change log (CHANGELOG.md). Please also let us know
+if you are hosting a CASA peer.
 
 ## License
 
