@@ -15,7 +15,7 @@ online version of the protocol.
 The CASA Protocol Specification is in a 1.0.0-beta release. The basic structure of the protocol is complete, but changes
 (especially regarding Attributes) are expected. Please check the change log in this directory `CHANGELOG.md`.
 
-A live CASA instance lives at http://casa.m.ucla.edu. The UCLA app store is also CASA implementation that includes a
+UCLA hosts a CASA instance at http://casa.m.ucla.edu. The UCLA CASA store also includes a
 responsive HTML5-based mobile dashboard. On your mobile device, navigate to http://casa.m.ucla.edu/mobile.
 
 If you are hosting a CASA peer and you would like to connect with other peers, please get in touch. We are working towards creating
