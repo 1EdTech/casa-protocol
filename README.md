@@ -44,3 +44,9 @@ license. The full text of the license may be found in the `LICENSE` file.
 * Rocchio, Rosemary (University of California, Los Angeles)
 * Sakabu, Edward (University of California, Los Angeles)
 * Vickers, Stephen (IMS Global Learning Consortium, Inc.)
+
+## Copyright Notice
+
+&copy; 2014-2015 IMS Global Learning Consortium, Inc. All rights reserved. IMS Learning Tools Interoperability&reg; (LTI)&reg; is a trademark of the IMS Global Learning Consortium, Inc. in the United States and/or other countries.
+
+
