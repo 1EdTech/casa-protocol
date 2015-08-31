@@ -53,7 +53,7 @@
 
         <h1>SendOut</h1>
 
-        <p>The <dfn>SendOut</dfn> operation publishes payloads to other autonomous systems. It responds to an HTTP GET request on the <var>/out/payloads</var> route, as outlined herein, with a JSON formatted array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a Client Error 4xx or Server Error 5xx.</p>
+        <p>The <dfn>SendOut</dfn> operation publishes payloads to other autonomous systems. It responds to an HTTP GET request, as outlined herein, with a JSON formatted array of <a href="module/payload#transitpayload"><var>TransitPayload</var> (Payload Module)</a> objects, unless an error is encountered, in which case it throws a Client Error 4xx or Server Error 5xx.  The recommended and canonical URI Path for this operation is <var>/out/payloads</var>.</p>
 
         <section data-status="non-normative">
 

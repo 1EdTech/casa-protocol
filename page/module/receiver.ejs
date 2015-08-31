@@ -58,7 +58,7 @@
         <p>To receive a payload from a peering system:</p>
 
         <ol>
-            <li>Must issue an <var>HTTP GET /out/payloads</var> request to another autonomous system; may include a secret.
+            <li>Must issue an <var>HTTP GET</var> request to the Publisher Module on another autonomous system; may include a secret.
             </li>
             <li>
                 Must validate response:
@@ -73,7 +73,7 @@
                 <ol>
                     <li>Must translate via <a href="#adjintranslate"><var>AdjInTranslate</var></a>;</li>
                     <li>Must squash via <a href="#adjinsquash"><var>AdjInSquash</var></a>;</li>
-                    <li>Must pass filtering by <a href="#adjintfilter"><var>AdjInFilter</var></a>; may filter with custom rules.</li>
+                    <li>Must pass filtering by <a href="#adjinfilter"><var>AdjInFilter</var></a>; may filter with custom rules.</li>
                 </ol>
             </li>
         </ol>
@@ -92,7 +92,7 @@
 
             <h1>Request</h1>
 
-            <p>The client issues an HTTP GET request to the <var>/out/payloads</var> route on the host.</p>
+            <p>The client issues an HTTP GET request to the Publisher Module URI path on the host.</p>
 
             <p>The client may include a request body. If the request includes a request body, it must be JSON-formatted.</p>
 
@@ -114,7 +114,7 @@
 
                 <h1 data-ref="receivein-access-controls">Access Control</h1>
 
-                <p>A host may refuse to serve a <var>GET /out/payloads</var> request unless certain access criteria are met. If the request from a client does not meet the host's access criteria, the HTTP response shall be a 4xx Error or 5xx Error and should be a 403 Error.</p>
+                <p>A host may refuse to serve a request unless certain access criteria are met. If the request from a client does not meet the host's access criteria, the HTTP response shall be a 4xx Error or 5xx Error and should be a 403 Error.</p>
 
                 <section data-status='non-normative'>
 

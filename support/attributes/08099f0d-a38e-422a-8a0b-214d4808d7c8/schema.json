@@ -1,6 +1,6 @@
 {
   "$schema":"http://json-schema.org/draft-04/schema#",
-  "id": "08099f0d-a38e-422a-8a0b-214d4808d7c8",
+  "description": "Schema for CASA Attribute ID 08099f0d-a38e-422a-8a0b-214d4808d7c8.",
   "title": "media_support",
   "oneOf": [
     { "$ref":"#/definitions/mediaQueryList" },

@@ -1,6 +1,6 @@
 {
   "$schema":"http://json-schema.org/draft-04/schema#",
-  "id": "8d72d66c-0320-4861-8793-c5aebd195fc2",
+  "description": "Schema for CASA Attribute ID 8d72d66c-0320-4861-8793-c5aebd195fc2.",
   "title": "android_app",
   "type": "object",
   "properties": {

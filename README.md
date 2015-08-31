@@ -12,8 +12,16 @@ online version of the protocol.
 
 ## Status
 
-The CASA Protocol is **under development** and **not intended for use** at this
-time.
+The CASA Protocol Specification is in a 1.0.0-beta release. The basic structure of the protocol is complete, but changes
+(especially regarding Attributes) are expected. Please check the change log in this directory `CHANGELOG.md`.
+
+UCLA hosts a CASA instance at http://casa.m.ucla.edu. The UCLA CASA store also includes a
+responsive HTML5-based mobile dashboard. On your mobile device, navigate to http://casa.m.ucla.edu/mobile.
+
+If you are hosting a CASA peer and you would like to connect with other peers, please get in touch. We are working towards creating
+CASA specification conformance guidelines and tests as well as a web-based registry of CASA instances.
+
+For more information about IMS Global and the CASA Task Force, please see http://www.imsglobal.org/casa/.
 
 ## License
 
@@ -24,14 +32,21 @@ license. The full text of the license may be found in the `LICENSE` file.
 
 ##### Editor
 
-* Bollens, Eric (University of California, Los Angeles)
+* Selsky, Joshua (University of California, Los Angeles)
 
 ##### Contributors
 
 * Bollens, Eric (University of California, Los Angeles)
+* Selsky, Joshua (University of California, Los Angeles)
 * Gray, Paul (Learning Objects, Inc.)
 * Mattson, Lisa (IMS Global Learning Consortium, Inc.)
 * Mosbacker, Bracken (Instructure, Inc.)
 * Rocchio, Rosemary (University of California, Los Angeles)
 * Sakabu, Edward (University of California, Los Angeles)
 * Vickers, Stephen (IMS Global Learning Consortium, Inc.)
+
+## Copyright Notice
+
+&copy; 2014-2015 IMS Global Learning Consortium, Inc. All rights reserved. IMS Learning Tools Interoperability&reg; (LTI&reg;) is a trademark of the IMS Global Learning Consortium, Inc. in the United States and/or other countries.
+
+

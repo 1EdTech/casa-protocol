@@ -30,9 +30,9 @@
 
 <main>
 
-    <section data-status="non-normative">
+    <section>
 
-        <h1>Overview</h1>
+        <h2>Overview</h2>
 
         <p>The attributes defined within this specification include:</p>
 
@@ -62,6 +62,11 @@
                     <td>string</td>
                 </tr>
                 <tr>
+                    <td><a href="Attributes/Foundation#icon">icon</a></td>
+                    <td>d25b3012-1832-4843-9ecf-3002d3434155</td>
+                    <td>string</td>
+                </tr>
+                <tr>
                     <td><a href="Attributes/Foundation#categories">categories</a></td>
                     <td>c80df319-d5da-4f59-8ca3-c89b234c5055</td>
                     <td>array[string]</td>
@@ -81,6 +86,17 @@
                     <td>273c148d-de83-499e-b554-4cac9b262ab6</td>
                     <td>object</td>
                 </tr>
+                <tr>
+                    <td><a href="Attributes/Foundation#support_contact">support_contact</a></td>
+                    <td>2536a700-f91c-4f16-a298-cfef43aba3d1</td>
+                    <td>object</td>
+                </tr>
+                <tr>
+                    <td><a href="Attributes/Foundation#admin_contact">admin_contact</a></td>
+                    <td>6f5f980d-c95a-4cd1-ae87-0c55d9cb6ec6</td>
+                    <td>object</td>
+                </tr>
+
                 </tbody>
             </table>
         </div>
@@ -129,6 +145,20 @@
 
     <section>
 
+        <h1 data-ref="icon">
+            Icon<br><small><dfn>d25b3012-1832-4843-9ecf-3002d3434155</dfn></small>
+        </h1>
+
+        <p>The attribute <var>d25b3012-1832-4843-9ecf-3002d3434155</var> is a Base64-encoded string that provides an icon image for an application. The image should be a general icon that can be used to identify the application in many different user interface environments: smartphones, tablets, desktop computers. The following practices
+        are recommended for creating an icon: (1) The icon should be square, (2) The icon should be 150 x 150 pixels in resolution, (3) The icon should be a 24-bit non-transparent PNG, and (4) The icon should not be text-heavy so it renders legibly on devices with small screens.</p>
+
+        <pre data-attribute-schema="d25b3012-1832-4843-9ecf-3002d3434155"></pre>
+
+    </section>
+
+
+    <section>
+
         <h1 data-ref="categories">
             Categories<br><small><dfn>c80df319-d5da-4f59-8ca3-c89b234c5055</dfn></small>
         </h1>
@@ -174,5 +204,30 @@
         <pre data-attribute-schema="273c148d-de83-499e-b554-4cac9b262ab6"></pre>
 
     </section>
+
+    <section>
+
+        <h1 data-ref="support_contact">
+            Support Contact<br><small><dfn>2536a700-f91c-4f16-a298-cfef43aba3d1</dfn></small>
+        </h1>
+
+        <p>The attribute <var>2536a700-f91c-4f16-a298-cfef43aba3d1</var> is an object that provides the support contact information for an application.</p>
+
+        <pre data-attribute-schema="2536a700-f91c-4f16-a298-cfef43aba3d1"></pre>
+
+    </section>
+
+    <section>
+
+        <h1 data-ref="admin_contact">
+            Administrative Contact<br><small><dfn>6f5f980d-c95a-4cd1-ae87-0c55d9cb6ec6</dfn></small>
+        </h1>
+
+        <p>The attribute <var>6f5f980d-c95a-4cd1-ae87-0c55d9cb6ec6</var> is an object that provides administrative contact information for an application.</p>
+
+        <pre data-attribute-schema="6f5f980d-c95a-4cd1-ae87-0c55d9cb6ec6"></pre>
+
+    </section>
+
 
 </main>

@@ -1,0 +1,6 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "description": "Schema for CASA Attribute ID d25b3012-1832-4843-9ecf-3002d3434155.",
+  "title": "icon",
+  "type":"string"
+}

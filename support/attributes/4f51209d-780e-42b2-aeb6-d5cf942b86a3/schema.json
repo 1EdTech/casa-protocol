@@ -1,0 +1,26 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "description": "Schema for CASA Attribute ID 4f51209d-780e-42b2-aeb6-d5cf942b86a3.",
+  "title": "competencies",
+  "type":"array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "A name for a competency."
+      },
+      "description": {
+        "type":"string",
+        "description":"A short description for a competency."
+      },
+      "tags" : {
+        "type":"array",
+        "description":"One or more tags describing a competency.",
+        "items": {
+          "type":"string"
+        }
+      }
+    }
+  }
+}
