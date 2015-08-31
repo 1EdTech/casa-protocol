@@ -1,10 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+
 This project adheres to [Semantic Versioning](http://semver.org/) and the general rules of thumb at http://keepachangelog.com/.
 
-## [Unreleased][unreleased]
-
-## [1.0.0-beta] - 2015-08-**
+## [1.0.0-beta] - 2015-08-31
 ### Added
 - Apps can now declare their support for Caliper Metric Profiles via the Caliper attribute within the Interoperability attribute group.
 - Apps can now declare WCAG guideline adherence via the WCAG attribute within the Accessibility attribute group.
