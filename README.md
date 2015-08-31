@@ -47,6 +47,6 @@ license. The full text of the license may be found in the `LICENSE` file.
 
 ## Copyright Notice
 
-&copy; 2014-2015 IMS Global Learning Consortium, Inc. All rights reserved. IMS Learning Tools Interoperability&reg; (LTI&reg); is a trademark of the IMS Global Learning Consortium, Inc. in the United States and/or other countries.
+&copy; 2014-2015 IMS Global Learning Consortium, Inc. All rights reserved. IMS Learning Tools Interoperability&reg; (LTI&reg;) is a trademark of the IMS Global Learning Consortium, Inc. in the United States and/or other countries.
 
 
