@@ -1,52 +1,67 @@
 {
-  "$schema":"http://json-schema.org/draft-04/schema#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for CASA Attribute ID f6820326-5ea3-4a02-840d-7f91e75eb01b.",
   "title": "lti",
-  "oneOf": [
-    {
-      "type": "object",
-      "properties": {
-        "launch_url": {
-          "type": "string",
-          "format": "uri"
+  "type": "object",
+  "properties": {
+    "launch_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "launch_params": {
+      "type": "string"
+    },
+    "registration_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "content_item_response": {
+      "oneOf": [
+        {
+          "type": "string"
         },
-        "configuration_url": {
-          "type": "string",
-          "format": "uri"
-        },
-        "registration_url": {
-          "type": "string",
-          "format": "uri"
-        },
-        "versions_supported": {
-          "oneOf": [
-            {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            {
-              "type": "string"
-            }
-          ]
-        },
-        "outcomes": {
-          "oneOf": [
-            {
-              "type": "string",
-              "enum": ["required", "optional"]
-            },
-            {
-              "type": "boolean",
-              "enum": [false]
-            }
+        {
+          "type": "boolean",
+          "enum": [
+            true
           ]
         }
-      }
+      ]
     },
-    {
-      "type": "boolean"
+    "outcomes": {
+      "type": "string",
+      "enum": [
+        "required",
+        "optional"
+      ]
+    },
+    "version_supported": {
+      "description": "Only allow one version to be set because support for different LTI versions can mean different configurations.",
+      "type": "string",
+      "enum": [
+        "1.0",
+        "1.1",
+        "1.2",
+        "2.0"
+      ]
+    },
+    "ims_global_certifications": {
+      "type": "object",
+      "properties": {
+        "link": {
+          "type": "string",
+          "description": "The link to the vendor's detailed certification page on www.imsglobal.org."
+        },
+        "certifications": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
+  },
+  "required": [
+    "launch_url"
   ]
 }
