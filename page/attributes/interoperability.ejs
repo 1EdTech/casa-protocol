@@ -79,8 +79,7 @@
 
         <p>Using <code>content_item_message</code>, apps that support the LTI Content-Item Message <a href="http://www.imsglobal.org/lti/ltiv1p2pd/ltiCIMv1p0pd.html" rel="external">specification</a> have the option to statically define their JSON-LD response payload or, by using
             the boolean variant, apps can declare that their JSON-LD responses are generated dynamically by metadata from the CASA implementation (E.g., from foundational attributes).
-            This is the JSON that is POSTed back to the Tool Consumer in the value for the <code>content_items</code> parameter when a Content-Item Request launch occurs. If a static value is configured, it must be an <code>application/x-www-form-urlencoded</code>-formatted string. A CASA instance must concatenate this value
-            with the value for <code>launch_params</code>.
+            This is the JSON that is POSTed back to the Tool Consumer in the value for the <code>content_items</code> parameter when a Content-Item Request launch occurs. If a static value is configured, it must be an <code>application/x-www-form-urlencoded</code>-formatted string.
 
         <p>Apps may also declare the LTI versions supported, the LTI conformance certifications obtained, and whether an app returns LIS <code>outcomes</code>.</p>
 
