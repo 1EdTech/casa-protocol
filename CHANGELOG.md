@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and the genera
 
 ### Changed
 - For Local and Publisher modules, dropped static URI paths for HTTP GET in favor of a recommendation to use a canonical URI path.
+- Support for LTI using the LTI attribute has been completely reworked.
 
 ## Pre-Beta
 - Release of the basic protocol including the main modules (Payload, Publisher, Receiver, Relay and Local) as well as
