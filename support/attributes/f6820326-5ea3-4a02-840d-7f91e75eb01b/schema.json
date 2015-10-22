@@ -35,28 +35,32 @@
         "optional"
       ]
     },
-    "version_supported": {
+    "version": {
       "description": "Only allow one version to be set because support for different LTI versions can mean different configurations.",
       "type": "string",
       "enum": [
         "1.0",
         "1.1",
+        "1.1.1",
         "1.2",
         "2.0"
       ]
     },
-    "ims_global_certifications": {
+    "ims_global_certification": {
       "type": "object",
+      "description":"The certification info for the version identified by the version property.",
       "properties": {
+        "registration_number": {
+          "type":"string",
+          "description":"The conformance certification number provided by IMS Global for this tool."
+        },
+        "conformance_date": {
+          "type":"string",
+          "description":"A human-readable date."
+        },
         "link": {
           "type": "string",
           "description": "The link to the vendor's detailed certification page on www.imsglobal.org."
-        },
-        "certifications": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     }
