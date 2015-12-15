@@ -21,7 +21,9 @@
             }
           }
         }
-      }
+      },
+      "required":["profile"]
+
     },
     "ims_global_certifications": {
       "type": "array",
@@ -54,7 +56,8 @@
             "type": "string",
             "description": "A link to the vendor's detailed certification page on www.imsglobal.org."
           }
-        }
+        },
+        "required":["metric_profiles","registration_number","conformance_date"]
       }
     }
   }
