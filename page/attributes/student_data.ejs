@@ -1,7 +1,7 @@
 <header>
     <hgroup>
         <h2>Community App Sharing Architecture</h2>
-        <h1>Education Attributes</h1>
+        <h1>Student Data Attributes</h1>
     </hgroup>
 </header>
 
@@ -48,9 +48,9 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td><a href="Attributes/Education#competencies">competencies</a></td>
-                    <td>4f51209d-780e-42b2-aeb6-d5cf942b86a3</td>
-                    <td>array[string]</td>
+                    <td><a href="Attributes/Student_Data#student_data">student data</a></td>
+                    <td>bf43cd9a-63d2-416e-bee7-02debe5e18c9</td>
+                    <td>object</td>
                 </tr>
                 </tbody>
             </table>
@@ -60,17 +60,15 @@
 
     <section>
 
-        <h1 data-ref="competencies">
-            Competencies<br><small><dfn>4f51209d-780e-42b2-aeb6-d5cf942b86a3</dfn></small>
+        <h1 data-ref="student_data">
+            Student Data<br><small><dfn>bf43cd9a-63d2-416e-bee7-02debe5e18c9</dfn></small>
         </h1>
 
-        <p>The attribute <var>4f51209d-780e-42b2-aeb6-d5cf942b86a3</var> describes competencies that may be gained by using an application. The competencies are represented by a simple array of strings.</p>
+        <p>The attribute <var>bf43cd9a-63d2-416e-bee7-02debe5e18c9</var> is an object that describes the ways an application
+            interacts with student data.</p>
 
-        <p>The basic data structure presented here is expressly not intended to allow application submitters to describe metadata using a standardized competency taxonomy. Instead, the intent is to allow for a general description of competencies such that application administrators and users may gain a better understanding of the educational purposes of an application.</p>
 
-        <p>The JSON Schema for this object may be extended by specific CASA implementations that wish to make claims towards a standard competency taxonomy (or other relevant competency metadata). It will then be up to peers to recognize and interpret those claims. At such a time when an inter-organizational standard for a competency taxonomy is developed, the CASA specification can be updated to reflect a more formalized data structure.</p>
-
-        <pre data-attribute-schema="4f51209d-780e-42b2-aeb6-d5cf942b86a3"></pre>
+        <pre data-attribute-schema="bf43cd9a-63d2-416e-bee7-02debe5e18c9"></pre>
 
     </section>
 

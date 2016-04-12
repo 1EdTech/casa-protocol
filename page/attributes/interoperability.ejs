@@ -69,11 +69,12 @@
             LTI<br><small><dfn>f6820326-5ea3-4a02-840d-7f91e75eb01b</dfn></small>
         </h1>
 
-        <p>The attribute <var>f6820326-5ea3-4a02-840d-7f91e75eb01b</var> is an object that indicates that the application is an LTI Tool Provider and how a Tool Consumer can launch and use it.</p>
+        <p>The attribute <var>f6820326-5ea3-4a02-840d-7f91e75eb01b</var> indicates that the application is an LTI Tool Provider and how a Tool Consumer can launch and use it. One or many
+        LTI configurations can be declared with this attribute.</p>
 
         <p><code>launch_url</code> is the canonical LTI Launch URL to which the Tool Consumer POSTs its parameters.</p>
 
-        <p>If <code>launch_params</code> is present, its value must be an <code>application/x-www-form-urlencoded</code>-formatted string. This value should only be set if it can be used unmodified for any launch of the app.
+        <p>If <code>launch_params</code> is present, its value must be an <code>application/x-www-form-urlencoded</code>-formatted string. This value should only be set if it can be used unmodified or with LTI Variable Substitutions for any launch of the app.
         Please see Section 4 of the <a href="http://www.imsglobal.org/lti/ltiv2p0/ltiIMGv2p0.html" rel="external">LTI 2.0 Specification</a> for details on launch parameters.</p>
 
         <p><code>registration_url</code> is the LTI 2.0 registration URL for use by Tool Consumer and Tool Provider auto-configuration.
@@ -81,7 +82,7 @@
         <p>Using <code>content_item_response</code>, apps that support the LTI Content-Item Message <a href="http://www.imsglobal.org/lti/ltiv1p2pd/ltiCIMv1p0pd.html" rel="external">specification</a> have the option to statically define their JSON-LD response payload or, by using
             the boolean variant, apps can declare that their JSON-LD response is generated dynamically by metadata from the CASA implementation (E.g., from foundational attributes).
             This is the JSON that is POSTed back to the Tool Consumer in the value for the <code>content_items</code> parameter when a Content-Item Request launch occurs. If a static value is configured, it must be an <code>application/x-www-form-urlencoded</code>-formatted string.
-        As with <code>launch_params</code>, this value should only be set if it can be used unmodified for any launch of the app.</p>
+        As with <code>launch_params</code>, this value should only be set if it can be used unmodified or with LTI Variable Substitutions for any launch of the app.</p>
 
         <p>Apps may also declare their supported LTI version, the IMS Global conformance certifications obtained, and whether LIS <code>outcomes</code> are returned.</p>
 

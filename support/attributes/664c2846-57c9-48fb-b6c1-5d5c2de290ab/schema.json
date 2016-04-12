@@ -1,0 +1,29 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "description": "Schema for CASA Attribute ID 664c2846-57c9-48fb-b6c1-5d5c2de290ab.",
+  "title": "licensing",
+  "type": "object",
+  "properties": {
+    "is_free": {
+      "type": "boolean"
+    },
+    "is_paid": {
+      "type": "boolean"
+    },
+    "is_recharge": {
+      "type": "boolean"
+    },
+    "is_by_seat": {
+      "type": "boolean"
+    },
+    "is_ad_supported": {
+      "type": "boolean"
+    },
+    "is_other": {
+      "type": "boolean"
+    },
+    "text": {
+      "type": "string"
+    }
+  }
+}

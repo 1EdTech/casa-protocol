@@ -1,0 +1,29 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "description": "Schema for CASA Attribute ID bf43cd9a-63d2-416e-bee7-02debe5e18c9.",
+  "title": "student data",
+  "type": "object",
+  "properties": {
+    "stores_local_data": {
+      "type": "boolean"
+    },
+    "requires_account": {
+      "type": "boolean"
+    },
+    "has_opt_out_for_data_collection": {
+      "type": "boolean"
+    },
+    "has_opt_in_for_data_collection": {
+      "type": "boolean"
+    },
+    "shows_eula": {
+      "type": "boolean"
+    },
+    "is_app_externally_hosted": {
+      "type": "boolean"
+    },
+    "stores_pii": {
+      "type": "boolean"
+    }
+  }
+}

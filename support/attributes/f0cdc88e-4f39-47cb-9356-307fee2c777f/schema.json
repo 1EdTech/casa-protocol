@@ -1,0 +1,33 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "description": "Schema for CASA Attribute ID f0cdc88e-4f39-47cb-9356-307fee2c777f.",
+  "title": "security",
+  "type": "object",
+  "properties": {
+    "uses_https": {
+      "type": "boolean"
+    },
+    "uses_additional_encryption": {
+      "type": "boolean"
+    },
+    "requires_cookies": {
+      "type": "boolean"
+    },
+    "requires_third_party_cookies": {
+      "type": "boolean"
+    },
+    "session_lifetime": {
+      "type": "string"
+    },
+    "cloud_vendor": {
+      "type": "string"
+    },
+    "policy_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "text": {
+      "type": "string"
+    }
+  }
+}

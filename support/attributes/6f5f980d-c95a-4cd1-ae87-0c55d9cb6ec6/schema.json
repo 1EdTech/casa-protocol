@@ -9,6 +9,10 @@
       "format": "email",
       "description": "The email address of an administrative contact."
     },
+    "name": {
+      "type": "string",
+      "description": "The person name of an administrative contact."
+    },
     "phone_number": {
       "type": "string",
       "description": "The phone number of an administrative contact."

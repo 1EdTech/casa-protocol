@@ -4,23 +4,6 @@
   "title": "competencies",
   "type":"array",
   "items": {
-    "type": "object",
-    "properties": {
-      "name": {
-        "type": "string",
-        "description": "A name for a competency."
-      },
-      "description": {
-        "type":"string",
-        "description":"A short description for a competency."
-      },
-      "tags" : {
-        "type":"array",
-        "description":"One or more tags describing a competency.",
-        "items": {
-          "type":"string"
-        }
-      }
-    }
+    "type":"string"
   }
 }

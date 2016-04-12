@@ -1,0 +1,7 @@
+{
+  "$schema":"http://json-schema.org/draft-04/schema#",
+  "description": "Schema for CASA Attribute ID 6060e394-06e3-4199-b88b-cbcd92dc7682.",
+  "title": "wcag_url",
+  "type":"string",
+  "format":"uri"
+}

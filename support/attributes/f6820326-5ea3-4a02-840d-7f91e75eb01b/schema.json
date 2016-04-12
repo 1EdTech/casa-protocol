@@ -2,70 +2,84 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for CASA Attribute ID f6820326-5ea3-4a02-840d-7f91e75eb01b.",
   "title": "lti",
-  "type": "object",
-  "properties": {
-    "launch_url": {
-      "type": "string",
-      "format": "uri"
+  "oneOf": [
+    { "$ref":"#/definitions/ltiList" },
+    { "$ref":"#/definitions/lti" }
+  ],
+  "definitions": {
+    "ltiList": {
+      "type": "array",
+      "items": {
+        "$ref":"#/definitions/lti"
+      }
     },
-    "launch_params": {
-      "type": "string"
-    },
-    "registration_url": {
-      "type": "string",
-      "format": "uri"
-    },
-    "content_item_response": {
-      "oneOf": [
-        {
+    "lti": {
+      "type": "object",
+      "properties": {
+        "launch_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "launch_params": {
           "type": "string"
         },
-        {
-          "type": "boolean",
-          "enum": [
-            true
-          ]
-        }
-      ]
-    },
-    "outcomes": {
-      "type": "string",
-      "enum": [
-        "required",
-        "optional"
-      ]
-    },
-    "version": {
-      "description": "Only allow one version to be set because support for different LTI versions can mean different configurations.",
-      "type": "string",
-      "enum": [
-        "1.0",
-        "1.1",
-        "1.1.1",
-        "1.2",
-        "2.0"
-      ]
-    },
-    "ims_global_certification": {
-      "type": "object",
-      "description":"The certification info for the version identified by the version property.",
-      "properties": {
-        "registration_number": {
-          "type":"string",
-          "description":"The conformance certification number provided by IMS Global for this tool."
-        },
-        "conformance_date": {
-          "type":"string",
-          "description":"A human-readable date."
-        },
-        "link": {
+        "registration_url": {
           "type": "string",
-          "description": "The link to the vendor's detailed certification page on www.imsglobal.org."
+          "format": "uri"
+        },
+        "content_item_response": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean",
+              "enum": [
+                true
+              ]
+            }
+          ]
+        },
+        "outcomes": {
+          "type": "string",
+          "enum": [
+            "required",
+            "optional"
+          ]
+        },
+        "version": {
+          "description": "Only allow one version to be set because support for different LTI versions can mean different configurations.",
+          "type": "string",
+          "enum": [
+            "1.0",
+            "1.1",
+            "1.1.1",
+            "1.2",
+            "2.0"
+          ]
+        },
+        "ims_global_certification": {
+          "type": "object",
+          "description":"The certification info for the version identified by the version property.",
+          "properties": {
+            "registration_number": {
+              "type":"string",
+              "description":"The conformance certification number provided by IMS Global for this tool."
+            },
+            "conformance_date": {
+              "type":"string",
+              "description":"A human-readable date."
+            },
+            "link": {
+              "type": "string",
+              "description": "The link to the vendor's detailed certification page on www.imsglobal.org."
+            }
+          }
         }
-      }
+      },
+      "required": [
+        "launch_url"
+      ]
     }
-  },
-  "required": [
-    "launch_url"
-  ]
+  }
 }
