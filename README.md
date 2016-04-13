@@ -15,17 +15,23 @@ online version of the protocol.
 The CASA Protocol Specification is in a 1.0.0-beta release. The basic structure of the protocol is complete, but changes
 (especially regarding Attributes) are expected. Please check the change log in this directory `CHANGELOG.md`.
 
-UCLA hosts a CASA instance at http://casa.m.ucla.edu. The UCLA CASA store also includes a
-responsive HTML5-based mobile dashboard. On your mobile device, navigate to http://casa.m.ucla.edu/mobile.
-
 If you are hosting a CASA peer and you would like to connect with other peers, please get in touch. We are working towards creating
 CASA specification conformance guidelines and tests as well as a web-based registry of CASA instances.
 
 For more information about IMS Global and the CASA Task Force, please see http://www.imsglobal.org/casa/.
 
+## Instances
+
+There are several public CASA instances out in the wild.
+
+* IMS Global: https://casa.imsglobal.org
+* Paul Gray: http://casa.paulgray.net/
+* Sakai: https://github.com/sakaiproject/sakai/blob/master/basiclti/docs/CASA.md
+* UCLA: https://apps.ucla.edu
+
 ## License
 
-The CASA Protocol is **open-source** and licensed under the Apache 2 License
+The CASA Protocol is open source and licensed under the Apache 2 License
 license. The full text of the license may be found in the `LICENSE` file.
 
 ## Credits
@@ -37,16 +43,16 @@ license. The full text of the license may be found in the `LICENSE` file.
 ##### Contributors
 
 * Bollens, Eric (University of California, Los Angeles)
-* Selsky, Joshua (University of California, Los Angeles)
 * Gray, Paul (Learning Objects, Inc.)
 * Mattson, Lisa (IMS Global Learning Consortium, Inc.)
 * Mosbacker, Bracken (Instructure, Inc.)
 * Rocchio, Rosemary (University of California, Los Angeles)
 * Sakabu, Edward (University of California, Los Angeles)
+* Selsky, Joshua (University of California, Los Angeles)
 * Vickers, Stephen (IMS Global Learning Consortium, Inc.)
 
 ## Copyright Notice
 
-&copy; 2014-2015 IMS Global Learning Consortium, Inc. All rights reserved. IMS Learning Tools Interoperability&reg; (LTI&reg;) is a trademark of the IMS Global Learning Consortium, Inc. in the United States and/or other countries.
+&copy; 2014-2016 IMS Global Learning Consortium, Inc. All rights reserved. IMS Learning Tools Interoperability&reg; (LTI&reg;) is a trademark of the IMS Global Learning Consortium, Inc. in the United States and/or other countries.
 
 
