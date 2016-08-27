@@ -24,7 +24,6 @@ For more information about IMS Global and the CASA Task Force, please see http:/
 
 There are several public CASA instances out in the wild.
 
-* IMS Global: https://casa.imsglobal.org
 * Paul Gray: http://casa.paulgray.net/
 * Sakai: https://github.com/sakaiproject/sakai/blob/master/basiclti/docs/CASA.md
 * UCLA: https://apps.ucla.edu
@@ -38,7 +37,7 @@ license. The full text of the license may be found in the `LICENSE` file.
 
 ##### Editor
 
-* Selsky, Joshua (University of California, Los Angeles)
+* Rocchio, Rose (University of California, Los Angeles)
 
 ##### Contributors
 
@@ -46,7 +45,7 @@ license. The full text of the license may be found in the `LICENSE` file.
 * Gray, Paul (Learning Objects, Inc.)
 * Mattson, Lisa (IMS Global Learning Consortium, Inc.)
 * Mosbacker, Bracken (Instructure, Inc.)
-* Rocchio, Rosemary (University of California, Los Angeles)
+* Rocchio, Rose (University of California, Los Angeles)
 * Sakabu, Edward (University of California, Los Angeles)
 * Selsky, Joshua (University of California, Los Angeles)
 * Vickers, Stephen (IMS Global Learning Consortium, Inc.)
